@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Photos Gallery</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
+    <meta name="description" content="Travel photography gallery with responsive masonry layout">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">🚀 KenWong's Page</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="kw-portfolio.html">Portfolio</a>
+                <a href="setup-guide.html">My MacAir Setup</a>
+                <a href="portfolio.html">Projects</a>
+                <a href="travel.html" class="active">Travel</a>
+                <button class="theme-toggle" aria-label="Toggle dark mode">
+                    <span class="toggle-icon">🌙</span>
+                </button>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+        </div>
+    </nav>
+
+    <header class="travel-header">
+        <div class="container">
+            <h1>Travel Gallery</h1>
+            <p>Photographs from various locations. Images are loaded automatically from the /images/travel folder.</p>
+            <div class="gallery-info">
+                <span id="image-count">Loading images...</span>
+                <span class="info-tip">Click any image to view larger</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="masonry-grid" id="gallery-container">
+            <!-- Images will be dynamically loaded here -->
+            <div class="loading-gallery">
+                <div class="spinner"></div>
+                <p>Loading travel images...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for enlarged image -->
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <img id="modalImage" alt="Enlarged travel photo">
+            <div class="modal-caption">
+                <h3 id="modalTitle"></h3>
+                <p id="modalDescription"></p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>All photos are for demonstration purposes. Add your own images to /images/travel/</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="setup-guide.html">Setup Guide</a>
+                <a href="portfolio.html">Projects</a>
+                <a href="#" class="theme-toggle-footer">Toggle Theme</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/theme-toggle.js"></script>
+    <script src="js/gallery-loader.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load gallery images
+            loadGalleryImages();
+            
+            // Mobile menu toggle
+            document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+                document.querySelector('.nav-links').classList.toggle('show');
+            });
+            
+            // Add theme toggle to footer
+            document.querySelector('.theme-toggle-footer').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector('.theme-toggle').click();
+            });
+        });
+    </script>
+</body>
+</html>

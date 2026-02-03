@@ -1,0 +1,126 @@
+/* Dark theme variables */
+:root {
+    --primary-color: #8fd3b0;
+    --secondary-color: #6fbf9f;
+    --accent-color: #e2d8c7;
+    --light-color: #0f1115;
+    --dark-color: #f5f3ee;
+    --gray-color: #c5c0b8;
+    --light-gray: #2a2f35;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark theme overrides */
+body {
+    background-color: var(--light-color);
+    color: var(--dark-color);
+}
+
+.navbar {
+    background-color: rgba(15, 17, 21, 0.95);
+    border-bottom-color: var(--light-gray);
+}
+
+.hero {
+    background: #131720;
+    border-bottom-color: var(--light-gray);
+}
+
+.feature-card,
+.portfolio-card,
+.guide-toc,
+.gallery-info,
+.link-card {
+    background-color: #f4f1ea;
+    border-color: #d1cdc4;
+    color: #1b3022;
+}
+.capability-card,
+.feature-project,
+.stack-chip {
+    background-color: #f4f1ea;
+    border-color: #d1cdc4;
+    color: #1b3022;
+}
+
+.tag {
+    background-color: #e0ddd5;
+    color: #1b3022;
+}
+
+.stack-chip {
+    color: #1b3022;
+}
+
+.section-link {
+    color: var(--primary-color);
+}
+
+.section-link:hover {
+    color: var(--accent-color);
+}
+
+.card-tools .tool-tag {
+    background-color: #e0ddd5;
+    color: #1b3022;
+}
+
+.filter-btn {
+    background-color: #f4f1ea;
+    border-color: #d1cdc4;
+    color: #1b3022;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #121212;
+}
+
+.guide-header {
+    background: linear-gradient(135deg, #151923 0%, #1f2530 100%);
+    border-bottom-color: var(--light-gray);
+}
+
+.markdown-content th {
+    background-color: #232a33;
+}
+
+.markdown-content th,
+.markdown-content td {
+    border-color: var(--light-gray);
+}
+
+.callout.tip {
+    background-color: #1f3a2c;
+    color: #bdebd3;
+}
+
+.callout.warning {
+    background-color: #3a2f1f;
+    color: #f7d789;
+}
+
+footer {
+    background-color: #0d0f14;
+}
+
+/* Modal in dark theme */
+.modal {
+    background-color: rgba(0, 0, 0, 0.95);
+}
+
+/* Code blocks in dark theme */
+.markdown-content pre {
+    background-color: #0d0f14;
+}
+
+/* Theme toggle button adjustment */
+.theme-toggle {
+    color: var(--dark-color);
+}
+
+.theme-toggle:hover {
+    background-color: var(--light-gray);
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple macOS → Docker → n8n → ngrok (Step-by-Step)</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
+    <meta name="description" content="Complete step-by-step guide for macOS, Docker, n8n and ngrok setup">
+    <meta name="keywords" content="macOS, Docker, n8n, ngrok, automation, setup guide">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">🚀 KenWong's Page</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="kw-portfolio.html">Portfolio</a>
+                <a href="setup-guide.html" class="active">My MacAir Setup</a>
+                <a href="portfolio.html">Projects</a>
+                <a href="travel.html">Travel</a>
+                <button class="theme-toggle" aria-label="Toggle dark mode">
+                    <span class="toggle-icon">🌙</span>
+                </button>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+        </div>
+    </nav>
+
+    <header class="guide-header">
+        <div class="container">
+            <h1>Apple macOS → Docker → n8n → ngrok</h1>
+            <p class="subtitle">Complete Step-by-Step Automation Setup Guide</p>
+            <div class="meta-info">
+                <span class="meta-item">⏱️ 15-30 min setup</span>
+                <span class="meta-item">🛠️ Intermediate level</span>
+                <span class="meta-item">✅ macOS 26.2</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <aside class="guide-toc">
+            <h3>Table of Contents</h3>
+            <nav id="toc"></nav>
+        </aside>
+
+        <article class="guide-content" id="markdown-content">
+            <!-- Markdown content will be loaded here by JavaScript -->
+            <div class="loading">Loading guide content...</div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>Need help? Check the <a href="https://docs.docker.com" target="_blank" rel="noopener">Docker documentation</a> or <a href="https://docs.n8n.io" target="_blank" rel="noopener">n8n guides</a>.</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="portfolio.html">Projects</a>
+                <a href="travel.html">Travel</a>
+                <a href="#" class="theme-toggle-footer">Toggle Theme</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/theme-toggle.js"></script>
+    <script src="js/scripts.js"></script>
+    <script>
+        // Load and render markdown content
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMarkdown('content/setup-guide.md');
+            
+            // Mobile menu toggle
+            document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+                document.querySelector('.nav-links').classList.toggle('show');
+            });
+            
+            // Add theme toggle to footer
+            document.querySelector('.theme-toggle-footer').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector('.theme-toggle').click();
+            });
+        });
+    </script>
+</body>
+</html>
