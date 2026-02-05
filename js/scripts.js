@@ -23,7 +23,7 @@ async function loadMarkdown(filePath) {
 function renderMarkdown(markdown) {
     const contentDiv = document.getElementById('markdown-content');
 
-    // Basic Markdown parsing
+    // Basic Markdown parsing with enhanced styling
     let html = markdown
         // Headers with IDs for TOC
         .replace(/^### (.*$)/gim, (match, title) => `<h3 id="${slugify(title)}">${title}</h3>`)
@@ -43,12 +43,12 @@ function renderMarkdown(markdown) {
         // Blockquotes
         .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
         
-        // Callouts (custom syntax)
-        .replace(/^\[!TIP\]([\s\S]*?)(?=\n\n|$)/g, '<div class="callout tip">$1</div>')
-        .replace(/^\[!WARNING\]([\s\S]*?)(?=\n\n|$)/g, '<div class="callout warning">$1</div>')
+        // Callouts (custom syntax) - enhanced styling
+        .replace(/^\[!TIP\]([\s\S]*?)(?=\n\n|$)/g, '<div class="tip-block">$1</div>')
+        .replace(/^\[!WARNING\]([\s\S]*?)(?=\n\n|$)/g, '<div class="warning-block">$1</div>')
         
-        // Steps (custom syntax)
-        .replace(/^\[STEP\]([\s\S]*?)(?=\n\n|$)/g, '<div class="step">$1</div>')
+        // Steps (custom syntax) - professional step blocks
+        .replace(/^\[STEP\]([\s\S]*?)(?=\n\n|$)/g, '<div class="step-block">$1</div>')
         
         // Links
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
@@ -65,7 +65,7 @@ function renderMarkdown(markdown) {
         // Line breaks
         .replace(/\n/g, '<br>');
     
-    contentDiv.innerHTML = '<div class="markdown-content">' + html + '</div>';
+    contentDiv.innerHTML = html;
     
     // Add syntax highlighting to code blocks
     highlightCodeBlocks();
@@ -85,7 +85,7 @@ function generateTOC() {
     const tocContainer = document.getElementById('toc');
     if (!tocContainer) return;
 
-    const headers = document.querySelectorAll('.markdown-content h2, .markdown-content h3');
+    const headers = document.querySelectorAll('#markdown-content h2, #markdown-content h3');
     let tocHTML = '';
     const usedIds = new Set();
     
