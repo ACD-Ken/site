@@ -469,16 +469,25 @@ a:hover {
 .card-image {
     height: 200px;
     overflow: hidden;
+    background-color: #f8f6f1;
 }
 
-.card-image img {
+.card-image img,
+.card-image svg {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
 
-.portfolio-card:hover .card-image img {
+.architecture-diagram {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.portfolio-card:hover .card-image img,
+.portfolio-card:hover .card-image svg {
     transform: scale(1.05);
 }
 

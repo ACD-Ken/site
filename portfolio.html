@@ -45,7 +45,60 @@
             <!-- Automation Projects -->
             <article class="portfolio-card" data-category="automation" id="automation">
                 <div class="card-image">
-                    <img src="images/portfolio/automation-dashboard.jpg" alt="Automation Dashboard" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"250\"><rect width=\"100%\" height=\"100%\" fill=\"%23333\"/><text x=\"50%\" y=\"50%\" font-family=\"Arial\" font-size=\"20\" fill=\"white\" text-anchor=\"middle\" dy=\".3em\">Automation Dashboard</text></svg>'">
+                    <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" class="architecture-diagram">
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1b3022;stop-opacity:0.1" />
+                                <stop offset="100%" style="stop-color:#1b3022;stop-opacity:0.05" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Background -->
+                        <rect width="600" height="300" fill="url(#grad1)"/>
+                        
+                        <!-- Webhook Input -->
+                        <rect x="30" y="120" width="100" height="60" rx="8" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="80" y="155" text-anchor="middle" fill="#f4f1ea" font-size="14" font-weight="600">Webhook</text>
+                        
+                        <!-- n8n Core -->
+                        <rect x="200" y="80" width="200" height="140" rx="8" fill="#f4f1ea" stroke="#1b3022" stroke-width="2"/>
+                        <text x="300" y="105" text-anchor="middle" fill="#1b3022" font-size="16" font-weight="700">n8n Orchestrator</text>
+                        
+                        <!-- Internal modules -->
+                        <rect x="220" y="120" width="75" height="35" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="257.5" y="142" text-anchor="middle" fill="#1b3022" font-size="11">Router</text>
+                        
+                        <rect x="305" y="120" width="75" height="35" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="342.5" y="142" text-anchor="middle" fill="#1b3022" font-size="11">Handler</text>
+                        
+                        <rect x="220" y="165" width="75" height="35" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="257.5" y="187" text-anchor="middle" fill="#1b3022" font-size="11">Error Log</text>
+                        
+                        <rect x="305" y="165" width="75" height="35" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="342.5" y="187" text-anchor="middle" fill="#1b3022" font-size="11">Monitor</text>
+                        
+                        <!-- Outputs -->
+                        <rect x="470" y="60" width="100" height="50" rx="8" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="520" y="90" text-anchor="middle" fill="#f4f1ea" font-size="13" font-weight="600">Slack</text>
+                        
+                        <rect x="470" y="125" width="100" height="50" rx="8" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="520" y="145" text-anchor="middle" fill="#f4f1ea" font-size="13" font-weight="600">Google</text>
+                        <text x="520" y="160" text-anchor="middle" fill="#f4f1ea" font-size="13" font-weight="600">Sheets</text>
+                        
+                        <rect x="470" y="190" width="100" height="50" rx="8" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="520" y="220" text-anchor="middle" fill="#f4f1ea" font-size="13" font-weight="600">REST API</text>
+                        
+                        <!-- Arrows -->
+                        <path d="M 130 150 L 195 150" stroke="#1b3022" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <path d="M 400 110 L 465 85" stroke="#1b3022" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <path d="M 400 150 L 465 150" stroke="#1b3022" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <path d="M 400 190 L 465 215" stroke="#1b3022" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#1b3022"/>
+                            </marker>
+                        </defs>
+                    </svg>
                 </div>
                 <div class="card-content">
                     <span class="card-category">Automation</span>
@@ -65,7 +118,59 @@
 
             <article class="portfolio-card" data-category="automation">
                 <div class="card-image">
-                    <img src="images/portfolio/docker-monitor.jpg" alt="Docker Monitoring" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"250\"><rect width=\"100%\" height=\"100%\" fill=\"%23333\"/><text x=\"50%\" y=\"50%\" font-family=\"Arial\" font-size=\"20\" fill=\"white\" text-anchor=\"middle\" dy=\".3em\">Docker Monitor</text></svg>'">
+                    <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" class="architecture-diagram">
+                        <defs>
+                            <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1b3022;stop-opacity:0.1" />
+                                <stop offset="100%" style="stop-color:#1b3022;stop-opacity:0.05" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="600" height="300" fill="url(#grad2)"/>
+                        
+                        <!-- Cron Scheduler -->
+                        <rect x="30" y="125" width="90" height="50" rx="8" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="75" y="155" text-anchor="middle" fill="#f4f1ea" font-size="13" font-weight="600">Cron</text>
+                        
+                        <!-- Monitoring Script -->
+                        <rect x="180" y="90" width="240" height="120" rx="8" fill="#f4f1ea" stroke="#1b3022" stroke-width="2"/>
+                        <text x="300" y="115" text-anchor="middle" fill="#1b3022" font-size="16" font-weight="700">Monitor Script</text>
+                        
+                        <rect x="200" y="135" width="85" height="30" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="242.5" y="155" text-anchor="middle" fill="#1b3022" font-size="11">Check Status</text>
+                        
+                        <rect x="315" y="135" width="85" height="30" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="357.5" y="155" text-anchor="middle" fill="#1b3022" font-size="11">Analyze Logs</text>
+                        
+                        <rect x="200" y="172" width="85" height="30" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="242.5" y="192" text-anchor="middle" fill="#1b3022" font-size="11">Auto-restart</text>
+                        
+                        <!-- Docker Containers -->
+                        <rect x="180" y="235" width="80" height="40" rx="6" fill="#2196F3" stroke="#1565C0" stroke-width="2"/>
+                        <text x="220" y="258" text-anchor="middle" fill="white" font-size="11" font-weight="600">Container 1</text>
+                        
+                        <rect x="270" y="235" width="80" height="40" rx="6" fill="#2196F3" stroke="#1565C0" stroke-width="2"/>
+                        <text x="310" y="258" text-anchor="middle" fill="white" font-size="11" font-weight="600">Container 2</text>
+                        
+                        <rect x="360" y="235" width="80" height="40" rx="6" fill="#2196F3" stroke="#1565C0" stroke-width="2"/>
+                        <text x="400" y="258" text-anchor="middle" fill="white" font-size="11" font-weight="600">Container 3</text>
+                        
+                        <!-- Alert Output -->
+                        <rect x="480" y="125" width="90" height="50" rx="8" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="525" y="155" text-anchor="middle" fill="#f4f1ea" font-size="13" font-weight="600">Slack Alert</text>
+                        
+                        <!-- Arrows -->
+                        <path d="M 120 150 L 175 150" stroke="#1b3022" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                        <path d="M 300 210 L 260 230" stroke="#1b3022" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                        <path d="M 300 210 L 310 230" stroke="#1b3022" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                        <path d="M 300 210 L 360 230" stroke="#1b3022" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                        <path d="M 420 150 L 475 150" stroke="#1b3022" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                        
+                        <defs>
+                            <marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#1b3022"/>
+                            </marker>
+                        </defs>
+                    </svg>
                 </div>
                 <div class="card-content">
                     <span class="card-category">Automation</span>
@@ -83,7 +188,53 @@
             <!-- Web Projects -->
             <article class="portfolio-card" data-category="web" id="web-projects">
                 <div class="card-image">
-                    <img src="images/portfolio/markdown-editor.jpg" alt="Markdown Editor" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"250\"><rect width=\"100%\" height=\"100%\" fill=\"%23333\"/><text x=\"50%\" y=\"50%\" font-family=\"Arial\" font-size=\"20\" fill=\"white\" text-anchor=\"middle\" dy=\".3em\">Markdown Editor</text></svg>'">
+                    <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" class="architecture-diagram">
+                        <defs>
+                            <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1b3022;stop-opacity:0.1" />
+                                <stop offset="100%" style="stop-color:#1b3022;stop-opacity:0.05" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="600" height="300" fill="url(#grad3)"/>
+                        
+                        <!-- User Interface Layer -->
+                        <rect x="50" y="40" width="500" height="220" rx="8" fill="#f4f1ea" stroke="#1b3022" stroke-width="2"/>
+                        <text x="300" y="65" text-anchor="middle" fill="#1b3022" font-size="16" font-weight="700">Browser Environment</text>
+                        
+                        <!-- Editor Pane -->
+                        <rect x="70" y="85" width="210" height="160" rx="6" fill="#e8e3d8" stroke="#1b3022" stroke-width="2"/>
+                        <text x="175" y="105" text-anchor="middle" fill="#1b3022" font-size="13" font-weight="600">Editor</text>
+                        <rect x="85" y="115" width="180" height="30" rx="4" fill="#fff" stroke="#1b3022"/>
+                        <text x="95" y="135" fill="#666" font-size="11" font-family="monospace"># Markdown Text</text>
+                        <rect x="85" y="150" width="180" height="30" rx="4" fill="#fff" stroke="#1b3022"/>
+                        <text x="95" y="170" fill="#666" font-size="11" font-family="monospace">## Heading</text>
+                        <rect x="85" y="185" width="180" height="30" rx="4" fill="#fff" stroke="#1b3022"/>
+                        <text x="95" y="205" fill="#666" font-size="11" font-family="monospace">**Bold text**</text>
+                        
+                        <!-- Preview Pane -->
+                        <rect x="320" y="85" width="210" height="160" rx="6" fill="#e8e3d8" stroke="#1b3022" stroke-width="2"/>
+                        <text x="425" y="105" text-anchor="middle" fill="#1b3022" font-size="13" font-weight="600">Live Preview</text>
+                        <text x="335" y="135" fill="#1b3022" font-size="14" font-weight="700">Markdown Text</text>
+                        <text x="335" y="165" fill="#1b3022" font-size="12" font-weight="600">Heading</text>
+                        <text x="335" y="195" fill="#1b3022" font-size="11"><tspan font-weight="700">Bold text</tspan></text>
+                        
+                        <!-- Processing arrow -->
+                        <path d="M 285 165 L 315 165" stroke="#1b3022" stroke-width="3" marker-end="url(#arrowhead3)"/>
+                        <text x="300" y="158" text-anchor="middle" fill="#1b3022" font-size="10" font-weight="600">Marked.js</text>
+                        
+                        <!-- LocalStorage -->
+                        <rect x="210" y="265" width="180" height="25" rx="4" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="300" y="282" text-anchor="middle" fill="#f4f1ea" font-size="12" font-weight="600">LocalStorage Persistence</text>
+                        
+                        <!-- Storage arrow -->
+                        <path d="M 175 245 L 245 265" stroke="#1b3022" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrowhead3)"/>
+                        
+                        <defs>
+                            <marker id="arrowhead3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#1b3022"/>
+                            </marker>
+                        </defs>
+                    </svg>
                 </div>
                 <div class="card-content">
                     <span class="card-category">Web Projects</span>
@@ -104,7 +255,61 @@
 
             <article class="portfolio-card" data-category="web">
                 <div class="card-image">
-                    <img src="images/portfolio/weather-dashboard.jpg" alt="Weather Dashboard" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"250\"><rect width=\"100%\" height=\"100%\" fill=\"%23333\"/><text x=\"50%\" y=\"50%\" font-family=\"Arial\" font-size=\"20\" fill=\"white\" text-anchor=\"middle\" dy=\".3em\">Weather Dashboard</text></svg>'">
+                    <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" class="architecture-diagram">
+                        <defs>
+                            <linearGradient id="grad4" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1b3022;stop-opacity:0.1" />
+                                <stop offset="100%" style="stop-color:#1b3022;stop-opacity:0.05" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="600" height="300" fill="url(#grad4)"/>
+                        
+                        <!-- User -->
+                        <circle cx="80" cy="150" r="30" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="80" y="158" text-anchor="middle" fill="#f4f1ea" font-size="13" font-weight="600">User</text>
+                        
+                        <!-- Frontend App -->
+                        <rect x="180" y="80" width="240" height="140" rx="8" fill="#f4f1ea" stroke="#1b3022" stroke-width="2"/>
+                        <text x="300" y="105" text-anchor="middle" fill="#1b3022" font-size="16" font-weight="700">Weather Dashboard</text>
+                        
+                        <rect x="200" y="125" width="90" height="30" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="245" y="145" text-anchor="middle" fill="#1b3022" font-size="11">Geolocation</text>
+                        
+                        <rect x="310" y="125" width="90" height="30" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="355" y="145" text-anchor="middle" fill="#1b3022" font-size="11">API Handler</text>
+                        
+                        <rect x="200" y="170" width="90" height="30" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="245" y="190" text-anchor="middle" fill="#1b3022" font-size="11">Chart.js</text>
+                        
+                        <rect x="310" y="170" width="90" height="30" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="355" y="190" text-anchor="middle" fill="#1b3022" font-size="11">Cache</text>
+                        
+                        <!-- Weather API -->
+                        <rect x="480" y="115" width="90" height="70" rx="8" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="525" y="140" text-anchor="middle" fill="#f4f1ea" font-size="12" font-weight="600">Weather</text>
+                        <text x="525" y="157" text-anchor="middle" fill="#f4f1ea" font-size="12" font-weight="600">API</text>
+                        <text x="525" y="173" text-anchor="middle" fill="#f4f1ea" font-size="10">(5-day data)</text>
+                        
+                        <!-- Arrows -->
+                        <path d="M 110 150 L 175 150" stroke="#1b3022" stroke-width="2" marker-end="url(#arrowhead4)"/>
+                        <text x="142" y="145" text-anchor="middle" fill="#1b3022" font-size="10">location</text>
+                        
+                        <path d="M 420 150 L 475 150" stroke="#1b3022" stroke-width="2" marker-end="url(#arrowhead4)"/>
+                        <text x="447" y="145" text-anchor="middle" fill="#1b3022" font-size="10">fetch</text>
+                        
+                        <!-- Chart visualization -->
+                        <path d="M 200 250 L 220 230 L 240 235 L 260 220 L 280 225 L 300 210 L 320 215 L 340 205 L 360 210 L 380 200" stroke="#1b3022" stroke-width="2" fill="none"/>
+                        <circle cx="200" cy="250" r="3" fill="#1b3022"/>
+                        <circle cx="260" cy="220" r="3" fill="#1b3022"/>
+                        <circle cx="320" cy="215" r="3" fill="#1b3022"/>
+                        <circle cx="380" cy="200" r="3" fill="#1b3022"/>
+                        
+                        <defs>
+                            <marker id="arrowhead4" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#1b3022"/>
+                            </marker>
+                        </defs>
+                    </svg>
                 </div>
                 <div class="card-content">
                     <span class="card-category">Web Projects</span>
@@ -122,7 +327,66 @@
             <!-- Experiments -->
             <article class="portfolio-card" data-category="experiment">
                 <div class="card-image">
-                    <img src="images/portfolio/voice-commands.jpg" alt="Voice Commands" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org2000/svg\" width=\"400\" height=\"250\"><rect width=\"100%\" height=\"100%\" fill=\"%23333\"/><text x=\"50%\" y=\"50%\" font-family=\"Arial\" font-size=\"20\" fill=\"white\" text-anchor=\"middle\" dy=\".3em\">Voice Interface</text></svg>'">
+                    <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" class="architecture-diagram">
+                        <defs>
+                            <linearGradient id="grad5" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1b3022;stop-opacity:0.1" />
+                                <stop offset="100%" style="stop-color:#1b3022;stop-opacity:0.05" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="600" height="300" fill="url(#grad5)"/>
+                        
+                        <!-- Microphone Input -->
+                        <circle cx="80" cy="150" r="35" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="80" y="145" text-anchor="middle" fill="#f4f1ea" font-size="30">🎤</text>
+                        <text x="80" y="200" text-anchor="middle" fill="#1b3022" font-size="11" font-weight="600">Voice Input</text>
+                        
+                        <!-- Speech Processing -->
+                        <rect x="180" y="80" width="240" height="140" rx="8" fill="#f4f1ea" stroke="#1b3022" stroke-width="2"/>
+                        <text x="300" y="105" text-anchor="middle" fill="#1b3022" font-size="16" font-weight="700">Speech Processor</text>
+                        
+                        <rect x="200" y="125" width="90" height="35" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="245" y="138" text-anchor="middle" fill="#1b3022" font-size="10">Web Speech</text>
+                        <text x="245" y="151" text-anchor="middle" fill="#1b3022" font-size="10">Recognition</text>
+                        
+                        <rect x="310" y="125" width="90" height="35" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="355" y="138" text-anchor="middle" fill="#1b3022" font-size="10">Command</text>
+                        <text x="355" y="151" text-anchor="middle" fill="#1b3022" font-size="10">Parser</text>
+                        
+                        <rect x="200" y="175" width="90" height="30" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="245" y="195" text-anchor="middle" fill="#1b3022" font-size="11">Intent Map</text>
+                        
+                        <rect x="310" y="175" width="90" height="30" rx="4" fill="#e8e3d8" stroke="#1b3022"/>
+                        <text x="355" y="195" text-anchor="middle" fill="#1b3022" font-size="11">Action</text>
+                        
+                        <!-- UI Actions -->
+                        <rect x="480" y="70" width="90" height="45" rx="8" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="525" y="97" text-anchor="middle" fill="#f4f1ea" font-size="12" font-weight="600">Navigate</text>
+                        
+                        <rect x="480" y="130" width="90" height="45" rx="8" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="525" y="157" text-anchor="middle" fill="#f4f1ea" font-size="12" font-weight="600">Fill Form</text>
+                        
+                        <rect x="480" y="190" width="90" height="45" rx="8" fill="#1b3022" stroke="#2a4833" stroke-width="2"/>
+                        <text x="525" y="217" text-anchor="middle" fill="#f4f1ea" font-size="12" font-weight="600">Click Button</text>
+                        
+                        <!-- Arrows -->
+                        <path d="M 115 150 L 175 150" stroke="#1b3022" stroke-width="2" marker-end="url(#arrowhead5)"/>
+                        <text x="145" y="145" text-anchor="middle" fill="#1b3022" font-size="10">audio</text>
+                        
+                        <path d="M 420 120 L 475 92" stroke="#1b3022" stroke-width="2" marker-end="url(#arrowhead5)"/>
+                        <path d="M 420 150 L 475 152" stroke="#1b3022" stroke-width="2" marker-end="url(#arrowhead5)"/>
+                        <path d="M 420 180 L 475 212" stroke="#1b3022" stroke-width="2" marker-end="url(#arrowhead5)"/>
+                        
+                        <!-- Sound waves -->
+                        <path d="M 50 150 Q 60 140, 70 150 T 90 150" stroke="#1b3022" stroke-width="1" fill="none" opacity="0.3"/>
+                        <path d="M 45 150 Q 57 135, 70 150 T 95 150" stroke="#1b3022" stroke-width="1" fill="none" opacity="0.2"/>
+                        
+                        <defs>
+                            <marker id="arrowhead5" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#1b3022"/>
+                            </marker>
+                        </defs>
+                    </svg>
                 </div>
                 <div class="card-content">
                     <span class="card-category">Experiments</span>
@@ -138,7 +402,69 @@
 
             <article class="portfolio-card" data-category="experiment">
                 <div class="card-image">
-                    <img src="images/portfolio/canvas-animation.jpg" alt="Canvas Animation" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"250\"><rect width=\"100%\" height=\"100%\" fill=\"%23333\"/><text x=\"50%\" y=\"50%\" font-family=\"Arial\" font-size=\"20\" fill=\"white\" text-anchor=\"middle\" dy=\".3em\">Canvas Animation</text></svg>'">
+                    <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" class="architecture-diagram">
+                        <defs>
+                            <linearGradient id="grad6" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1b3022;stop-opacity:0.1" />
+                                <stop offset="100%" style="stop-color:#1b3022;stop-opacity:0.05" />
+                            </linearGradient>
+                            <radialGradient id="particle1">
+                                <stop offset="0%" style="stop-color:#1b3022;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#1b3022;stop-opacity:0" />
+                            </radialGradient>
+                        </defs>
+                        <rect width="600" height="300" fill="url(#grad6)"/>
+                        
+                        <!-- Canvas Layer -->
+                        <rect x="50" y="40" width="500" height="220" rx="8" fill="#f4f1ea" stroke="#1b3022" stroke-width="2"/>
+                        <text x="300" y="65" text-anchor="middle" fill="#1b3022" font-size="16" font-weight="700">Canvas Rendering Pipeline</text>
+                        
+                        <!-- Animation Loop -->
+                        <rect x="80" y="90" width="150" height="150" rx="6" fill="#e8e3d8" stroke="#1b3022" stroke-width="2"/>
+                        <text x="155" y="110" text-anchor="middle" fill="#1b3022" font-size="13" font-weight="600">Animation Loop</text>
+                        
+                        <rect x="95" y="125" width="120" height="28" rx="4" fill="#fff" stroke="#1b3022"/>
+                        <text x="155" y="143" text-anchor="middle" fill="#1b3022" font-size="10">Update Physics</text>
+                        
+                        <rect x="95" y="160" width="120" height="28" rx="4" fill="#fff" stroke="#1b3022"/>
+                        <text x="155" y="178" text-anchor="middle" fill="#1b3022" font-size="10">Collision Detection</text>
+                        
+                        <rect x="95" y="195" width="120" height="28" rx="4" fill="#fff" stroke="#1b3022"/>
+                        <text x="155" y="213" text-anchor="middle" fill="#1b3022" font-size="10">Render Frame</text>
+                        
+                        <!-- Particles System -->
+                        <rect x="270" y="90" width="250" height="150" rx="6" fill="#e8e3d8" stroke="#1b3022" stroke-width="2"/>
+                        <text x="395" y="110" text-anchor="middle" fill="#1b3022" font-size="13" font-weight="600">Particle System</text>
+                        
+                        <!-- Animated particles -->
+                        <circle cx="300" cy="150" r="6" fill="url(#particle1)"/>
+                        <circle cx="340" cy="130" r="5" fill="url(#particle1)"/>
+                        <circle cx="380" cy="170" r="7" fill="url(#particle1)"/>
+                        <circle cx="420" cy="145" r="5" fill="url(#particle1)"/>
+                        <circle cx="460" cy="185" r="6" fill="url(#particle1)"/>
+                        <circle cx="490" cy="155" r="4" fill="url(#particle1)"/>
+                        
+                        <!-- Connection lines between particles -->
+                        <line x1="300" y1="150" x2="340" y2="130" stroke="#1b3022" stroke-width="1" opacity="0.3"/>
+                        <line x1="340" y1="130" x2="420" y2="145" stroke="#1b3022" stroke-width="1" opacity="0.3"/>
+                        <line x1="380" y1="170" x2="460" y2="185" stroke="#1b3022" stroke-width="1" opacity="0.3"/>
+                        <line x1="420" y1="145" x2="490" y2="155" stroke="#1b3022" stroke-width="1" opacity="0.3"/>
+                        
+                        <!-- Mouse interaction indicator -->
+                        <circle cx="395" cy="210" r="15" fill="none" stroke="#1b3022" stroke-width="2"/>
+                        <circle cx="395" cy="210" r="3" fill="#1b3022"/>
+                        <text x="395" y="232" text-anchor="middle" fill="#1b3022" font-size="10">Mouse Interact</text>
+                        
+                        <!-- RAF Arrow -->
+                        <path d="M 155 240 Q 155 270, 395 270 Q 395 260, 395 240" stroke="#1b3022" stroke-width="2" fill="none" marker-end="url(#arrowhead6)"/>
+                        <text x="275" y="283" text-anchor="middle" fill="#1b3022" font-size="10" font-weight="600">requestAnimationFrame</text>
+                        
+                        <defs>
+                            <marker id="arrowhead6" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#1b3022"/>
+                            </marker>
+                        </defs>
+                    </svg>
                 </div>
                 <div class="card-content">
                     <span class="card-category">Experiments</span>
