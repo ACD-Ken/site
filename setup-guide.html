@@ -4,16 +4,509 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My MacAir Setup - Development Environment Guide</title>
-    <link rel="stylesheet" href="css/ai-portfolio.css">
-    <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
     <meta name="description" content="Complete setup guide for macOS development environment with Docker, n8n, and ngrok">
     <meta name="keywords" content="macOS, Docker, n8n, ngrok, automation, setup guide, development environment">
+    <style>
+        :root {
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --slate-950: #020617;
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --emerald-400: #34d399;
+            --emerald-500: #10b981;
+            --yellow-400: #fbbf24;
+            --yellow-500: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--slate-950);
+            color: var(--slate-200);
+            line-height: 1.6;
+        }
+
+        /* Grid Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--slate-800);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--slate-100);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--slate-300);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--blue-400);
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--slate-400);
+        }
+
+        .breadcrumb a {
+            color: var(--blue-400);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border-radius: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--slate-50);
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--slate-300);
+            max-width: 700px;
+        }
+
+        /* Layout Container */
+        .guide-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        /* Sidebar TOC */
+        .toc-sidebar {
+            position: sticky;
+            top: 100px;
+            background: var(--slate-900);
+            border: 1px solid var(--slate-800);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .toc-sidebar h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--slate-400);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .toc-sidebar ul {
+            list-style: none;
+        }
+
+        .toc-sidebar li {
+            margin-bottom: 0.5rem;
+        }
+
+        .toc-sidebar a {
+            display: block;
+            color: var(--slate-300);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .toc-sidebar a:hover {
+            background: var(--slate-800);
+            color: var(--blue-400);
+        }
+
+        .toc-sidebar a.active {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--blue-400);
+            border-left: 2px solid var(--blue-500);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 800px;
+            background: var(--slate-900);
+            border: 1px solid var(--slate-800);
+            border-radius: 0.75rem;
+            padding: 3rem;
+        }
+
+        /* Typography */
+        .main-content h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--slate-50);
+            margin: 2.5rem 0 1.25rem;
+            letter-spacing: -0.01em;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--slate-800);
+        }
+
+        .main-content h2:first-child {
+            margin-top: 0;
+        }
+
+        .main-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--slate-100);
+            margin: 2rem 0 1rem;
+        }
+
+        .main-content h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--slate-200);
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        .main-content p {
+            margin-bottom: 1.25rem;
+            color: var(--slate-300);
+        }
+
+        /* Step Component */
+        .step-container {
+            counter-reset: step-counter;
+            margin: 2rem 0;
+        }
+
+        .step {
+            counter-increment: step-counter;
+            position: relative;
+            padding-left: 4rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-left: 2px solid var(--slate-800);
+            margin-left: 2rem;
+        }
+
+        .step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -2.5rem;
+            top: 0;
+            width: 3rem;
+            height: 3rem;
+            background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .step:last-child {
+            border-left-color: transparent;
+        }
+
+        /* Code Blocks */
+        .code-block-wrapper {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
+        .code-block-header {
+            background: var(--slate-800);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--slate-700);
+            border-bottom: none;
+        }
+
+        .code-language {
+            color: var(--slate-400);
+            font-size: 0.875rem;
+            font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .copy-btn {
+            background: var(--slate-700);
+            color: var(--slate-300);
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .copy-btn:hover {
+            background: var(--blue-600);
+            color: white;
+        }
+
+        pre {
+            background: var(--slate-950);
+            border: 1px solid var(--slate-700);
+            border-radius: 0 0 0.5rem 0.5rem;
+            padding: 1.25rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        pre code {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.7;
+            color: var(--slate-200);
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--slate-800);
+            color: var(--emerald-400);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.875em;
+        }
+
+        /* Note/Warning Boxes */
+        .callout {
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .callout.note {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--blue-500);
+        }
+
+        .callout.tip {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--emerald-500);
+        }
+
+        .callout.warning {
+            background: rgba(251, 191, 36, 0.1);
+            border-color: var(--yellow-500);
+        }
+
+        .callout-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .callout.note .callout-title {
+            color: var(--blue-400);
+        }
+
+        .callout.tip .callout-title {
+            color: var(--emerald-400);
+        }
+
+        .callout.warning .callout-title {
+            color: var(--yellow-400);
+        }
+
+        /* Lists */
+        .main-content ul, .main-content ol {
+            margin: 1rem 0 1.5rem 1.5rem;
+            color: var(--slate-300);
+        }
+
+        .main-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Links */
+        .main-content a {
+            color: var(--blue-400);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .main-content a:hover {
+            border-bottom-color: var(--blue-400);
+        }
+
+        /* Footer */
+        footer {
+            max-width: 1400px;
+            margin: 4rem auto 2rem;
+            padding: 2rem;
+            text-align: center;
+            color: var(--slate-400);
+            border-top: 1px solid var(--slate-800);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--slate-400);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--blue-400);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 968px) {
+            .guide-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .toc-sidebar {
+                position: static;
+                max-height: none;
+            }
+
+            .main-content {
+                padding: 2rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .step {
+                padding-left: 3rem;
+                margin-left: 1rem;
+            }
+
+            .step::before {
+                left: -2rem;
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .breadcrumb, .hero, .guide-container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            pre {
+                padding: 1rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
@@ -26,52 +519,379 @@
                 <a href="setup-guide.html" class="nav-link active">Setup</a>
                 <a href="portfolio.html" class="nav-link">Projects</a>
                 <a href="travel.html" class="nav-link">Travel</a>
-                <button class="theme-toggle" aria-label="Toggle dark mode">
-                    <span class="toggle-icon">🌙</span>
-                </button>
             </div>
-            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
         </div>
     </nav>
 
-    <header class="portfolio-header">
-        <div class="container">
-            <h1>My MacAir Setup</h1>
-            <p>Complete step-by-step guide for macOS development environment with Docker, n8n, and ngrok</p>
-        </div>
-    </header>
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span>›</span>
+        <a href="#">Guides</a>
+        <span>›</span>
+        <span>Setup</span>
+    </div>
 
-    <main class="container">
-        <div class="portfolio-card" style="max-width: 900px; margin: 0 auto 4rem;">
-            <div class="card-content" id="markdown-content">
-                <!-- Markdown content will be loaded here by JavaScript -->
-                <div class="loading">Loading guide content...</div>
-            </div>
-        </div>
-    </main>
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>🛠️ My MacAir Setup</h1>
+        <p>Complete step-by-step guide for macOS development environment with Docker, n8n, and ngrok for secure external access.</p>
+    </div>
 
+    <!-- Main Guide Container -->
+    <div class="guide-container">
+        <!-- Sidebar TOC -->
+        <aside class="toc-sidebar">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#config">My Mac Config</a></li>
+                <li><a href="#step1">Step 1: Install Homebrew</a></li>
+                <li><a href="#step2">Step 2: Install Docker & n8n</a></li>
+                <li><a href="#step3">Step 3: Install ngrok & Sign up</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Config Section -->
+            <section id="config">
+                <h2>My Mac Config</h2>
+                <div class="callout note">
+                    <div class="callout-title">💻 System Specifications</div>
+                    <p>MacBook Air (M4) — macOS Tahoe 26.2 — RAM: 16GB, HD: 512GB</p>
+                </div>
+            </section>
+
+            <!-- Step 1 -->
+            <section id="step1">
+                <h2>Step 1: Install Homebrew</h2>
+                <p>Homebrew is the package manager for macOS that we'll use to install other tools.</p>
+                
+                <div class="step-container">
+                    <div class="step">
+                        <h4>Open Terminal</h4>
+                        <p>Press <code>Cmd + Space</code>, type "Terminal", then press Enter</p>
+                    </div>
+
+                    <div class="step">
+                        <h4>Install Homebrew</h4>
+                        <p>Run the following command:</p>
+                        <div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h4>Verify Installation</h4>
+                        <p>Verify Homebrew is installed and update your environment:</p>
+                        <div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code>brew --version
+brew doctor
+brew update</code></pre>
+                        </div>
+                        
+                        <div class="callout tip">
+                            <div class="callout-title">💡 Pro Tip</div>
+                            <p>If <code>brew</code> is not available immediately, follow the installer's printed instructions to add Homebrew to your shell environment (Apple Silicon commonly uses <code>/opt/homebrew</code>):</p>
+                            <div class="code-block-wrapper">
+                                <div class="code-block-header">
+                                    <span class="code-language">bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre><code># Example (run if installer suggests it):
+eval "$(/opt/homebrew/bin/brew shellenv)"</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="callout warning">
+                            <div class="callout-title">⚠️ Important</div>
+                            <p>If you see warnings from <code>brew doctor</code>, follow the suggested fixes before continuing.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 2 -->
+            <section id="step2">
+                <h2>Step 2: Install Docker & n8n</h2>
+                <p>Docker Desktop is the recommended way for macOS users to run Docker and Docker Compose. Install via Homebrew Cask and then start the Docker app.</p>
+                
+                <div class="step-container">
+                    <div class="step">
+                        <h4>Install Docker Desktop</h4>
+                        <p>Install via Homebrew:</p>
+                        <div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code>brew install --cask docker</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h4>Start Docker</h4>
+                        <p>May prompt for permissions; wait until Docker menu shows as running:</p>
+                        <div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code>open --background -a Docker</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h4>Verify Docker Installation</h4>
+                        <p>Verify Docker is installed and Compose is available:</p>
+                        <div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code>docker --version
+docker compose version</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Docker Compose example</h3>
+                <p>A minimal <code>docker-compose.yml</code> example (suitable for local testing):</p>
+                <div class="code-block-wrapper">
+                    <div class="code-block-header">
+                        <span class="code-language">yaml</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>version: "3.7"
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=changeme
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+    volumes:
+      - ./n8n:/home/node/.n8n</code></pre>
+                </div>
+
+                <p>Start it with:</p>
+                <div class="code-block-wrapper">
+                    <div class="code-block-header">
+                        <span class="code-language">bash</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>docker compose up -d</code></pre>
+                </div>
+
+                <h3>Verify Docker & n8n</h3>
+                <div class="step-container">
+                    <div class="step">
+                        <h4>Quick Docker verification</h4>
+                        <div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code># Verify Docker daemon and run a test container
+docker run --rm hello-world
+
+docker info</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h4>Verify Docker Compose and n8n</h4>
+                        <div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code># Show running services
+docker compose ps
+
+# Stream n8n logs
+docker compose logs -f n8n</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h4>Verify n8n is reachable</h4>
+                        <p>Open <code>http://localhost:5678</code> in your browser. If you used the example environment variables above, sign in with <strong>admin / changeme</strong>.</p>
+                        <p>Or use curl to check the HTTP response directly:</p>
+                        <div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code># If Basic Auth is enabled (example config)
+curl -I -u admin:changeme http://localhost:5678
+
+# If Basic Auth is disabled
+curl -I http://localhost:5678</code></pre>
+                        </div>
+                        
+                        <div class="callout warning">
+                            <div class="callout-title">⚠️ Troubleshooting</div>
+                            <p>If n8n doesn't respond, check Docker Desktop is running and inspect logs with <code>docker compose logs -f n8n</code>. Stop the stack with <code>docker compose down</code> when finished.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 3 -->
+            <section id="step3">
+                <h2>Step 3: Install ngrok & Sign up</h2>
+                <p>ngrok exposes local servers to the internet and is handy for testing webhooks and remote integrations.</p>
+                
+                <div class="step-container">
+                    <div class="step">
+                        <h4>Install ngrok via Homebrew</h4>
+                        <div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code># GUI + CLI (recommended)
+brew install --cask ngrok
+
+# Or use the Homebrew formula if available:
+brew install ngrok/ngrok/ngrok</code></pre>
+                        </div>
+                        
+                        <p>Verify installation:</p>
+                        <div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code>ngrok --version</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h4>Sign up for ngrok</h4>
+                        <p>Sign up for a free account at <a href="https://ngrok.com" target="_blank">https://ngrok.com</a> and copy your <strong>Auth Token</strong> from the dashboard (Account → Auth).</p>
+                    </div>
+
+                    <div class="step">
+                        <h4>Add your auth token</h4>
+                        <div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code># ngrok v3
+ngrok config add-authtoken &lt;YOUR_AUTH_TOKEN&gt;
+
+# Older ngrok versions may use:
+# ngrok authtoken &lt;YOUR_AUTH_TOKEN&gt;</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h4>Start a tunnel</h4>
+                        <p>Start a tunnel to your locally running service (example: n8n on port 5678):</p>
+                        <div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code>ngrok http 5678</code></pre>
+                        </div>
+                        
+                        <div class="callout note">
+                            <div class="callout-title">📡 Usage Note</div>
+                            <p>Once started, ngrok prints public HTTP/HTTPS forwarding URLs — open the HTTPS URL in your browser to reach your local service remotely. Note: the free tier uses ephemeral subdomains and has connection limits; review <a href="https://ngrok.com/pricing" target="_blank">https://ngrok.com/pricing</a> for details.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Additional Resources -->
+            <section style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--slate-800);">
+                <h2>📚 Additional Resources</h2>
+                <ul>
+                    <li><a href="https://docs.docker.com" target="_blank">Docker Documentation</a> - Official Docker docs</li>
+                    <li><a href="https://docs.n8n.io" target="_blank">n8n Documentation</a> - n8n workflow automation docs</li>
+                    <li><a href="https://ngrok.com/docs" target="_blank">ngrok Documentation</a> - ngrok tunneling docs</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
     <footer>
-        <div class="footer-content">
-            <p>📚 Additional Resources: <a href="https://docs.docker.com" target="_blank" rel="noopener">Docker Docs</a> • <a href="https://docs.n8n.io" target="_blank" rel="noopener">n8n Docs</a> • <a href="https://ngrok.com/docs" target="_blank" rel="noopener">ngrok Docs</a></p>
-            <div class="footer-links">
-                <a href="index.html">Home</a>
-                <a href="kw-portfolio.html">Portfolio</a>
-                <a href="portfolio.html">Projects</a>
-                <a href="travel.html">Travel</a>
-            </div>
+        <p>&copy; 2026 AlsoCanDo. Built with passion for AI and automation.</p>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="kw-portfolio.html">Portfolio</a>
+            <a href="portfolio.html">Projects</a>
+            <a href="travel.html">Travel</a>
         </div>
     </footer>
 
-    <script src="js/theme-toggle.js"></script>
-    <script src="js/scripts.js"></script>
     <script>
-        // Load and render markdown content
-        document.addEventListener('DOMContentLoaded', function() {
-            loadMarkdown('content/setup-guide.md');
+        // Copy code functionality
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-block-wrapper').querySelector('code');
+            const text = codeBlock.textContent;
             
-            // Mobile menu toggle
-            document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
-                document.querySelector('.nav-links').classList.toggle('show');
+            navigator.clipboard.writeText(text).then(() => {
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+
+        // Smooth scroll for TOC links
+        document.querySelectorAll('.toc-sidebar a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                    // Update active state
+                    document.querySelectorAll('.toc-sidebar a').forEach(link => link.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Highlight active section in TOC on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const tocLinks = document.querySelectorAll('.toc-sidebar a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
             });
         });
     </script>
