@@ -76,6 +76,17 @@
     <script src="js/gallery-loader.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const isAuthed = sessionStorage.getItem('travelAuth') === 'true';
+            if (!isAuthed) {
+                const password = prompt('Enter password to view the travel page:');
+                if (password !== 'AlsoCanDo') {
+                    alert('Incorrect password. Redirecting to home.');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                sessionStorage.setItem('travelAuth', 'true');
+            }
+
             // Load gallery images
             loadGalleryImages();
             

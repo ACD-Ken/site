@@ -134,21 +134,17 @@
 
     <footer>
         <div class="footer-content">
-            <p>Built with vanilla HTML, CSS & JavaScript. Hosted locally or via Docker.</p>
+            <p>Built with Visual Studio Code and Copilot agent.</p>
             <div class="footer-links">
                 <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
                 <a href="mailto:example@domain.com">Contact</a>
                 <a href="#" class="theme-toggle-footer">Toggle Theme</a>
             </div>
-            <p class="footer-note">© <span id="current-year"></span> All content is for demonstration purposes.</p>
         </div>
     </footer>
 
     <script src="js/theme-toggle.js"></script>
     <script>
-        // Set current year in footer
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-        
         // Mobile menu toggle
         document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
             document.querySelector('.nav-links').classList.toggle('show');
