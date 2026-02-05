@@ -554,7 +554,7 @@ section {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
     transition: var(--transition);
     border-left: 4px solid var(--accent);
 }
@@ -567,18 +567,18 @@ section {
     color: var(--accent);
     font-weight: 600;
     font-size: var(--font-size-sm);
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
 }
 
 .learning-card h4 {
     font-size: var(--font-size-lg);
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
     color: var(--text-light);
 }
 
 .learning-card p {
     color: var(--text-muted);
-    line-height: 1.8;
+    line-height: 1.6;
 }
 
 /* ===================================
