@@ -11,7 +11,6 @@ async function loadMarkdown(filePath) {
         
         const markdown = await response.text();
         renderMarkdown(markdown);
-        generateTOC();
     } catch (error) {
         console.error('Error loading markdown:', error);
         document.getElementById('markdown-content').innerHTML = 

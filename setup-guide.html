@@ -3,335 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MacOS Development Setup Guide - Professional Documentation</title>
+    <title>My MacAir Setup - Development Environment Guide</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
-    <meta name="description" content="Professional setup guide for macOS development environment with Docker, n8n, and ngrok">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
+    <meta name="description" content="Complete setup guide for macOS development environment with Docker, n8n, and ngrok">
     <meta name="keywords" content="macOS, Docker, n8n, ngrok, automation, setup guide, development environment">
-    <style>
-        /* Prevent horizontal scrolling */
-        html, body {
-            overflow-x: hidden;
-            max-width: 100vw;
-        }
-        
-        * {
-            max-width: 100%;
-        }
-        
-        /* DeepSeek-inspired professional documentation styles - Compact version */
-        .guide-hero {
-            background: linear-gradient(135deg, #1b3022 0%, #2a4833 100%);
-            color: #f4f1ea;
-            padding: 2rem 0 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .guide-hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 50%;
-            height: 100%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="rgba(244,241,234,0.03)"/></svg>');
-            background-size: 100px;
-            opacity: 0.5;
-        }
-        
-        .guide-hero .container {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .guide-hero h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-        
-        .guide-hero .lead {
-            font-size: 1rem;
-            opacity: 0.9;
-            margin-bottom: 1rem;
-            max-width: 700px;
-        }
-        
-        .guide-meta {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-        }
-        
-        .guide-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-size: 0.85rem;
-            background: rgba(244, 241, 234, 0.1);
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .guide-meta-icon {
-            font-size: 1rem;
-        }
-        
-        .guide-layout {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 2rem;
-            margin: 2rem auto;
-            max-width: 1400px;
-            padding: 0 2rem;
-            align-items: start;
-            overflow-x: hidden;
-        }
-        
-        .guide-sidebar {
-            position: sticky;
-            top: 80px;
-            background: #ffffff;
-            border: 1px solid #e8e3d8;
-            border-radius: 8px;
-            padding: 1.25rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            max-height: calc(100vh - 120px);
-            overflow-y: auto;
-            overflow-x: hidden;
-            word-wrap: break-word;
-        }
-        
-        .guide-sidebar h3 {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #666;
-            margin-bottom: 0.75rem;
-        }
-        
-        .guide-sidebar nav a {
-            display: block;
-            padding: 0.4rem 0.6rem;
-            color: #2a2a2a;
-            text-decoration: none;
-            font-size: 0.85rem;
-            border-radius: 6px;
-            transition: all 0.2s;
-            margin-bottom: 0.2rem;
-        }
-        
-        .guide-sidebar nav a:hover {
-            background: #f8f6f1;
-            color: #1b3022;
-            padding-left: 0.9rem;
-        }
-        
-        .guide-main {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            border: 1px solid #e8e3d8;
-            overflow-x: hidden;
-            max-width: 100%;
-        }
-        
-        .guide-main h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1b3022;
-            margin: 1.75rem 0 0.75rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #e8e3d8;
-            word-wrap: break-word;
-        }
-        
-        .guide-main h2:first-child {
-            margin-top: 0;
-        }
-        
-        .guide-main h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #2a2a2a;
-            margin: 1.25rem 0 0.75rem;
-        }
-        
-        .guide-main p {
-            line-height: 1.6;
-            margin-bottom: 0.75rem;
-            color: #444;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-        
-        .guide-main code {
-            background: #f8f6f1;
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 0.85em;
-            color: #1b3022;
-            border: 1px solid #e8e3d8;
-            word-break: break-all;
-            overflow-wrap: break-word;
-        }
-        
-        .guide-main pre {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 1rem;
-            border-radius: 6px;
-            overflow-x: auto;
-            overflow-y: hidden;
-            margin: 1rem 0;
-            border: 1px solid #333;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            max-width: 100%;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-        }
-        
-        .guide-main pre code {
-            background: none;
-            padding: 0;
-            border: none;
-            color: inherit;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            word-break: break-all;
-            white-space: pre-wrap;
-        }
-        
-        .step-block {
-            background: linear-gradient(135deg, #f8f6f1 0%, #ffffff 100%);
-            border-left: 3px solid #1b3022;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            overflow-x: hidden;
-            word-wrap: break-word;
-        }
-        
-        .step-block::before {
-            content: '📌';
-            font-size: 1rem;
-            margin-right: 0.5rem;
-        }
-        
-        .tip-block {
-            background: #e8f5e9;
-            border-left: 3px solid #4caf50;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 6px;
-            overflow-x: hidden;
-            word-wrap: break-word;
-        }
-        
-        .tip-block::before {
-            content: '💡 TIP';
-            font-weight: 700;
-            color: #2e7d32;
-            display: block;
-            margin-bottom: 0.4rem;
-            font-size: 0.75rem;
-        }
-        
-        .warning-block {
-            background: #fff3e0;
-            border-left: 3px solid #ff9800;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 6px;
-            overflow-x: hidden;
-            word-wrap: break-word;
-        }
-        
-        .warning-block::before {
-            content: '⚠️ WARNING';
-            font-weight: 700;
-            color: #e65100;
-            display: block;
-            margin-bottom: 0.4rem;
-            font-size: 0.75rem;
-        }
-        
-        .config-box {
-            background: #1b3022;
-            color: #f4f1ea;
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            margin: 0.75rem 0;
-            font-size: 0.85rem;
-        }
-        
-        .config-box strong {
-            color: #a8d8b9;
-        }
-        
-        @media (max-width: 1024px) {
-            .guide-layout {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .guide-sidebar {
-                position: static;
-                order: 1;
-                max-height: none;
-            }
-            
-            .guide-main {
-                padding: 1.5rem;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .guide-hero {
-                padding: 1.5rem 0 1rem;
-            }
-            
-            .guide-hero h1 {
-                font-size: 1.5rem;
-            }
-            
-            .guide-hero .lead {
-                font-size: 0.9rem;
-            }
-            
-            .guide-meta {
-                gap: 0.75rem;
-            }
-            
-            .guide-meta-item {
-                font-size: 0.8rem;
-                padding: 0.3rem 0.6rem;
-            }
-            
-            .guide-main {
-                padding: 1.25rem;
-            }
-            
-            .guide-main h2 {
-                font-size: 1.25rem;
-                margin: 1.25rem 0 0.5rem;
-            }
-            
-            .guide-main h3 {
-                font-size: 1rem;
-                margin: 1rem 0 0.5rem;
-            }
-        }
-    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -351,46 +28,25 @@
         </div>
     </nav>
 
-    <header class="guide-hero">
+    <header class="portfolio-header">
         <div class="container">
-            <h1>macOS Development Environment Setup</h1>
-            <p class="lead">A comprehensive, professional guide to configuring a modern automation server on macOS using Docker, n8n, and ngrok for secure external access.</p>
-            <div class="guide-meta">
-                <div class="guide-meta-item">
-                    <span class="guide-meta-icon">⏱️</span>
-                    <span>15-30 minutes</span>
-                </div>
-                <div class="guide-meta-item">
-                    <span class="guide-meta-icon">📊</span>
-                    <span>Intermediate Level</span>
-                </div>
-                <div class="guide-meta-item">
-                    <span class="guide-meta-icon">💻</span>
-                    <span>macOS 26.2+ (Apple Silicon)</span>
-                </div>
-                <div class="guide-meta-item">
-                    <span class="guide-meta-icon">🔧</span>
-                    <span>Docker • n8n • ngrok</span>
-                </div>
-            </div>
+            <h1>My MacAir Setup</h1>
+            <p>Complete step-by-step guide for macOS development environment with Docker, n8n, and ngrok</p>
         </div>
     </header>
 
-    <div class="guide-layout">
-        <aside class="guide-sidebar">
-            <h3>Contents</h3>
-            <nav id="toc"></nav>
-        </aside>
-
-        <main class="guide-main" id="markdown-content">
-            <!-- Markdown content will be loaded here by JavaScript -->
-            <div class="loading">Loading documentation...</div>
-        </main>
-    </div>
+    <main class="container">
+        <div class="portfolio-card" style="max-width: 900px; margin: 0 auto 4rem;">
+            <div class="card-content" id="markdown-content">
+                <!-- Markdown content will be loaded here by JavaScript -->
+                <div class="loading">Loading guide content...</div>
+            </div>
+        </div>
+    </main>
 
     <footer>
         <div class="footer-content">
-            <p>📚 Additional Resources: <a href="https://docs.docker.com" target="_blank" rel="noopener">Docker Documentation</a> • <a href="https://docs.n8n.io" target="_blank" rel="noopener">n8n Documentation</a> • <a href="https://ngrok.com/docs" target="_blank" rel="noopener">ngrok Documentation</a></p>
+            <p>📚 Additional Resources: <a href="https://docs.docker.com" target="_blank" rel="noopener">Docker Docs</a> • <a href="https://docs.n8n.io" target="_blank" rel="noopener">n8n Docs</a> • <a href="https://ngrok.com/docs" target="_blank" rel="noopener">ngrok Docs</a></p>
             <div class="footer-links">
                 <a href="index.html">Home</a>
                 <a href="kw-portfolio.html">Portfolio</a>
@@ -410,12 +66,6 @@
             // Mobile menu toggle
             document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
                 document.querySelector('.nav-links').classList.toggle('show');
-            });
-            
-            // Add theme toggle to footer
-            document.querySelector('.theme-toggle-footer').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelector('.theme-toggle').click();
             });
         });
     </script>
