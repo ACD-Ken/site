@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ken Wong - AI Developer & Automation Specialist</title>
+    <link rel="stylesheet" href="css/ai-portfolio.css">
+    <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">🚀</span>
+                <span class="logo-text">Ken Wong</span>
+            </div>
+            <div class="nav-links">
+                <a href="#about" class="nav-link">About</a>
+                <a href="#projects" class="nav-link">AI Projects</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <button class="theme-toggle" aria-label="Toggle dark mode">
+                    <span class="toggle-icon">🌙</span>
+                </button>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    Building the Future with <span class="accent">AI & Automation</span>
+                </h1>
+                <p class="hero-subtitle">
+                    AI Developer | Automation Specialist | Continuous Learner
+                </p>
+                <p class="hero-description">
+                    I'm passionate about leveraging artificial intelligence and automation to solve real-world problems. With expertise in n8n, Python, and LLM integration, I help businesses transform their workflows and unlock new possibilities.
+                </p>
+                <div class="hero-cta">
+                    <a href="https://github.com/ACD-Ken" target="_blank" class="btn btn-primary">
+                        View My GitHub
+                        <span class="btn-arrow">→</span>
+                    </a>
+                    <a href="#projects" class="btn btn-secondary">
+                        Explore Projects
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="ai-graphic">
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="floating">
+                        <defs>
+                            <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#38bdf8;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Neural network nodes -->
+                        <circle cx="50" cy="50" r="8" fill="url(#aiGrad)"/>
+                        <circle cx="150" cy="50" r="8" fill="url(#aiGrad)"/>
+                        <circle cx="100" cy="150" r="8" fill="url(#aiGrad)"/>
+                        <circle cx="50" cy="150" r="8" fill="url(#aiGrad)"/>
+                        <circle cx="150" cy="150" r="8" fill="url(#aiGrad)"/>
+                        <circle cx="100" cy="100" r="10" fill="url(#aiGrad)"/>
+                        
+                        <!-- Connecting lines -->
+                        <line x1="50" y1="50" x2="100" y2="100" stroke="#38bdf8" stroke-width="1.5" opacity="0.5"/>
+                        <line x1="150" y1="50" x2="100" y2="100" stroke="#38bdf8" stroke-width="1.5" opacity="0.5"/>
+                        <line x1="50" y1="150" x2="100" y2="100" stroke="#38bdf8" stroke-width="1.5" opacity="0.5"/>
+                        <line x1="150" y1="150" x2="100" y2="100" stroke="#38bdf8" stroke-width="1.5" opacity="0.5"/>
+                        <line x1="50" y1="50" x2="150" y2="50" stroke="#38bdf8" stroke-width="1.5" opacity="0.3"/>
+                        <line x1="50" y1="150" x2="150" y2="150" stroke="#38bdf8" stroke-width="1.5" opacity="0.3"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="section-header">
+                <h2>About Me</h2>
+                <p class="section-subtitle">From Curiosity to Expertise</p>
+            </div>
+            <div class="about-content">
+                <div class="about-card">
+                    <h3>🎓 My Journey</h3>
+                    <p>
+                        Started as a curious learner fascinated by artificial intelligence, machine learning, and automation. Through hands-on projects and continuous learning, I've developed expertise in building AI-powered solutions that drive real business value.
+                    </p>
+                </div>
+                <div class="about-card">
+                    <h3>💼 Professional Focus</h3>
+                    <p>
+                        Specializing in workflow automation with n8n, integration of large language models (LLMs), and building scalable automation systems. My work at Bell's and OMD Singapore focused on leveraging AI for operational efficiency and innovation.
+                    </p>
+                </div>
+                <div class="about-card">
+                    <h3>🚀 Vision</h3>
+                    <p>
+                        I believe AI should be accessible and practical. My goal is to help businesses and teams harness automation and AI to focus on what matters most—innovation, creativity, and growth.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="tech-stack">
+        <div class="container">
+            <div class="section-header">
+                <h2>Tech Stack</h2>
+                <p class="section-subtitle">Tools & Technologies I Work With</p>
+            </div>
+            <div class="stack-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">🐍</div>
+                    <h4>Python</h4>
+                    <p>Data processing, automation, and scripting</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🤖</div>
+                    <h4>LLMs & AI</h4>
+                    <p>GPT integration, prompt engineering, fine-tuning</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">⚙️</div>
+                    <h4>n8n Workflows</h4>
+                    <p>No-code automation, API integration, webhooks</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🐳</div>
+                    <h4>Docker</h4>
+                    <p>Containerization, deployment, DevOps</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">📊</div>
+                    <h4>Data & Analytics</h4>
+                    <p>Data analysis, visualization, insights</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🔗</div>
+                    <h4>Git & Version Control</h4>
+                    <p>GitHub, collaboration, CI/CD</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Projects Section -->
+    <section class="projects" id="projects">
+        <div class="container">
+            <div class="section-header">
+                <h2>Featured AI Projects</h2>
+                <p class="section-subtitle">Showcasing my work in AI and automation</p>
+            </div>
+            <div class="projects-grid">
+                <!-- Project 1 -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">🤖</div>
+                        <div class="project-tags">
+                            <span class="tag">LLM</span>
+                            <span class="tag">Python</span>
+                        </div>
+                    </div>
+                    <h3>Fine-tuning GPT Models for Domain Expertise</h3>
+                    <p>
+                        Developed and fine-tuned custom GPT models for specific business use cases. Implemented prompt engineering strategies to optimize model outputs and reduce hallucinations.
+                    </p>
+                    <div class="project-footer">
+                        <a href="#" class="project-link">Learn More →</a>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">⚙️</div>
+                        <div class="project-tags">
+                            <span class="tag">n8n</span>
+                            <span class="tag">Automation</span>
+                        </div>
+                    </div>
+                    <h3>Enterprise Workflow Automation with n8n</h3>
+                    <p>
+                        Built scalable automation workflows integrating multiple APIs and services. Reduced manual data processing by 80% and enabled real-time data synchronization across platforms.
+                    </p>
+                    <div class="project-footer">
+                        <a href="#" class="project-link">Learn More →</a>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">📊</div>
+                        <div class="project-tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">Analytics</span>
+                        </div>
+                    </div>
+                    <h3>AI-Powered Data Intelligence Platform</h3>
+                    <p>
+                        Created an AI system that analyzes business data and generates actionable insights. Integrated natural language processing to make data accessible to non-technical stakeholders.
+                    </p>
+                    <div class="project-footer">
+                        <a href="#" class="project-link">Learn More →</a>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">🌐</div>
+                        <div class="project-tags">
+                            <span class="tag">Web</span>
+                            <span class="tag">API</span>
+                        </div>
+                    </div>
+                    <h3>AI Chatbot Integration & Deployment</h3>
+                    <p>
+                        Deployed conversational AI systems using LLMs, integrated with web applications. Implemented context management and conversation history for seamless user experiences.
+                    </p>
+                    <div class="project-footer">
+                        <a href="#" class="project-link">Learn More →</a>
+                    </div>
+                </div>
+            </div>
+            <div class="projects-cta">
+                <a href="portfolio.html" class="btn btn-primary">View All Projects</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Weekly Learnings Section -->
+    <section class="learnings">
+        <div class="container">
+            <div class="section-header">
+                <h2>Weekly AI Learnings</h2>
+                <p class="section-subtitle">My journey of continuous learning and growth</p>
+            </div>
+            <div class="learnings-grid">
+                <div class="learning-card">
+                    <div class="learning-date">Week 1-2</div>
+                    <h4>Introduction to LLM Fine-tuning</h4>
+                    <p>Explored techniques for fine-tuning language models on custom datasets. Learned about LoRA and parameter-efficient fine-tuning methods.</p>
+                </div>
+                <div class="learning-card">
+                    <div class="learning-date">Week 3-4</div>
+                    <h4>Advanced Prompt Engineering</h4>
+                    <p>Mastered few-shot prompting, chain-of-thought reasoning, and prompt optimization for better model outputs.</p>
+                </div>
+                <div class="learning-card">
+                    <div class="learning-date">Week 5-6</div>
+                    <h4>AI in Production: Deployment & Monitoring</h4>
+                    <p>Learned best practices for deploying AI models in production, handling model drift, and implementing monitoring systems.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2>Get In Touch</h2>
+                <p class="section-subtitle">Let's collaborate on AI projects</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-card">
+                    <h3>Connect with Me</h3>
+                    <p>I'm always interested in discussing AI projects, automation opportunities, and new technologies.</p>
+                    <div class="contact-links">
+                        <a href="https://github.com/ACD-Ken" class="contact-link" target="_blank">
+                            <span class="contact-icon">💻</span>
+                            GitHub
+                        </a>
+                        <a href="https://linkedin.com/in/kenwong" class="contact-link" target="_blank">
+                            <span class="contact-icon">💼</span>
+                            LinkedIn
+                        </a>
+                        <a href="mailto:ken@example.com" class="contact-link">
+                            <span class="contact-icon">✉️</span>
+                            Email
+                        </a>
+                    </div>
+                </div>
+                <div class="contact-card">
+                    <h3>Quick Facts</h3>
+                    <ul class="facts-list">
+                        <li>📍 Based in Singapore</li>
+                        <li>📞 +65-9369-0060</li>
+                        <li>🎯 Focus: AI & Automation</li>
+                        <li>📚 Continuous Learner</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Ken Wong. Built with passion for AI and automation.</p>
+            <div class="footer-links">
+                <a href="kw-portfolio.html">Portfolio</a>
+                <a href="setup-guide.html">Setup Guide</a>
+                <a href="travel.html">Travel</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/theme-toggle.js"></script>
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('show');
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
