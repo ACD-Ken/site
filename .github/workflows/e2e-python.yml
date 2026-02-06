@@ -17,7 +17,13 @@ jobs:
       - name: Install Playwright browsers
         run: python -m playwright install --with-deps
       - name: Start simple HTTP server
-        run: python3 -m http.server 8000 &
+        run: |
+          python3 -m http.server 8001 &
+          echo $! > server.pid
+      - name: Wait for server to be ready
+        run: |
+          timeout 30 bash -c 'until curl -s http://localhost:8001 > /dev/null; do sleep 1; done'
+          echo "Server is ready!"
       - name: Run pytest
         run: pytest -q --junitxml=test-results/results.xml
       - name: Upload JUnit result

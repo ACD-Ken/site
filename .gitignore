@@ -1,0 +1,12 @@
+# Node
+node_modules/
+package-lock.json
+
+# Test results
+test-results/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
