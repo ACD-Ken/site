@@ -1,6 +1,6 @@
 def test_setup_guide_loads_and_toc(page):
-    # Ensure the site is being served at http://localhost:8000
-    page.goto("http://localhost:8000/setup-guide.html")
+    # Ensure the site is being served at http://localhost:8001
+    page.goto("http://localhost:8001/setup-guide.html")
 
     assert page.locator('#markdown-content').is_visible()
 
