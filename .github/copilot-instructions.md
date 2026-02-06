@@ -5,13 +5,13 @@ Summary
 - No build step or bundler is required — pages are served as static files. Use an HTTP server for local development (fetch requires HTTP). See `README.md` for deployment notes (Docker / GitHub Pages).
 
 Quick orientation (big picture)
-- Pages: `index.html`, `setup-guide.html`, `portfolio.html`, `travel.html` are the primary surfaces.
+- Pages: `index.html`, `setup-guide.html`, `projects.html`, `travel.html` are the primary surfaces.
 - Shared logic: `js/scripts.js` contains common helpers (markdown rendering, TOC generation, code highlighting).
 - Feature-specific modules:
   - Theme: `js/theme-toggle.js` + `css/dark.css` (theme toggles by enabling/disabling the `#dark-css` stylesheet and storing preference in `localStorage`).
   - Markdown guide: `content/setup-guide.md` is fetched by `loadMarkdown()` (see `js/scripts.js`). Custom syntaxes: `[!TIP]`, `[!WARNING]`, `[STEP]` are converted into `.callout` and `.step` blocks.
   - Gallery: `js/gallery-loader.js` builds the travel gallery. Currently uses `sampleImages` and placeholder Unsplash URLs; real images are expected in `images/travel/` and getImageList() should be adapted to fetch a server-side list if needed.
-  - Portfolio filtering: implemented inline in `portfolio.html` using `.filter-btn` and `data-filter`/`data-category` attributes.
+  - Portfolio filtering: implemented inline in `projects.html` using `.filter-btn` and `data-filter`/`data-category` attributes.
 
 Important conventions & patterns (project-specific)
 - Markdown → HTML: `loadMarkdown()` reads `content/*.md` and `renderMarkdown()` performs light-weight regex-based parsing. If extending, keep the same header/id generation and update `generateTOC()` to keep TOC behavior consistent with `setup-guide.html` (TOC is injected into `#toc`).

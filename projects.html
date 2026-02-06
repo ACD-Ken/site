@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - AI & Automation Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💼</text></svg>">
+    <meta name="description" content="AI and automation projects - n8n workflows, Docker monitoring, web applications">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --accent-blue: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --emerald: #10b981;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Grid Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--accent-blue);
+        }
+
+        /* Header */
+        .header {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(135deg, var(--accent-blue), var(--emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* Filter Buttons */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: var(--bg-dark);
+        }
+
+        /* Projects Grid */
+        .projects-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Project Card */
+        .project-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 12px 24px rgba(56, 189, 248, 0.15);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(16, 185, 129, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .project-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .project-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.625rem;
+            border-radius: 0.375rem;
+            white-space: nowrap;
+        }
+
+        .status-badge.completed {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--emerald);
+        }
+
+        .status-badge.in-progress {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .status-dot.pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .project-category {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent-blue);
+            margin-bottom: 0.75rem;
+        }
+
+        .project-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+            line-height: 1.6;
+        }
+
+        /* Problem-Solution-Impact */
+        .project-details {
+            margin-bottom: 1.25rem;
+        }
+
+        .detail-section {
+            margin-bottom: 1rem;
+        }
+
+        .detail-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-bottom: 0.375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .detail-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .key-insight {
+            background: rgba(56, 189, 248, 0.05);
+            border-left: 3px solid var(--accent-blue);
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 0.375rem;
+        }
+
+        .key-insight .detail-label {
+            margin-bottom: 0.5rem;
+        }
+
+        .metrics {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-value {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--emerald);
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-badge {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 0.375rem 0.75rem;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-blue);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .tech-badge:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent-blue);
+        }
+
+        /* Action Buttons */
+        .project-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: auto;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.625rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: var(--bg-dark);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        /* Footer */
+        footer {
+            max-width: 1400px;
+            margin: 4rem auto 2rem;
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            border-top: 1px solid var(--card-border);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-container,
+            .header,
+            .projects-container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .project-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span>🚀</span>
+                <span>Ken Wong</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="kw-portfolio.html" class="nav-link">Portfolio</a>
+                <a href="setup-guide.html" class="nav-link">Setup</a>
+                <a href="projects.html" class="nav-link active">Projects</a>
+                <a href="travel.html" class="nav-link">Travel</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="header">
+        <h1>AI & Automation Projects</h1>
+        <p>Real-world applications of AI agents, workflow automation, and technical experimentation</p>
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All Projects</button>
+            <button class="filter-btn" data-filter="automation">Automation</button>
+            <button class="filter-btn" data-filter="web">Web Apps</button>
+            <button class="filter-btn" data-filter="experiment">Experiments</button>
+        </div>
+    </header>
+
+    <main class="projects-container">
+        <div class="projects-grid">
+            <!-- Project 1: n8n Workflow Orchestrator -->
+            <article class="project-card" data-category="automation">
+                <div class="project-image">⚙️</div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <div>
+                            <span class="project-category">Automation</span>
+                            <h3 class="project-title">n8n Workflow Orchestrator</h3>
+                        </div>
+                        <span class="status-badge completed">
+                            <span class="status-dot"></span>
+                            In its early stages
+                        </span>
+                    </div>
+
+                    <p class="project-description">
+                        Multi-step automation pipeline integrating Slack, Google Sheets, and REST APIs. Features error handling, retry logic, and real-time monitoring dashboards.
+                    </p>
+
+                    <div class="project-details">
+                        <div class="detail-section">
+                            <div class="detail-label">💡 Problem</div>
+                            <p class="detail-text">Manual data synchronization across multiple platforms caused delays and errors in team workflows.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">🔧 Solution</div>
+                            <p class="detail-text">Built automated pipeline with n8n to orchestrate data flow between Slack notifications, Google Sheets logging, and external APIs.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">📈 Impact</div>
+                            <p class="detail-text">Reduced manual processing time by 85% and eliminated data sync errors.</p>
+                        </div>
+                    </div>
+
+                    <div class="key-insight">
+                        <div class="detail-label">🔍 Key AI Insight</div>
+                        <p class="detail-text">Implemented intelligent error recovery using conditional logic and exponential backoff retry patterns to handle API rate limits gracefully.</p>
+                    </div>
+
+                    <div class="metrics">
+                        <div class="metric">
+                            <span class="metric-label">Uptime</span>
+                            <span class="metric-value">99.2%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Avg Response</span>
+                            <span class="metric-value">&lt;3s</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-stack">
+                        <span class="tech-badge">n8n</span>
+                        <span class="tech-badge">Docker</span>
+                        <span class="tech-badge">Node.js</span>
+                        <span class="tech-badge">Webhooks</span>
+                    </div>
+
+                    <div class="project-actions">
+                        <a href="setup-guide.html" class="btn btn-primary">View Guide</a>
+                        <a href="#" class="btn btn-secondary">Live Demo</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Project 2: Docker Container Monitor -->
+            <article class="project-card" data-category="automation">
+                <div class="project-image">🐳</div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <div>
+                            <span class="project-category">Automation</span>
+                            <h3 class="project-title">Docker Container Monitor</h3>
+                        </div>
+                        <span class="status-badge completed">
+                            <span class="status-dot"></span>
+                            In its early stages
+                        </span>
+                    </div>
+
+                    <p class="project-description">
+                        Automated monitoring system for Docker containers with Slack notifications, log aggregation, and intelligent auto-restart capabilities.
+                    </p>
+
+                    <div class="project-details">
+                        <div class="detail-section">
+                            <div class="detail-label">💡 Problem</div>
+                            <p class="detail-text">Production containers failed silently without alerting, causing service disruptions.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">🔧 Solution</div>
+                            <p class="detail-text">Created bash/Python monitoring script using Docker API with cron scheduling for health checks and automated recovery.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">📈 Impact</div>
+                            <p class="detail-text">Reduced mean time to recovery (MTTR) from hours to minutes with proactive alerts.</p>
+                        </div>
+                    </div>
+
+                    <div class="key-insight">
+                        <div class="detail-label">🔍 Key AI Insight</div>
+                        <p class="detail-text">Implemented pattern recognition in logs to distinguish between expected errors and critical failures requiring immediate action.</p>
+                    </div>
+
+                    <div class="metrics">
+                        <div class="metric">
+                            <span class="metric-label">MTTR</span>
+                            <span class="metric-value">~4min</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">False Alerts</span>
+                            <span class="metric-value">&lt;2%</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-stack">
+                        <span class="tech-badge">Bash</span>
+                        <span class="tech-badge">Python</span>
+                        <span class="tech-badge">Docker API</span>
+                        <span class="tech-badge">Cron</span>
+                    </div>
+
+                    <div class="project-actions">
+                        <a href="#" class="btn btn-primary">View on GitHub</a>
+                        <a href="#" class="btn btn-secondary">Documentation</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Project 3: Real-time Markdown Editor -->
+            <article class="project-card" data-category="web">
+                <div class="project-image">📝</div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <div>
+                            <span class="project-category">Web App</span>
+                            <h3 class="project-title">Real-time Markdown Editor</h3>
+                        </div>
+                        <span class="status-badge completed">
+                            <span class="status-dot"></span>
+                            In its early stages
+                        </span>
+                    </div>
+
+                    <p class="project-description">
+                        Browser-based Markdown editor with live preview, syntax highlighting, and local storage persistence for offline-first workflows.
+                    </p>
+
+                    <div class="project-details">
+                        <div class="detail-section">
+                            <div class="detail-label">💡 Problem</div>
+                            <p class="detail-text">Needed lightweight documentation tool without backend dependencies or cloud storage requirements.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">🔧 Solution</div>
+                            <p class="detail-text">Built pure JavaScript app using Marked.js for rendering with LocalStorage for persistence and CSS Grid for responsive layout.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">📈 Impact</div>
+                            <p class="detail-text">Enabled offline documentation workflow with instant preview and zero setup friction.</p>
+                        </div>
+                    </div>
+
+                    <div class="key-insight">
+                        <div class="detail-label">🔍 Key AI Insight</div>
+                        <p class="detail-text">Implemented debounced auto-save to balance UX responsiveness with storage efficiency, preventing excessive localStorage writes.</p>
+                    </div>
+
+                    <div class="metrics">
+                        <div class="metric">
+                            <span class="metric-label">Render Time</span>
+                            <span class="metric-value">&lt;50ms</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Bundle Size</span>
+                            <span class="metric-value">~45KB</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-stack">
+                        <span class="tech-badge">JavaScript</span>
+                        <span class="tech-badge">Marked.js</span>
+                        <span class="tech-badge">CSS Grid</span>
+                        <span class="tech-badge">LocalStorage</span>
+                    </div>
+
+                    <div class="project-actions">
+                        <a href="#" class="btn btn-primary">Live Demo</a>
+                        <a href="#" class="btn btn-secondary">View Code</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Project 4: Weather Dashboard -->
+            <article class="project-card" data-category="web">
+                <div class="project-image">🌤️</div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <div>
+                            <span class="project-category">Web App</span>
+                            <h3 class="project-title">Weather Dashboard</h3>
+                        </div>
+                        <span class="status-badge in-progress">
+                            <span class="status-dot pulse"></span>
+                            In Progress
+                        </span>
+                    </div>
+
+                    <p class="project-description">
+                        Interactive weather dashboard with geolocation support, 5-day forecasts, and Chart.js visualizations for temperature trends.
+                    </p>
+
+                    <div class="project-details">
+                        <div class="detail-section">
+                            <div class="detail-label">💡 Problem</div>
+                            <p class="detail-text">Existing weather apps lacked clean UI and performance optimization for low-bandwidth scenarios.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">🔧 Solution</div>
+                            <p class="detail-text">Built lightweight dashboard with intelligent caching and progressive data loading using Weather API.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">📈 Impact</div>
+                            <p class="detail-text">Reduced API calls by 60% through smart caching while maintaining data freshness.</p>
+                        </div>
+                    </div>
+
+                    <div class="key-insight">
+                        <div class="detail-label">🔍 Key AI Insight</div>
+                        <p class="detail-text">Implemented predictive caching based on user location patterns to pre-fetch forecast data before explicit requests.</p>
+                    </div>
+
+                    <div class="metrics">
+                        <div class="metric">
+                            <span class="metric-label">Load Time</span>
+                            <span class="metric-value">~1.2s</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Cache Hit</span>
+                            <span class="metric-value">78%</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-stack">
+                        <span class="tech-badge">JavaScript</span>
+                        <span class="tech-badge">Chart.js</span>
+                        <span class="tech-badge">Weather API</span>
+                        <span class="tech-badge">Geolocation</span>
+                    </div>
+
+                    <div class="project-actions">
+                        <a href="#" class="btn btn-primary">View on GitHub</a>
+                        <a href="#" class="btn btn-secondary">Live Demo</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Project 5: API Response Timer -->
+            <article class="project-card" data-category="experiment">
+                <div class="project-image">⏱️</div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <div>
+                            <span class="project-category">Experiment</span>
+                            <h3 class="project-title">API Performance Analyzer</h3>
+                        </div>
+                        <span class="status-badge completed">
+                            <span class="status-dot"></span>
+                            In its early stages
+                        </span>
+                    </div>
+
+                    <p class="project-description">
+                        Developer tool for benchmarking API endpoints with detailed performance metrics, latency histograms, and visual reporting.
+                    </p>
+
+                    <div class="project-details">
+                        <div class="detail-section">
+                            <div class="detail-label">💡 Problem</div>
+                            <p class="detail-text">Identifying performance bottlenecks in API chains required manual timing and spreadsheet analysis.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">🔧 Solution</div>
+                            <p class="detail-text">Created automated benchmarking tool with D3.js visualizations and statistical analysis of response times.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">📈 Impact</div>
+                            <p class="detail-text">Reduced API debugging time by 70% with instant visualization of performance patterns.</p>
+                        </div>
+                    </div>
+
+                    <div class="key-insight">
+                        <div class="detail-label">🔍 Key AI Insight</div>
+                        <p class="detail-text">Applied percentile-based metrics (p50, p95, p99) instead of averages to identify outlier requests affecting user experience.</p>
+                    </div>
+
+                    <div class="metrics">
+                        <div class="metric">
+                            <span class="metric-label">Max Endpoints</span>
+                            <span class="metric-value">50+</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Tests/Min</span>
+                            <span class="metric-value">100+</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-stack">
+                        <span class="tech-badge">JavaScript</span>
+                        <span class="tech-badge">D3.js</span>
+                        <span class="tech-badge">Fetch API</span>
+                        <span class="tech-badge">Statistics</span>
+                    </div>
+
+                    <div class="project-actions">
+                        <a href="#" class="btn btn-primary">View on GitHub</a>
+                        <a href="#" class="btn btn-secondary">Try It</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Project 6: Canvas Animation -->
+            <article class="project-card" data-category="experiment">
+                <div class="project-image">🎨</div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <div>
+                            <span class="project-category">Experiment</span>
+                            <h3 class="project-title">Interactive Canvas Animation</h3>
+                        </div>
+                        <span class="status-badge completed">
+                            <span class="status-dot"></span>
+                            In its early stages
+                        </span>
+                    </div>
+
+                    <p class="project-description">
+                        Procedurally generated animations using HTML5 Canvas with interactive particle systems responding to mouse movements.
+                    </p>
+
+                    <div class="project-details">
+                        <div class="detail-section">
+                            <div class="detail-label">💡 Problem</div>
+                            <p class="detail-text">Needed engaging visual element for portfolio without heavy video files or external dependencies.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">🔧 Solution</div>
+                            <p class="detail-text">Built lightweight particle system using Canvas API with requestAnimationFrame for 60fps performance.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">📈 Impact</div>
+                            <p class="detail-text">Created reusable animation library used across 3 production sites with zero dependencies.</p>
+                        </div>
+                    </div>
+
+                    <div class="key-insight">
+                        <div class="detail-label">🔍 Key AI Insight</div>
+                        <p class="detail-text">Optimized collision detection using spatial hashing to maintain 60fps with 200+ particles on low-end devices.</p>
+                    </div>
+
+                    <div class="metrics">
+                        <div class="metric">
+                            <span class="metric-label">Frame Rate</span>
+                            <span class="metric-value">60fps</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Particles</span>
+                            <span class="metric-value">200+</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-stack">
+                        <span class="tech-badge">Canvas API</span>
+                        <span class="tech-badge">RAF</span>
+                        <span class="tech-badge">Physics</span>
+                        <span class="tech-badge">Math.js</span>
+                    </div>
+
+                    <div class="project-actions">
+                        <a href="#" class="btn btn-primary">Interactive Demo</a>
+                        <a href="#" class="btn btn-secondary">View Code</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 AlsoCanDo. Built with passion for AI and automation.</p>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="kw-portfolio.html">Portfolio</a>
+            <a href="setup-guide.html">Setup</a>
+            <a href="travel.html">Travel</a>
+        </div>
+    </footer>
+
+    <script>
+        // Filter functionality
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const projectCards = document.querySelectorAll('.project-card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filter = btn.dataset.filter;
+
+                // Update active button
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Filter cards
+                projectCards.forEach(card => {
+                    const category = card.dataset.category;
+                    if (filter === 'all' || category === filter) {
+                        card.style.display = 'flex';
+                        setTimeout(() => card.style.opacity = '1', 10);
+                    } else {
+                        card.style.opacity = '0';
+                        setTimeout(() => card.style.display = 'none', 300);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
