@@ -308,6 +308,57 @@ body {
     pointer-events: none;
 }
 
+.btn-sm {
+    padding: 0.35rem 0.9rem;
+    font-size: 13px;
+    border-radius: 8px;
+    gap: 0.35rem;
+}
+
+/* Compact contact section */
+.contact-compact {
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.contact-compact-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.contact-compact-group h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+    font-weight: 600;
+}
+
+.contact-item {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+}
+
+.contact-item a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.contact-item a:hover {
+    text-decoration: underline;
+}
+
+.avail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
 .hero-visual {
     display: flex;
     justify-content: center;
