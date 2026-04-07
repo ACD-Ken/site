@@ -100,7 +100,7 @@ async function getImageList() {
     return sampleImages.map(img => ({
         ...img,
         // Using placeholder images since we don't have actual files
-        url: `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?auto=format&fit=crop&w=800&q=80`,
+        url: `https://images.unsplash.com/photo-${['1506905925346-21bda4d32df4','1519681393784-d120267933ba','1505142468610-359e5e6f785e','1519996529931-28324d5a630e','1491553895911-0055eca6402d','1501854140801-50d01698950b','1464822759023-fed622ff2c3b','1506905925346-21bda4d32df4'][sampleImages.indexOf(img) % 8]}?auto=format&fit=crop&w=800&q=80`,
         localPath: `images/travel/${img.filename}`
     }));
 }
