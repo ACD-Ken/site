@@ -396,6 +396,12 @@
             background: rgba(56, 189, 248, 0.1);
         }
 
+        .btn-disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         /* Footer */
         footer {
             max-width: 1400px;
@@ -482,7 +488,7 @@
     <main class="projects-container">
         <div class="projects-grid">
             <!-- Project 1: n8n Workflow Orchestrator -->
-            <article class="project-card" data-category="automation">
+            <article class="project-card" id="n8n-orchestrator" data-category="automation">
                 <div class="project-image">⚙️</div>
                 <div class="project-content">
                     <div class="project-header">
@@ -540,13 +546,13 @@
 
                     <div class="project-actions">
                         <a href="setup-guide.html" class="btn btn-primary">View Guide</a>
-                        <a href="#" class="btn btn-secondary">Live Demo</a>
+                        <a href="#" class="btn btn-secondary btn-disabled" title="Coming soon">Live Demo</a>
                     </div>
                 </div>
             </article>
 
             <!-- Project 2: Docker Container Monitor -->
-            <article class="project-card" data-category="automation">
+            <article class="project-card" id="docker-monitor" data-category="automation">
                 <div class="project-image">🐳</div>
                 <div class="project-content">
                     <div class="project-header">
@@ -603,14 +609,14 @@
                     </div>
 
                     <div class="project-actions">
-                        <a href="#" class="btn btn-primary">View on GitHub</a>
-                        <a href="#" class="btn btn-secondary">Documentation</a>
+                        <a href="#" class="btn btn-primary btn-disabled" title="Coming soon">View on GitHub</a>
+                        <a href="#" class="btn btn-secondary btn-disabled" title="Coming soon">Documentation</a>
                     </div>
                 </div>
             </article>
 
             <!-- Project 3: Real-time Markdown Editor -->
-            <article class="project-card" data-category="web">
+            <article class="project-card" id="markdown-editor" data-category="web">
                 <div class="project-image">📝</div>
                 <div class="project-content">
                     <div class="project-header">
@@ -667,14 +673,14 @@
                     </div>
 
                     <div class="project-actions">
-                        <a href="#" class="btn btn-primary">Live Demo</a>
-                        <a href="#" class="btn btn-secondary">View Code</a>
+                        <a href="#" class="btn btn-primary btn-disabled" title="Coming soon">Live Demo</a>
+                        <a href="#" class="btn btn-secondary btn-disabled" title="Coming soon">View Code</a>
                     </div>
                 </div>
             </article>
 
             <!-- Project 4: Weather Dashboard -->
-            <article class="project-card" data-category="web">
+            <article class="project-card" id="weather-dashboard" data-category="web">
                 <div class="project-image">🌤️</div>
                 <div class="project-content">
                     <div class="project-header">
@@ -731,14 +737,14 @@
                     </div>
 
                     <div class="project-actions">
-                        <a href="#" class="btn btn-primary">View on GitHub</a>
-                        <a href="#" class="btn btn-secondary">Live Demo</a>
+                        <a href="#" class="btn btn-primary btn-disabled" title="Coming soon">View on GitHub</a>
+                        <a href="#" class="btn btn-secondary btn-disabled" title="Coming soon">Live Demo</a>
                     </div>
                 </div>
             </article>
 
             <!-- Project 5: API Response Timer -->
-            <article class="project-card" data-category="experiment">
+            <article class="project-card" id="api-analyzer" data-category="experiment">
                 <div class="project-image">⏱️</div>
                 <div class="project-content">
                     <div class="project-header">
@@ -795,72 +801,84 @@
                     </div>
 
                     <div class="project-actions">
-                        <a href="#" class="btn btn-primary">View on GitHub</a>
-                        <a href="#" class="btn btn-secondary">Try It</a>
+                        <a href="#" class="btn btn-primary btn-disabled" title="Coming soon">View on GitHub</a>
+                        <a href="#" class="btn btn-secondary btn-disabled" title="Coming soon">Try It</a>
                     </div>
                 </div>
             </article>
 
-            <!-- Project 6: Canvas Animation -->
-            <article class="project-card" data-category="experiment">
-                <div class="project-image">🎨</div>
+            <!-- Project 6: Lucky7 TOTO AI -->
+            <article class="project-card" id="lucky7-toto" data-category="web-apps">
+                <div class="project-image">🎯</div>
                 <div class="project-content">
                     <div class="project-header">
                         <div>
-                            <span class="project-category">Experiment</span>
-                            <h3 class="project-title">Interactive Canvas Animation</h3>
+                            <span class="project-category">WEB APP</span>
+                            <h3 class="project-title">Lucky7 TOTO AI</h3>
                         </div>
                         <span class="status-badge completed">
                             <span class="status-dot"></span>
-                            In its early stages
+                            Completed
                         </span>
                     </div>
 
                     <p class="project-description">
-                        Procedurally generated animations using HTML5 Canvas with interactive particle systems responding to mouse movements.
+                        AI-powered Progressive Web App for Singapore TOTO predictions using Claude AI, BaZi metaphysics, and statistical analysis.
                     </p>
 
                     <div class="project-details">
                         <div class="detail-section">
                             <div class="detail-label">💡 Problem</div>
-                            <p class="detail-text">Needed engaging visual element for portfolio without heavy video files or external dependencies.</p>
+                            <p class="detail-text">Lottery players have no structured way to approach number selection — purely random guessing with no pattern analysis or strategic insight.</p>
                         </div>
                         <div class="detail-section">
                             <div class="detail-label">🔧 Solution</div>
-                            <p class="detail-text">Built lightweight particle system using Canvas API with requestAnimationFrame for 60fps performance.</p>
+                            <p class="detail-text">Built a full-stack PWA combining Claude AI with 8 prediction strategies: BaZi, Numerology, Frequency Analysis, Lunar Calendar, Gap Analysis, I-Ching, Seed, and Hybrid ensemble.</p>
                         </div>
                         <div class="detail-section">
                             <div class="detail-label">📈 Impact</div>
-                            <p class="detail-text">Created reusable animation library used across 3 production sites with zero dependencies.</p>
+                            <p class="detail-text">Delivered a complete AI-powered analysis tool with real-time draw countdowns, analytics dashboard, chat interface, and offline PWA support.</p>
                         </div>
                     </div>
 
                     <div class="key-insight">
                         <div class="detail-label">🔍 Key AI Insight</div>
-                        <p class="detail-text">Optimized collision detection using spatial hashing to maintain 60fps with 200+ particles on low-end devices.</p>
+                        <p class="detail-text">Multi-strategy ensemble allows Claude to cross-reference metaphysical patterns with statistical frequency data, producing uniquely personalized predictions per user profile.</p>
                     </div>
 
                     <div class="metrics">
                         <div class="metric">
-                            <span class="metric-label">Frame Rate</span>
-                            <span class="metric-value">60fps</span>
+                            <span class="metric-label">Strategies</span>
+                            <span class="metric-value">8 AI Models</span>
                         </div>
                         <div class="metric">
-                            <span class="metric-label">Particles</span>
-                            <span class="metric-value">200+</span>
+                            <span class="metric-label">Draws</span>
+                            <span class="metric-value">2/Week</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Platform</span>
+                            <span class="metric-value">PWA + Offline</span>
                         </div>
                     </div>
 
                     <div class="tech-stack">
-                        <span class="tech-badge">Canvas API</span>
-                        <span class="tech-badge">RAF</span>
-                        <span class="tech-badge">Physics</span>
-                        <span class="tech-badge">Math.js</span>
+                        <span class="tech-badge">React</span>
+                        <span class="tech-badge">TypeScript</span>
+                        <span class="tech-badge">Vite</span>
+                        <span class="tech-badge">Tailwind</span>
+                        <span class="tech-badge">Claude AI</span>
+                        <span class="tech-badge">Supabase</span>
+                        <span class="tech-badge">Node.js</span>
+                        <span class="tech-badge">Express</span>
                     </div>
 
                     <div class="project-actions">
-                        <a href="#" class="btn btn-primary">Interactive Demo</a>
-                        <a href="#" class="btn btn-secondary">View Code</a>
+                        <a href="https://acd-ken.github.io/lucky7_web/" class="btn btn-primary" target="_blank">View App</a>
+                        <a href="https://github.com/ACD-Ken/lucky7toto" class="btn btn-secondary" target="_blank">View Code</a>
+                    </div>
+                    <div class="project-actions" style="margin-top:0.5rem;">
+                        <a href="lucky7-predictions.html" class="btn btn-secondary">🔮 Live Predictions</a>
+                        <a href="lucky7-strikes.html" class="btn btn-secondary">🏆 Strike History</a>
                     </div>
                 </div>
             </article>

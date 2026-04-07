@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky7 Strike History</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --accent-blue: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --emerald: #10b981;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --lucky-gold: #f5c518;
+            --lucky-gold-bg: rgba(245, 197, 24, 0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        nav {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .nav-links { display: flex; align-items: center; gap: 2rem; }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active { color: var(--accent-blue); }
+
+        .page-header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem 1.5rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue), var(--emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-header p { color: var(--text-secondary); font-size: 0.95rem; }
+
+        .main { max-width: 1200px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+        /* Month Navigator */
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .month-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            padding: 0.5rem 0.875rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .month-btn:hover:not(:disabled) {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .month-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .month-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 130px;
+            text-align: center;
+        }
+
+        /* Tab switcher */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 0.625rem;
+            padding: 0.25rem;
+            width: fit-content;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-blue);
+            color: var(--bg-dark);
+        }
+
+        .tab-btn:not(.active):hover { color: var(--text-primary); }
+
+        /* Summary banner */
+        .summary-banner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 0.5rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .summary-count {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--emerald);
+        }
+
+        /* Strike card */
+        .strike-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 0.625rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.875rem;
+            transition: border-color 0.2s;
+        }
+
+        .strike-card:hover { border-color: rgba(56, 189, 248, 0.35); }
+
+        .strike-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .strike-draw {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .strike-draw strong { color: var(--text-secondary); }
+
+        .strategy-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.2rem 0.625rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            color: var(--accent-blue);
+        }
+
+        .match-badge {
+            padding: 0.25rem 0.625rem;
+            border-radius: 0.375rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .match-5, .match-6 { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .match-4 { background: rgba(234, 88, 12, 0.12); color: #fb923c; border: 1px solid rgba(234, 88, 12, 0.3); }
+        .match-3 { background: var(--lucky-gold-bg); color: var(--lucky-gold); border: 1px solid rgba(245, 197, 24, 0.3); }
+
+        .ball {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .ball-gold    { background: var(--lucky-gold); color: #0a1628; }
+        .ball-default { background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--card-border); }
+        .ball-add     { background: rgba(56, 189, 248, 0.12); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.3); }
+
+        .balls { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+
+        .win-nums-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .strike-nums-row {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .nums-group { display: flex; flex-direction: column; }
+
+        /* 4D specific */
+        .fourd-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 0.625rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.875rem;
+            transition: border-color 0.2s;
+        }
+
+        .fourd-card:hover { border-color: rgba(56, 189, 248, 0.35); }
+
+        .fourd-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.875rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .prize-row {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .prize-chip {
+            padding: 0.3rem 0.75rem;
+            border-radius: 0.375rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            border: 1px solid var(--card-border);
+            background: rgba(255,255,255,0.03);
+            color: var(--text-secondary);
+        }
+
+        .prize-chip.hit {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.4);
+            color: #34d399;
+        }
+
+        .prize-chip.hit::before { content: '🎯 '; }
+
+        .pair-display {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--lucky-gold);
+        }
+
+        .no-pred {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Empty / loading */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 0.625rem;
+        }
+
+        .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .empty-state p { font-size: 0.95rem; }
+
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.6s infinite;
+            border-radius: 0.5rem;
+            height: 90px;
+            margin-bottom: 0.875rem;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .hidden { display: none !important; }
+
+        footer {
+            max-width: 1400px;
+            margin: 4rem auto 2rem;
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            border-top: 1px solid var(--card-border);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--accent-blue); }
+
+        @media (max-width: 768px) {
+            .nav-container, .page-header, .main { padding-left: 1rem; padding-right: 1rem; }
+            .strike-nums-row { gap: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="projects.html" class="nav-logo"><span>🚀</span><span>Ken Wong</span></a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="kw-portfolio.html" class="nav-link">Portfolio</a>
+                <a href="projects.html" class="nav-link">Projects</a>
+                <a href="lucky7-predictions.html" class="nav-link">Live Predictions</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>🏆 Lucky7 — Strike History</h1>
+        <p>TOTO &amp; 4D prediction results by month</p>
+    </div>
+
+    <main class="main">
+        <!-- Month navigator -->
+        <div class="month-nav">
+            <button class="month-btn" id="prevBtn" onclick="changeMonth(-1)">◀ Prev</button>
+            <span class="month-label" id="monthLabel"></span>
+            <button class="month-btn" id="nextBtn" onclick="changeMonth(1)">Next ▶</button>
+        </div>
+
+        <!-- Tab switcher -->
+        <div class="tabs">
+            <button class="tab-btn active" id="tabToto" onclick="switchTab('toto')">🎰 TOTO Strikes</button>
+            <button class="tab-btn" id="tabFourd" onclick="switchTab('4d')">🎲 4D History</button>
+        </div>
+
+        <!-- TOTO panel -->
+        <div id="totoPanel">
+            <div id="totoContent">
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+            </div>
+        </div>
+
+        <!-- 4D panel -->
+        <div id="fourdPanel" class="hidden">
+            <div id="fourdContent">
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 AlsoCanDo. Built with passion for AI and automation.</p>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="projects.html">Projects</a>
+            <a href="lucky7-predictions.html">Live Predictions</a>
+        </div>
+    </footer>
+
+    <script>
+    const BACKEND = 'https://lucky7-mobile-backend-production.up.railway.app';
+
+    // ── state ────────────────────────────────────────────────────────────────
+    const today = new Date();
+    const maxMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    let currentMonth = maxMonth;
+    let activeTab = 'toto';
+
+    let totoCache = {};
+    let fourdCache = {};
+
+    // ── month helpers ────────────────────────────────────────────────────────
+    function monthDisplay(ym) {
+        const [y, m] = ym.split('-').map(Number);
+        return new Date(y, m - 1, 1).toLocaleString('en-SG', { month: 'long', year: 'numeric' });
+    }
+
+    function addMonths(ym, delta) {
+        let [y, m] = ym.split('-').map(Number);
+        m += delta;
+        if (m > 12) { m -= 12; y++; }
+        if (m < 1)  { m += 12; y--; }
+        return `${y}-${String(m).padStart(2, '0')}`;
+    }
+
+    function updateMonthUI() {
+        document.getElementById('monthLabel').textContent = monthDisplay(currentMonth);
+        document.getElementById('nextBtn').disabled = (currentMonth >= maxMonth);
+    }
+
+    function changeMonth(delta) {
+        const next = addMonths(currentMonth, delta);
+        if (delta > 0 && next > maxMonth) return;
+        currentMonth = next;
+        updateMonthUI();
+        loadHistory();
+    }
+
+    // ── tab switch ───────────────────────────────────────────────────────────
+    function switchTab(tab) {
+        activeTab = tab;
+        document.getElementById('tabToto').classList.toggle('active', tab === 'toto');
+        document.getElementById('tabFourd').classList.toggle('active', tab === '4d');
+        document.getElementById('totoPanel').classList.toggle('hidden', tab !== 'toto');
+        document.getElementById('fourdPanel').classList.toggle('hidden', tab !== '4d');
+    }
+
+    // ── fetch ────────────────────────────────────────────────────────────────
+    async function loadHistory() {
+        // Show skeletons
+        document.getElementById('totoContent').innerHTML  = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+        document.getElementById('fourdContent').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+
+        // Check cache
+        const cacheKey = currentMonth;
+        if (totoCache[cacheKey] && fourdCache[cacheKey]) {
+            renderTOTO(totoCache[cacheKey]);
+            render4D(fourdCache[cacheKey]);
+            return;
+        }
+
+        try {
+            const [tRes, fRes] = await Promise.all([
+                fetch(`${BACKEND}/api/public/strike-history/toto?month=${currentMonth}`),
+                fetch(`${BACKEND}/api/public/strike-history/4d?month=${currentMonth}`),
+            ]);
+
+            if (!tRes.ok || !fRes.ok) throw new Error('API error');
+
+            const [tData, fData] = await Promise.all([tRes.json(), fRes.json()]);
+
+            totoCache[cacheKey]  = tData;
+            fourdCache[cacheKey] = fData;
+
+            renderTOTO(tData);
+            render4D(fData);
+        } catch (e) {
+            console.error('[strikes] fetch error:', e);
+            const errHtml = `<div class="empty-state"><div class="icon">⚠️</div><p>Could not load data.<br>The backend may be temporarily unavailable.</p></div>`;
+            document.getElementById('totoContent').innerHTML  = errHtml;
+            document.getElementById('fourdContent').innerHTML = errHtml;
+        }
+    }
+
+    // ── render TOTO strikes ──────────────────────────────────────────────────
+    function ball(n, variant) {
+        const cls = variant === 'gold' ? 'ball ball-gold'
+                  : variant === 'add'  ? 'ball ball-add'
+                  : 'ball ball-default';
+        return `<span class="${cls}">${n}</span>`;
+    }
+
+    function formatDrawDate(str) {
+        if (!str) return '—';
+        const d = new Date(str + 'T00:00:00');
+        return d.toLocaleDateString('en-SG', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function matchBadgeClass(count) {
+        if (count >= 5) return 'match-badge match-5';
+        if (count === 4) return 'match-badge match-4';
+        return 'match-badge match-3';
+    }
+
+    function renderTOTO(data) {
+        const el = document.getElementById('totoContent');
+        const strikes = data?.strikes || [];
+
+        // Summary banner
+        const total = data?.total ?? strikes.length;
+        let html = `<div class="summary-banner"><span class="summary-count">${total}</span><span>strike${total !== 1 ? 's' : ''} in ${monthDisplay(data?.month || currentMonth)}</span></div>`;
+
+        if (strikes.length === 0) {
+            html += `<div class="empty-state"><div class="icon">🎯</div><p>No strikes (3+ matches) recorded for ${monthDisplay(currentMonth)}.<br>Try a different month.</p></div>`;
+            el.innerHTML = html;
+            return;
+        }
+
+        // Group by draw
+        const byDraw = {};
+        for (const s of strikes) {
+            const key = s.drawNo || s.drawDate;
+            if (!byDraw[key]) byDraw[key] = { drawNo: s.drawNo, drawDate: s.drawDate, strategies: [] };
+            byDraw[key].strategies.push(s);
+        }
+
+        for (const draw of Object.values(byDraw)) {
+            const allWinNums = draw.strategies[0]?.allWinNums || [];
+            const addNum     = draw.strategies[0]?.addNum;
+
+            const winBalls = allWinNums.map(n => ball(n, 'default')).join('');
+            const addBall  = addNum ? ball(addNum, 'add') : '';
+
+            const stratRows = draw.strategies.map(s => {
+                const hitBalls = (s.strikeNumbers || []).map(n => ball(n, 'gold')).join('');
+                return `
+                    <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+                        <span class="strategy-pill">${s.strategyEmoji || ''} ${s.strategyLabel}</span>
+                        <span class="${matchBadgeClass(s.matchCount)}">${s.matchCount} hits${s.hasAdditional ? ' +A' : ''}</span>
+                        <div class="balls">${hitBalls}</div>
+                    </div>`;
+            }).join('');
+
+            html += `
+                <div class="strike-card">
+                    <div class="strike-header">
+                        <div class="strike-draw">Draw <strong>#${draw.drawNo || '—'}</strong> · ${formatDrawDate(draw.drawDate)}</div>
+                    </div>
+                    <div class="strike-nums-row">
+                        <div class="nums-group">
+                            <div class="win-nums-label">Winning Numbers</div>
+                            <div class="balls">${winBalls}${addBall ? `<span style="color:var(--text-muted);margin:0 0.25rem;font-size:0.75rem;">+</span>${addBall}` : ''}</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:0.875rem;">${stratRows}</div>
+                </div>`;
+        }
+
+        el.innerHTML = html;
+    }
+
+    // ── render 4D history ────────────────────────────────────────────────────
+    function render4D(data) {
+        const el = document.getElementById('fourdContent');
+        const history = data?.history || [];
+
+        const anyHit = history.some(h => h.matches && (h.matches.prize1 || h.matches.prize2 || h.matches.prize3));
+        const hitCount = history.filter(h => h.matches && (h.matches.prize1 || h.matches.prize2 || h.matches.prize3)).length;
+
+        let html = `<div class="summary-banner"><span class="summary-count">${hitCount}</span><span>pair match${hitCount !== 1 ? 'es' : ''} in ${monthDisplay(data?.month || currentMonth)} · ${history.length} draws</span></div>`;
+
+        if (history.length === 0) {
+            html += `<div class="empty-state"><div class="icon">🎲</div><p>No 4D results for ${monthDisplay(currentMonth)}.<br>Try a different month.</p></div>`;
+            el.innerHTML = html;
+            return;
+        }
+
+        for (const draw of history) {
+            const hasPred = draw.prediction !== null;
+            const m = draw.matches;
+            const anyMatch = m && (m.prize1 || m.prize2 || m.prize3);
+
+            html += `
+                <div class="fourd-card" style="${anyMatch ? 'border-color:rgba(16,185,129,0.35);' : ''}">
+                    <div class="fourd-card-header">
+                        <div>
+                            <div class="strike-draw">Draw <strong>#${draw.drawNo || '—'}</strong> · ${formatDrawDate(draw.drawDate)}</div>
+                            ${hasPred ? `<div style="margin-top:0.3rem;display:flex;align-items:center;gap:0.5rem;">
+                                <span style="font-size:0.75rem;color:var(--text-muted);">Predicted pair:</span>
+                                <span class="pair-display">${draw.prediction.pairStr || draw.prediction.pairDigit}</span>
+                            </div>` : `<div class="no-pred" style="margin-top:0.3rem;">No prediction recorded for this draw</div>`}
+                        </div>
+                        ${anyMatch ? `<span style="padding:0.25rem 0.625rem;border-radius:0.375rem;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:#34d399;font-size:0.78rem;font-weight:700;">PAIR HIT 🎯</span>` : ''}
+                    </div>
+                    <div class="prize-row">
+                        <span style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-right:0.25rem;">Results:</span>
+                        <span class="prize-chip${m && m.prize1 ? ' hit' : ''}">1st: ${draw.prize1 || '—'}</span>
+                        <span class="prize-chip${m && m.prize2 ? ' hit' : ''}">2nd: ${draw.prize2 || '—'}</span>
+                        <span class="prize-chip${m && m.prize3 ? ' hit' : ''}">3rd: ${draw.prize3 || '—'}</span>
+                    </div>
+                    ${hasPred && draw.prediction.numbers && draw.prediction.numbers.length > 0 ? `
+                    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--text-muted);">
+                        Predicted numbers: <span style="font-family:'Fira Code',monospace;color:var(--text-secondary);">${draw.prediction.numbers.join(', ')}</span>
+                    </div>` : ''}
+                </div>`;
+        }
+
+        el.innerHTML = html;
+    }
+
+    // ── init ─────────────────────────────────────────────────────────────────
+    updateMonthUI();
+    loadHistory();
+    </script>
+</body>
+</html>

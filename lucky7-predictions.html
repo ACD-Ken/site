@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky7 Live Predictions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+    <!-- SECURITY: SUPABASE_ANON is a public key. RLS on predictions/users tables
+         prevents access to private data. public_display contains only anonymised
+         prediction snapshots written by the server. No user_id is stored here. -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --accent-blue: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --emerald: #10b981;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --lucky-gold: #f5c518;
+            --lucky-gold-bg: rgba(245, 197, 24, 0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        nav {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .nav-links { display: flex; align-items: center; gap: 2rem; }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active { color: var(--accent-blue); }
+
+        .page-header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--lucky-gold), #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header p { color: var(--text-secondary); margin-top: 0.25rem; font-size: 0.95rem; }
+
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.875rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-muted);
+            white-space: nowrap;
+            transition: all 0.4s;
+        }
+
+        .live-badge.connected {
+            border-color: var(--emerald);
+            color: var(--emerald);
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .live-badge.flash {
+            background: rgba(245, 197, 24, 0.15);
+            border-color: var(--lucky-gold);
+            color: var(--lucky-gold);
+        }
+
+        .live-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .live-badge.connected .live-dot {
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.8); }
+        }
+
+        .main { max-width: 1200px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .draw-info {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            padding: 0.875rem 1rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 0.5rem;
+            border: 1px solid var(--card-border);
+        }
+
+        .draw-info-item { display: flex; flex-direction: column; gap: 0.2rem; }
+        .draw-info-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+        .draw-info-value { font-family: 'Fira Code', monospace; font-size: 0.95rem; font-weight: 600; color: var(--text-primary); }
+
+        /* Lucky Pool */
+        .lucky-pool-box {
+            background: var(--lucky-gold-bg);
+            border: 1px solid rgba(245, 197, 24, 0.3);
+            border-radius: 0.625rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .lucky-pool-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--lucky-gold);
+            white-space: nowrap;
+        }
+
+        .balls { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+
+        .ball {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .ball-gold { background: var(--lucky-gold); color: #0a1628; }
+        .ball-blue { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.4); }
+        .ball-default { background: rgba(255,255,255,0.06); color: var(--text-primary); border: 1px solid var(--card-border); }
+
+        /* Strategy grid */
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .strategy-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .strategy-card:hover { border-color: rgba(56, 189, 248, 0.4); }
+
+        .strategy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .strategy-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .confidence {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: var(--emerald);
+            font-weight: 600;
+        }
+
+        .confidence-bar-track {
+            height: 3px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 2px;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+        }
+
+        .confidence-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--emerald));
+        }
+
+        /* Bet Partition */
+        .bet-partition {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .bet-partition-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .bet-groups { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+        .bet-group {
+            background: rgba(56, 189, 248, 0.05);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 0.5rem;
+            padding: 0.625rem 0.875rem;
+        }
+
+        .bet-group-type {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.4rem;
+        }
+
+        /* 4D section */
+        .fourd-layout {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .pair-digit-card {
+            background: var(--lucky-gold-bg);
+            border: 2px solid rgba(245, 197, 24, 0.4);
+            border-radius: 0.75rem;
+            padding: 1.25rem 1.5rem;
+            text-align: center;
+            min-width: 130px;
+        }
+
+        .pair-digit-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--lucky-gold);
+            margin-bottom: 0.25rem;
+        }
+
+        .pair-digit-value {
+            font-family: 'Fira Code', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--lucky-gold);
+            line-height: 1;
+        }
+
+        .element-badge {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-blue);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+        }
+
+        .fourd-numbers { display: flex; flex-direction: column; gap: 0.875rem; }
+
+        .fourd-number-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1rem;
+        }
+
+        .fourd-digit-row {
+            display: flex;
+            gap: 0.375rem;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+
+        .fourd-digit {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.75rem;
+            font-weight: 700;
+            width: 48px; height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.375rem;
+            border: 1px solid var(--card-border);
+            background: rgba(255,255,255,0.04);
+            color: var(--text-primary);
+        }
+
+        .fourd-digit.pair-pos {
+            background: var(--lucky-gold-bg);
+            border-color: rgba(245, 197, 24, 0.5);
+            color: var(--lucky-gold);
+        }
+
+        .fourd-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .fourd-meta-item {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .fourd-meta-item strong { color: var(--text-secondary); }
+
+        /* Empty / loading states */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .empty-state p { font-size: 0.95rem; }
+
+        .loading-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.6s infinite;
+            border-radius: 0.375rem;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .timestamp { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        footer {
+            max-width: 1400px;
+            margin: 4rem auto 2rem;
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            border-top: 1px solid var(--card-border);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--accent-blue); }
+
+        @media (max-width: 768px) {
+            .nav-container, .page-header, .main { padding-left: 1rem; padding-right: 1rem; }
+            .page-header { flex-direction: column; }
+            .strategy-grid { grid-template-columns: 1fr; }
+            .fourd-layout { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="projects.html" class="nav-logo"><span>🚀</span><span>Ken Wong</span></a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="kw-portfolio.html" class="nav-link">Portfolio</a>
+                <a href="projects.html" class="nav-link">Projects</a>
+                <a href="lucky7-strikes.html" class="nav-link">Strike History</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <div>
+            <h1>🎯 Lucky7 — Live Predictions</h1>
+            <p>Latest TOTO &amp; 4D predictions · updates instantly when generated on the mobile app</p>
+        </div>
+        <div>
+            <div class="live-badge" id="liveBadge">
+                <span class="live-dot"></span>
+                <span id="liveText">Connecting…</span>
+            </div>
+            <div class="timestamp" id="lastUpdated" style="text-align:right;margin-top:0.35rem;"></div>
+        </div>
+    </div>
+
+    <main class="main">
+        <!-- TOTO Section -->
+        <div class="section">
+            <div class="section-title">🎰 TOTO Predictions</div>
+            <div id="totoContent">
+                <div class="loading-row">
+                    <div class="skeleton" style="height:60px;flex:1;"></div>
+                </div>
+                <div class="loading-row">
+                    <div class="skeleton" style="height:100px;flex:1;"></div>
+                    <div class="skeleton" style="height:100px;flex:1;margin-left:0.5rem;"></div>
+                    <div class="skeleton" style="height:100px;flex:1;margin-left:0.5rem;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4D Section -->
+        <div class="section">
+            <div class="section-title">🎲 4D Predictions</div>
+            <div id="fourdContent">
+                <div class="loading-row">
+                    <div class="skeleton" style="height:60px;flex:1;"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 AlsoCanDo. Built with passion for AI and automation.</p>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="projects.html">Projects</a>
+            <a href="lucky7-strikes.html">Strike History</a>
+        </div>
+    </footer>
+
+    <script>
+    const SUPABASE_URL  = 'https://nkvablrvbbbbfkwttvoe.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdmFibHJ2YmJiYmZrd3R0dm9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDYzODQsImV4cCI6MjA4NzY4MjM4NH0.Onwp2KdURMl4AQileRA-y0ZvPZYpJtPeYW19-mtKZK8';
+
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // ── helpers ──────────────────────────────────────────────────────────────
+    function ball(n, variant = 'default') {
+      const cls = variant === 'gold' ? 'ball ball-gold'
+                : variant === 'blue' ? 'ball ball-blue'
+                : 'ball ball-default';
+      return `<span class="${cls}">${n}</span>`;
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleString('en-SG', { timeZone: 'Asia/Singapore', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatDrawDate(str) {
+      if (!str) return '—';
+      const d = new Date(str);
+      return d.toLocaleDateString('en-SG', { timeZone: 'Asia/Singapore', weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    // ── render TOTO ──────────────────────────────────────────────────────────
+    function renderTOTO(data) {
+      const el = document.getElementById('totoContent');
+      if (!data) {
+        el.innerHTML = `<div class="empty-state"><div class="icon">🎰</div><p>No TOTO predictions yet.<br>Open the Lucky7 app and tap <strong>Generate Predictions</strong>.</p></div>`;
+        return;
+      }
+
+      const luckyBalls = (data.luckyPool || []).map(n => ball(n, 'gold')).join('');
+      const consBalls  = (data.consensusNumbers || []).map(n => ball(n, 'blue')).join('');
+
+      // Strategy cards
+      const stratCards = (data.strategies || []).map(s => {
+        const conf    = Math.round((s.confidence || 0) * 100);
+        const numBalls = (s.numbers || []).map(n => {
+          const inPool = (data.luckyPool || []).includes(n);
+          return ball(n, inPool ? 'gold' : 'default');
+        }).join('');
+        return `
+          <div class="strategy-card">
+            <div class="strategy-header">
+              <span class="strategy-name">${s.emoji || ''} ${s.label || s.strategy}</span>
+              <span class="confidence">${conf}%</span>
+            </div>
+            <div class="confidence-bar-track">
+              <div class="confidence-bar-fill" style="width:${conf}%"></div>
+            </div>
+            <div class="balls">${numBalls}</div>
+          </div>`;
+      }).join('');
+
+      // Bet partition
+      let betHTML = '';
+      if (data.betPartition && data.betPartition.length) {
+        const groups = data.betPartition.map(g => `
+          <div class="bet-group">
+            <div class="bet-group-type">${g.type || 'Group'}</div>
+            <div class="balls">${(g.numbers || []).map(n => ball(n, 'blue')).join('')}</div>
+          </div>`).join('');
+        betHTML = `
+          <div class="bet-partition">
+            <div class="bet-partition-title">🎴 I-Ching Bet Partition</div>
+            <div class="bet-groups">${groups}</div>
+          </div>`;
+      }
+
+      el.innerHTML = `
+        <div class="draw-info">
+          <div class="draw-info-item">
+            <span class="draw-info-label">Draw Date</span>
+            <span class="draw-info-value">${formatDrawDate(data.drawDate)}</span>
+          </div>
+          ${data.hexagramNum ? `<div class="draw-info-item">
+            <span class="draw-info-label">I-Ching Hexagram</span>
+            <span class="draw-info-value">#${data.hexagramNum}</span>
+          </div>` : ''}
+          <div class="draw-info-item">
+            <span class="draw-info-label">Generated</span>
+            <span class="draw-info-value">${formatDate(data.generatedAt)}</span>
+          </div>
+        </div>
+
+        ${luckyBalls ? `<div class="lucky-pool-box">
+          <span class="lucky-pool-label">⭐ Lucky Pool</span>
+          <div class="balls">${luckyBalls}</div>
+        </div>` : ''}
+
+        ${consBalls ? `<div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.25rem;">
+          <span style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">Consensus</span>
+          <div class="balls">${consBalls}</div>
+        </div>` : ''}
+
+        <div class="strategy-grid">${stratCards}</div>
+        ${betHTML}`;
+    }
+
+    // ── render 4D ────────────────────────────────────────────────────────────
+    function render4D(data) {
+      const el = document.getElementById('fourdContent');
+      if (!data) {
+        el.innerHTML = `<div class="empty-state"><div class="icon">🎲</div><p>No 4D predictions yet.<br>Open the Lucky7 app and tap <strong>Generate 4D</strong>.</p></div>`;
+        return;
+      }
+
+      const ELEMENT_COLORS = {
+        Water: '#38bdf8', Wood: '#22c55e', Fire: '#ef4444', Earth: '#f59e0b', Metal: '#94a3b8'
+      };
+      const elemColor = ELEMENT_COLORS[data.element] || 'var(--accent-blue)';
+
+      const numCards = (data.suggestions || []).map(s => {
+        const digits = String(s.number || '').split('');
+        const pairPos = s.pairPositions || [];
+        const digitHtml = digits.map((d, i) =>
+          `<div class="fourd-digit${pairPos.includes(i) ? ' pair-pos' : ''}">${d}</div>`
+        ).join('');
+
+        return `
+          <div class="fourd-number-card">
+            <div class="fourd-digit-row">${digitHtml}</div>
+            <div class="fourd-meta">
+              ${s.hexagramNo ? `<span class="fourd-meta-item">I-Ching: <strong>#${s.hexagramNo}</strong></span>` : ''}
+              ${s.ibetType   ? `<span class="fourd-meta-item">iBet: <strong>${s.ibetType}</strong></span>` : ''}
+              ${s.permCount  ? `<span class="fourd-meta-item">Perms: <strong>${s.permCount}</strong></span>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+
+      el.innerHTML = `
+        <div class="fourd-layout">
+          <div class="pair-digit-card">
+            <div class="pair-digit-label">Lucky Pair</div>
+            <div class="pair-digit-value">${data.pairDigit ?? '?'}</div>
+            <div style="margin-top:0.25rem;">
+              <span class="element-badge" style="border-color:${elemColor}33;color:${elemColor};background:${elemColor}18;">${data.element || '—'}</span>
+            </div>
+          </div>
+          <div>
+            <div class="draw-info" style="margin-bottom:1rem;">
+              <div class="draw-info-item">
+                <span class="draw-info-label">Draw</span>
+                <span class="draw-info-value">${formatDrawDate(data.drawDate)}</span>
+              </div>
+              ${data.drawDay ? `<div class="draw-info-item">
+                <span class="draw-info-label">Day</span>
+                <span class="draw-info-value">${data.drawDay}</span>
+              </div>` : ''}
+              <div class="draw-info-item">
+                <span class="draw-info-label">Generated</span>
+                <span class="draw-info-value">${formatDate(data.generatedAt)}</span>
+              </div>
+            </div>
+            <div class="fourd-numbers">${numCards || '<p style="color:var(--text-muted);font-size:0.9rem;">No suggestions in snapshot.</p>'}</div>
+          </div>
+        </div>`;
+    }
+
+    // ── live indicator ───────────────────────────────────────────────────────
+    function setLive(state) {
+      const badge = document.getElementById('liveBadge');
+      const text  = document.getElementById('liveText');
+      badge.className = 'live-badge';
+      if (state === 'live')    { badge.classList.add('connected'); text.textContent = 'Live'; }
+      else if (state === 'flash') {
+        badge.classList.add('flash'); text.textContent = 'Updated!';
+        setTimeout(() => setLive('live'), 2500);
+      } else {
+        text.textContent = 'Offline';
+      }
+    }
+
+    function setTimestamp(totoAt, fourdAt) {
+      const ts = [totoAt, fourdAt].filter(Boolean).sort().pop();
+      if (ts) {
+        document.getElementById('lastUpdated').textContent = 'Last updated: ' + formatDate(ts);
+      }
+    }
+
+    // ── load & subscribe ─────────────────────────────────────────────────────
+    async function loadData() {
+      try {
+        const { data, error } = await sb.from('public_display').select('*');
+        if (error) throw error;
+        const totoRow  = (data || []).find(r => r.id === 'toto_latest');
+        const fourdRow = (data || []).find(r => r.id === '4d_latest');
+        renderTOTO(totoRow?.data ?? null);
+        render4D(fourdRow?.data ?? null);
+        setTimestamp(totoRow?.updated_at, fourdRow?.updated_at);
+      } catch (e) {
+        console.error('[lucky7] load error:', e);
+        document.getElementById('totoContent').innerHTML  = `<div class="empty-state"><div class="icon">⚠️</div><p>Could not load predictions. Please try refreshing.</p></div>`;
+        document.getElementById('fourdContent').innerHTML = '';
+      }
+    }
+
+    // Realtime subscription — fires on INSERT (first time) and UPDATE (every new generation)
+    sb.channel('public_display_live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'public_display' }, payload => {
+        const row = payload.new;
+        if (!row) return;
+        if (row.id === 'toto_latest') renderTOTO(row.data);
+        if (row.id === '4d_latest')   render4D(row.data);
+        setTimestamp(
+          row.id === 'toto_latest' ? row.updated_at : null,
+          row.id === '4d_latest'   ? row.updated_at : null
+        );
+        setLive('flash');
+      })
+      .subscribe(status => {
+        if (status === 'SUBSCRIBED') setLive('live');
+        else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') setLive('offline');
+      });
+
+    loadData();
+    </script>
+</body>
+</html>
