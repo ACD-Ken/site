@@ -648,7 +648,7 @@
       };
       const elemColor = ELEMENT_COLORS[data.element] || 'var(--accent-blue)';
 
-      const numCards = (data.suggestions || []).map(s => {
+      const numCards = (data.suggestions || []).slice(0, 1).map(s => {
         const digits = String(s.number || '').split('');
         const pairPos = s.pairPositions || [];
         const digitHtml = digits.map((d, i) =>
