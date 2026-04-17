@@ -2,7 +2,7 @@
  * After deploying to Railway, replace RAILWAY_URL with your actual deployment URL,
  * e.g. https://site-production-abc1.up.railway.app
  */
-const RAILWAY_URL = 'https://YOUR-RAILWAY-DEPLOYMENT.up.railway.app';
+const RAILWAY_URL = 'https://acd-bot-production.up.railway.app';
 const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
   ? 'http://localhost:3000/api/chat'
   : `${RAILWAY_URL}/api/chat`;
