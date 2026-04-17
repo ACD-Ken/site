@@ -99,8 +99,8 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       return res.status(400).json({ error: 'messages array is required' });
     }
 
-    // Validate each message: only allow user/assistant roles, cap text length
-    const MAX_MSG_LEN = 500;
+    // Validate each message
+    const MAX_USER_MSG_LEN = 500; // cap user input only — assistant replies can be longer
     for (const msg of messages) {
       if (!['user', 'assistant'].includes(msg.role)) {
         return res.status(400).json({ error: 'Invalid message role' });
@@ -108,8 +108,8 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       if (typeof msg.content !== 'string' || msg.content.trim() === '') {
         return res.status(400).json({ error: 'Message content must be a non-empty string' });
       }
-      if (msg.content.length > MAX_MSG_LEN) {
-        return res.status(400).json({ error: `Message exceeds ${MAX_MSG_LEN} character limit` });
+      if (msg.role === 'user' && msg.content.length > MAX_USER_MSG_LEN) {
+        return res.status(400).json({ error: `Message exceeds ${MAX_USER_MSG_LEN} character limit` });
       }
     }
 
