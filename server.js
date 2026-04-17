@@ -99,7 +99,7 @@ Start tunnel: `ngrok http 5678` — this gives a public HTTPS URL pointing at yo
 Consulting, full-time roles, speaking engagements, and automation projects across Southeast Asia.
 
 ## Contact
-Email: ken@alsocando.com | LinkedIn: linkedin.com/in/kenwong3 | Location: Singapore
+Email: ken@alsocando.com or alsocando@gmail.com | LinkedIn: linkedin.com/in/kenwong3 | Location: Singapore
 Portfolio: https://acd-ken.github.io/site
 
 ## How to reply
