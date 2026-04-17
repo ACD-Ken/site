@@ -55,6 +55,46 @@ Ken Wong is a **Seasoned IT Leader & Agentic AI Specialist** based in Singapore 
 - **n8n Automation** — Telegram chatbot that reads, updates, and appends Google Sheets with real-time notifications.
 - **AWS S3 Migration** — Led multi-year migration of regional legacy server storage to AWS/S3 across 6 Southeast Asian markets.
 
+## Dev Environment Setup (MacBook Air M4)
+Ken has published a setup guide for his MacAir development environment. Here is the complete walkthrough:
+
+**Step 1 — Homebrew (package manager)**
+Install: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+Verify: `brew --version` and `brew doctor`. On Apple Silicon, may need `eval "$(/opt/homebrew/bin/brew shellenv)"` to add Homebrew to PATH.
+
+**Step 2 — Docker & n8n**
+Install Docker Desktop: `brew install --cask docker`, then start it: `open --background -a Docker`.
+Verify: `docker --version` and `docker compose version`.
+Create a `docker-compose.yml`:
+```
+version: "3.7"
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=changeme
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+    volumes:
+      - ./n8n:/home/node/.n8n
+```
+Launch: `docker compose up -d`. Access n8n at `http://localhost:5678` (login: admin / changeme).
+Useful checks: `docker compose ps`, `docker compose logs -f n8n`.
+
+**Step 3 — ngrok (expose local server to internet)**
+Install: `brew install --cask ngrok`. Verify: `ngrok --version`.
+Sign up free at ngrok.com, get your Auth Token from Account → Auth dashboard.
+Configure: `ngrok config add-authtoken <YOUR_AUTH_TOKEN>`.
+Start tunnel: `ngrok http 5678` — this gives a public HTTPS URL pointing at your local n8n.
+
+**System specs:** MacBook Air M4, macOS Tahoe 26.2, 16 GB RAM, 512 GB storage.
+
 ## Open To
 Consulting, full-time roles, speaking engagements, and automation projects across Southeast Asia.
 
