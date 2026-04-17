@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const Anthropic = require('@anthropic-ai/sdk');
 
 const app = express();
+app.set('trust proxy', 1); // Trust Railway's reverse proxy for correct IP detection
 
 // Security headers
 app.use(helmet());
