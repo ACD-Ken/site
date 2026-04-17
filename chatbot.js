@@ -14,6 +14,17 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
   let isOpen = false;
   let isWaiting = false;
 
+  const STORAGE_KEY = 'acd_chat';
+
+  function saveSession() {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ messages, isOpen }));
+  }
+
+  function loadSession() {
+    try { return JSON.parse(sessionStorage.getItem(STORAGE_KEY)) || {}; }
+    catch { return {}; }
+  }
+
   function buildWidget() {
     // Floating button
     const btn = document.createElement('button');
@@ -61,7 +72,17 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
       input.style.height = Math.min(input.scrollHeight, 90) + 'px';
     });
 
-    appendBotMessage(GREETING);
+    const saved = loadSession();
+    if (saved.messages && saved.messages.length > 0) {
+      messages = saved.messages;
+      messages.forEach(m => {
+        if (m.role === 'user') appendUserMessage(m.content);
+        else appendBotMessage(m.content);
+      });
+      if (saved.isOpen) openChat();
+    } else {
+      appendBotMessage(GREETING);
+    }
   }
 
   function toggleChat() {
@@ -74,12 +95,14 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
     document.getElementById('acd-chat-btn').innerHTML = '✕';
     setTimeout(() => document.getElementById('acd-input').focus(), 250);
     scrollToBottom();
+    saveSession();
   }
 
   function closeChat() {
     isOpen = false;
     document.getElementById('acd-chat-window').classList.add('acd-hidden');
     document.getElementById('acd-chat-btn').innerHTML = '🤖';
+    saveSession();
   }
 
   function appendBotMessage(text) {
@@ -130,6 +153,7 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
 
     messages.push({ role: 'user', content: text });
     if (messages.length > 12) messages = messages.slice(-12);
+    saveSession();
 
     isWaiting = true;
     document.getElementById('acd-send-btn').disabled = true;
@@ -149,6 +173,7 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
       appendBotMessage(reply);
       messages.push({ role: 'assistant', content: reply });
       if (messages.length > 12) messages = messages.slice(-12);
+      saveSession();
     } catch (err) {
       removeTyping();
       appendBotMessage('Oops! I\'m having trouble connecting right now. Please try again shortly.');
