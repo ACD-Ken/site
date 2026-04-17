@@ -67,10 +67,14 @@ const chatLimiter = rateLimit({
   message: { error: 'Too many requests. Please try again in a few minutes.' },
 });
 
-// Request logger — visible in Railway logs for debugging
+// Request logger — logs method, IP, origin and final HTTP status
 app.use('/api/chat', (req, res, next) => {
   const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip;
-  console.log(`[${new Date().toISOString()}] ${req.method} /api/chat ip=${ip} origin=${req.headers.origin || '-'}`);
+  const start = Date.now();
+  res.on('finish', () => {
+    const ms = Date.now() - start;
+    console.log(`[${new Date().toISOString()}] ${req.method} ${res.statusCode} /api/chat ip=${ip} origin=${req.headers.origin || '-'} ${ms}ms`);
+  });
   next();
 });
 
