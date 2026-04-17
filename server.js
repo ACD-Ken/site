@@ -1,8 +1,16 @@
+require('dotenv').config();
 const express = require('express');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 const Anthropic = require('@anthropic-ai/sdk');
 
 const app = express();
-app.use(express.json());
+
+// Security headers
+app.use(helmet());
+
+// Body size cap — prevents oversized payload attacks
+app.use(express.json({ limit: '10kb' }));
 
 const ALLOWED_ORIGINS = [
   'https://acd-ken.github.io',
@@ -47,6 +55,16 @@ Guidelines:
 - If asked for Ken's phone number or home address, do not share — just provide email and LinkedIn
 - Use a warm, professional tone`;
 
+// Rate limiter: max 20 requests per IP per 15 minutes
+const chatLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please try again in a few minutes.' },
+});
+
+// CORS — only allow known origins
 app.use('/api/chat', (req, res, next) => {
   const origin = req.headers.origin || '';
   if (ALLOWED_ORIGINS.includes(origin)) {
@@ -58,23 +76,56 @@ app.use('/api/chat', (req, res, next) => {
   next();
 });
 
-app.post('/api/chat', async (req, res) => {
-  const { messages } = req.body || {};
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({ error: 'messages array is required' });
+app.post('/api/chat', chatLimiter, async (req, res) => {
+  try {
+    const { messages } = req.body || {};
+
+    // Validate structure
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return res.status(400).json({ error: 'messages array is required' });
+    }
+
+    // Validate each message: only allow user/assistant roles, cap text length
+    const MAX_MSG_LEN = 500;
+    for (const msg of messages) {
+      if (!['user', 'assistant'].includes(msg.role)) {
+        return res.status(400).json({ error: 'Invalid message role' });
+      }
+      if (typeof msg.content !== 'string' || msg.content.trim() === '') {
+        return res.status(400).json({ error: 'Message content must be a non-empty string' });
+      }
+      if (msg.content.length > MAX_MSG_LEN) {
+        return res.status(400).json({ error: `Message exceeds ${MAX_MSG_LEN} character limit` });
+      }
+    }
+
+    // Sanitise: strip null bytes and trim whitespace
+    const sanitised = messages.slice(-6).map((m) => ({
+      role: m.role,
+      content: m.content.replace(/\0/g, '').trim(),
+    }));
+
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+    const response = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 300,
+      system: SYSTEM_PROMPT,
+      messages: sanitised,
+    });
+
+    const reply = response.content[0]?.text || "Sorry, I couldn't generate a response.";
+    res.json({ reply });
+  } catch (err) {
+    console.error('[ACD-Bot error]', err.message || err);
+    res.status(500).json({ error: 'Internal server error' });
   }
+});
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
-  const response = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 300,
-    system: SYSTEM_PROMPT,
-    messages: messages.slice(-6),
-  });
-
-  const reply = response.content[0]?.text || "Sorry, I couldn't generate a response.";
-  res.json({ reply });
+// Global error handler — never leak stack traces to client
+app.use((err, req, res, _next) => {
+  console.error('[ACD-Bot error]', err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 const PORT = process.env.PORT || 3000;

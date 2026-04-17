@@ -1,8 +1,11 @@
 /* ACD-Bot Chat Widget
- * After deploying to Railway, replace the placeholder URL below with your
- * actual Railway deployment URL, e.g. https://site-production-abc1.up.railway.app/api/chat
+ * After deploying to Railway, replace RAILWAY_URL with your actual deployment URL,
+ * e.g. https://site-production-abc1.up.railway.app
  */
-const CHATBOT_API_URL = 'https://YOUR-RAILWAY-DEPLOYMENT.up.railway.app/api/chat';
+const RAILWAY_URL = 'https://YOUR-RAILWAY-DEPLOYMENT.up.railway.app';
+const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000/api/chat'
+  : `${RAILWAY_URL}/api/chat`;
 
 (function () {
   const GREETING = "Hi! I'm ACD-Bot 🤖, Ken's personal assistant. Ask me anything about his skills, projects, or how to get in touch!";
