@@ -83,7 +83,10 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
     } else {
       appendBotMessage(GREETING);
     }
-    setTimeout(() => { if (!isOpen) openChat(); }, 5000);
+    try {
+      const prefs = JSON.parse(localStorage.getItem('acd_prefs')) || {};
+      if (prefs.autoopen !== false) setTimeout(() => { if (!isOpen) openChat(); }, 5000);
+    } catch { setTimeout(() => { if (!isOpen) openChat(); }, 5000); }
   }
 
   function toggleChat() {

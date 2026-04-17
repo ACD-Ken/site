@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy & Cookie Settings - Ken Wong</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>">
+    <style>
+        :root {
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --slate-950: #020617;
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --emerald-400: #34d399;
+            --emerald-500: #10b981;
+            --red-400: #f87171;
+            --red-500: #ef4444;
+            --yellow-400: #fbbf24;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--slate-950);
+            color: var(--slate-200);
+            line-height: 1.7;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--slate-800);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--slate-100);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--slate-300);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover, .nav-link.active { color: var(--blue-400); }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--slate-400);
+        }
+
+        .breadcrumb a { color: var(--blue-400); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* Hero */
+        .hero {
+            max-width: 1000px;
+            margin: 1.5rem auto 0;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border-radius: 1rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--blue-400);
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--slate-50);
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p {
+            font-size: 1.05rem;
+            color: var(--slate-300);
+            max-width: 620px;
+        }
+
+        /* Main content */
+        .content {
+            max-width: 1000px;
+            margin: 2.5rem auto 4rem;
+            padding: 0 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Section card */
+        .card {
+            background: var(--slate-900);
+            border: 1px solid var(--slate-800);
+            border-radius: 0.875rem;
+            padding: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-icon {
+            font-size: 1.4rem;
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--slate-50);
+        }
+
+        .card p {
+            color: var(--slate-300);
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .card p:last-child { margin-bottom: 0; }
+
+        /* Storage table */
+        .storage-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .storage-table th {
+            text-align: left;
+            padding: 0.6rem 1rem;
+            background: var(--slate-800);
+            color: var(--slate-400);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .storage-table th:first-child { border-radius: 0.5rem 0 0 0.5rem; }
+        .storage-table th:last-child { border-radius: 0 0.5rem 0.5rem 0; }
+
+        .storage-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--slate-800);
+            color: var(--slate-300);
+            vertical-align: top;
+        }
+
+        .storage-table tr:last-child td { border-bottom: none; }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-green { background: rgba(16, 185, 129, 0.15); color: var(--emerald-400); }
+        .badge-blue  { background: rgba(59, 130, 246, 0.15); color: var(--blue-400); }
+        .badge-yellow { background: rgba(251, 191, 36, 0.15); color: var(--yellow-400); }
+
+        /* Preference rows */
+        .pref-list { display: flex; flex-direction: column; gap: 1rem; }
+
+        .pref-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1.5rem;
+            padding: 1.25rem;
+            background: var(--slate-800);
+            border: 1px solid var(--slate-700);
+            border-radius: 0.75rem;
+        }
+
+        .pref-info { flex: 1; }
+
+        .pref-title {
+            font-weight: 600;
+            color: var(--slate-100);
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+        }
+
+        .pref-desc {
+            font-size: 0.85rem;
+            color: var(--slate-400);
+            line-height: 1.5;
+        }
+
+        /* Toggle switch */
+        .toggle-wrap { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; padding-top: 0.15rem; }
+
+        .toggle-label { font-size: 0.8rem; color: var(--slate-400); min-width: 2.5rem; text-align: right; }
+
+        .toggle {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+
+        .toggle input { opacity: 0; width: 0; height: 0; }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: var(--slate-700);
+            border-radius: 26px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: 3px;
+            top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .toggle input:checked + .toggle-slider { background: var(--blue-500); }
+        .toggle input:checked + .toggle-slider::before { transform: translateX(22px); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 1.25rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            flex-shrink: 0;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--red-400);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-primary {
+            background: var(--blue-600);
+            color: white;
+        }
+
+        .btn-primary:hover { background: var(--blue-500); }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(4rem);
+            background: var(--slate-800);
+            border: 1px solid var(--slate-600);
+            color: var(--slate-100);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 9999;
+            white-space: nowrap;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Last updated note */
+        .updated-note {
+            font-size: 0.8rem;
+            color: var(--slate-500);
+            margin-top: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--slate-900);
+            border-top: 1px solid var(--slate-800);
+            text-align: center;
+            padding: 2rem;
+            color: var(--slate-500);
+            font-size: 0.875rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--slate-400);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover { color: var(--blue-400); }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.6rem; }
+            .pref-row { flex-direction: column; }
+            .nav-links { gap: 1rem; }
+            .storage-table { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🚀 Ken Wong</a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="kw-portfolio.html" class="nav-link">Portfolio</a>
+                <a href="setup-guide.html" class="nav-link">Setup</a>
+                <a href="projects.html" class="nav-link">Projects</a>
+                <a href="travel.html" class="nav-link">Travel</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span>›</span>
+        <span>Privacy &amp; Cookie Settings</span>
+    </div>
+
+    <div class="hero">
+        <div class="hero-badge">🔒 Privacy</div>
+        <h1>Privacy &amp; Cookie Settings</h1>
+        <p>Understand what data this site uses and manage your personal preferences below.</p>
+        <p class="updated-note">Last updated: April 2026</p>
+    </div>
+
+    <div class="content">
+
+        <!-- What we collect -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">📋</span>
+                <h2>What This Site Collects</h2>
+            </div>
+            <p>This is a personal portfolio site with no advertising, no third-party trackers, and no accounts. Data use is minimal and transparent.</p>
+            <p><strong style="color:var(--slate-100)">Chat sessions</strong> — When you use ACD-Bot, your messages are sent to a secure API hosted on Railway to generate a reply using Claude AI (Anthropic). Conversations are stored temporarily in your browser's <code style="background:var(--slate-800);padding:0.1rem 0.4rem;border-radius:0.3rem;font-size:0.85rem">sessionStorage</code> so the chat persists as you navigate between pages. This data never leaves your device beyond the API call and is deleted when you close the tab.</p>
+            <p><strong style="color:var(--slate-100)">Server logs</strong> — Each API request logs your IP address, timestamp, and the originating page for security and rate-limiting purposes. Logs are retained temporarily in Railway's infrastructure and are not shared with third parties.</p>
+            <p><strong style="color:var(--slate-100)">No tracking cookies</strong> — This site sets no advertising cookies, analytics cookies, or any cookies that identify you across visits.</p>
+        </div>
+
+        <!-- Storage types -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">🗂️</span>
+                <h2>Storage &amp; Cookies Used</h2>
+            </div>
+            <table class="storage-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Purpose</th>
+                        <th>Expires</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code style="font-size:0.82rem">acd_chat</code></td>
+                        <td><span class="badge badge-blue">sessionStorage</span></td>
+                        <td>Stores your chat history so conversation continues across pages</td>
+                        <td>When tab is closed</td>
+                    </tr>
+                    <tr>
+                        <td><code style="font-size:0.82rem">acd_prefs</code></td>
+                        <td><span class="badge badge-green">localStorage</span></td>
+                        <td>Saves your chatbot preferences (e.g. auto-open on/off)</td>
+                        <td>Until manually cleared</td>
+                    </tr>
+                    <tr>
+                        <td>Google Fonts</td>
+                        <td><span class="badge badge-yellow">3rd-party</span></td>
+                        <td>Loads the Inter typeface from Google's CDN. Google may log the request per their own privacy policy.</td>
+                        <td>Browser cache</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Manage preferences -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">⚙️</span>
+                <h2>Manage Your Preferences</h2>
+            </div>
+            <div class="pref-list">
+
+                <div class="pref-row">
+                    <div class="pref-info">
+                        <div class="pref-title">Auto-open chatbot</div>
+                        <div class="pref-desc">ACD-Bot pops open automatically 5 seconds after you land on a page. Turn this off to open it manually instead.</div>
+                    </div>
+                    <div class="toggle-wrap">
+                        <span class="toggle-label" id="autoopen-label">On</span>
+                        <label class="toggle">
+                            <input type="checkbox" id="autoopen-toggle" checked onchange="setPref('autoopen', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pref-row">
+                    <div class="pref-info">
+                        <div class="pref-title">Chat session persistence</div>
+                        <div class="pref-desc">Your conversation is kept in sessionStorage while your tab is open so it continues as you navigate between pages. This is always active while the tab is open and clears automatically when you close it.</div>
+                    </div>
+                    <div class="toggle-wrap">
+                        <span class="toggle-label" style="color:var(--slate-500)">Always on</span>
+                    </div>
+                </div>
+
+                <div class="pref-row">
+                    <div class="pref-info">
+                        <div class="pref-title">Clear chat history</div>
+                        <div class="pref-desc">Delete your current chat session from this browser tab immediately. The next time you open the chatbot, it will start fresh with the welcome greeting.</div>
+                    </div>
+                    <button class="btn btn-danger" onclick="clearChat()">🗑️ Clear chat history</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">✉️</span>
+                <h2>Privacy Questions</h2>
+            </div>
+            <p>If you have any questions about how your data is handled, reach out directly:</p>
+            <p>
+                <strong style="color:var(--slate-100)">Email:</strong>
+                <a href="mailto:ken@alsocando.com" style="color:var(--blue-400);text-decoration:none">ken@alsocando.com</a>
+                &nbsp;or&nbsp;
+                <a href="mailto:alsocando@gmail.com" style="color:var(--blue-400);text-decoration:none">alsocando@gmail.com</a>
+            </p>
+        </div>
+
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="kw-portfolio.html">Portfolio</a>
+            <a href="projects.html">Projects</a>
+            <a href="setup-guide.html">Setup</a>
+            <a href="travel.html">Travel</a>
+            <a href="privacy.html">Privacy</a>
+        </div>
+        <div>© 2026 Ken Wong · Singapore</div>
+    </footer>
+
+    <div id="toast"></div>
+
+    <script>
+        const PREFS_KEY = 'acd_prefs';
+
+        function getPrefs() {
+            try { return JSON.parse(localStorage.getItem(PREFS_KEY)) || {}; }
+            catch { return {}; }
+        }
+
+        function savePrefs(prefs) {
+            localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+        }
+
+        function setPref(key, value) {
+            const prefs = getPrefs();
+            prefs[key] = value;
+            savePrefs(prefs);
+            const label = document.getElementById('autoopen-label');
+            if (label) label.textContent = value ? 'On' : 'Off';
+            showToast(value ? 'Auto-open enabled' : 'Auto-open disabled');
+        }
+
+        function clearChat() {
+            sessionStorage.removeItem('acd_chat');
+            showToast('✓ Chat history cleared');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        // Load saved prefs on page load
+        (function () {
+            const prefs = getPrefs();
+            const autoopen = prefs.autoopen !== false; // default true
+            const toggle = document.getElementById('autoopen-toggle');
+            const label = document.getElementById('autoopen-label');
+            toggle.checked = autoopen;
+            label.textContent = autoopen ? 'On' : 'Off';
+        })();
+    </script>
+
+    <link rel="stylesheet" href="chatbot.css">
+    <script src="chatbot.js" defer></script>
+</body>
+</html>
