@@ -56,13 +56,22 @@ Guidelines:
 - If asked for Ken's phone number or home address, do not share — just provide email and LinkedIn
 - Use a warm, professional tone`;
 
-// Rate limiter: max 20 requests per IP per 15 minutes
+// Rate limiter: max 50 messages per IP per 15 minutes
 const chatLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 50,
   standardHeaders: true,
   legacyHeaders: false,
+  // Use X-Forwarded-For directly to get the real client IP behind Railway's proxies
+  keyGenerator: (req) => req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip,
   message: { error: 'Too many requests. Please try again in a few minutes.' },
+});
+
+// Request logger — visible in Railway logs for debugging
+app.use('/api/chat', (req, res, next) => {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip;
+  console.log(`[${new Date().toISOString()}] ${req.method} /api/chat ip=${ip} origin=${req.headers.origin || '-'}`);
+  next();
 });
 
 // CORS — only allow known origins
