@@ -7,6 +7,9 @@
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed"
   },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  },
   "devDependencies": {
     "@playwright/test": "^1.40.0"
   }
