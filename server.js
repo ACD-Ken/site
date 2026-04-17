@@ -1,4 +1,14 @@
+const express = require('express');
 const Anthropic = require('@anthropic-ai/sdk');
+
+const app = express();
+app.use(express.json());
+
+const ALLOWED_ORIGINS = [
+  'https://acd-ken.github.io',
+  'http://localhost:8000',
+  'http://127.0.0.1:8000',
+];
 
 const SYSTEM_PROMPT = `You are ACD-Bot, the personal AI assistant on Ken Wong's portfolio website. Your job is to help visitors learn about Ken and his work.
 
@@ -37,30 +47,19 @@ Guidelines:
 - If asked for Ken's phone number or home address, do not share — just provide email and LinkedIn
 - Use a warm, professional tone`;
 
-module.exports = async (req, res) => {
+app.use('/api/chat', (req, res, next) => {
   const origin = req.headers.origin || '';
-  const allowedOrigins = [
-    'https://acd-ken.github.io',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-  ];
-
-  if (allowedOrigins.includes(origin)) {
+  if (ALLOWED_ORIGINS.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  next();
+});
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+app.post('/api/chat', async (req, res) => {
   const { messages } = req.body || {};
-
   if (!Array.isArray(messages) || messages.length === 0) {
     return res.status(400).json({ error: 'messages array is required' });
   }
@@ -75,5 +74,8 @@ module.exports = async (req, res) => {
   });
 
   const reply = response.content[0]?.text || "Sorry, I couldn't generate a response.";
-  return res.status(200).json({ reply });
-};
+  res.json({ reply });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`ACD-Bot server running on port ${PORT}`));

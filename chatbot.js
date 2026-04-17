@@ -1,8 +1,8 @@
 /* ACD-Bot Chat Widget
- * After deploying to Vercel, replace the placeholder URL below with your
- * actual Vercel deployment URL, e.g. https://site-abc123.vercel.app/api/chat
+ * After deploying to Railway, replace the placeholder URL below with your
+ * actual Railway deployment URL, e.g. https://site-production-abc1.up.railway.app/api/chat
  */
-const CHATBOT_API_URL = 'https://YOUR-VERCEL-DEPLOYMENT.vercel.app/api/chat';
+const CHATBOT_API_URL = 'https://YOUR-RAILWAY-DEPLOYMENT.up.railway.app/api/chat';
 
 (function () {
   const GREETING = "Hi! I'm ACD-Bot 🤖, Ken's personal assistant. Ask me anything about his skills, projects, or how to get in touch!";
