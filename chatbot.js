@@ -82,6 +82,7 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
       if (saved.isOpen) openChat();
     } else {
       appendBotMessage(GREETING);
+      setTimeout(() => { if (!isOpen) openChat(); }, 5000);
     }
   }
 
