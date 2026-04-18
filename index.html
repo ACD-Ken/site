@@ -282,8 +282,11 @@
             // ── SVG ───────────────────────────────────────────────
             const svg = d3.select("#graph-container")
                 .append("svg")
+                .attr("width", width)
+                .attr("height", height)
                 .attr("viewBox", `0 0 ${width} ${height}`)
                 .attr("preserveAspectRatio", "xMidYMid meet")
+                .style("display", "block")
                 .style("opacity", 0);
 
             svg.transition().duration(400).delay(200).style("opacity", 1);
@@ -336,7 +339,7 @@
                 .data(nodes)
                 .join("g")
                 .attr("class", "graph-node")
-                .style("animation-delay", (_, i) => `${i * 60}ms`);
+                .style("opacity", 0);
 
             nodeGroup.append("circle")
                 .attr("r", nodeRadius)
@@ -353,6 +356,12 @@
                 .attr("font-weight", d => d.isHome ? "600" : "400")
                 .attr("font-family", "Inter, sans-serif")
                 .text(d => d.label);
+
+            // Staggered fade-in for nodes (safe in SVG — no transform needed)
+            nodeGroup.transition()
+                .duration(600)
+                .delay((_, i) => 200 + i * 60)
+                .style("opacity", 1);
 
             // ── Interactions ──────────────────────────────────────
             function getId(x) { return typeof x === "object" ? x.id : x; }
@@ -429,7 +438,7 @@
             new ResizeObserver(() => {
                 const s = getSize();
                 width = s.width; height = s.height;
-                svg.attr("viewBox", `0 0 ${width} ${height}`);
+                svg.attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
                 simulation.force("center", d3.forceCenter(width / 2, height / 2)).alpha(0.3).restart();
             }).observe(container);
 
