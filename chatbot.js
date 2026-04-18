@@ -85,8 +85,8 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
     }
     try {
       const prefs = JSON.parse(localStorage.getItem('acd_prefs')) || {};
-      if (prefs.autoopen !== false) setTimeout(() => { if (!isOpen) openChat(); }, 5000);
-    } catch { setTimeout(() => { if (!isOpen) openChat(); }, 5000); }
+      if (prefs.autoopen !== false) setTimeout(() => { if (!isOpen) showTeaser(); }, 5000);
+    } catch { setTimeout(() => { if (!isOpen) showTeaser(); }, 5000); }
   }
 
   function toggleChat() {
@@ -94,6 +94,7 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
   }
 
   function openChat() {
+    removeTeaser();
     isOpen = true;
     document.getElementById('acd-chat-window').classList.remove('acd-hidden');
     document.getElementById('acd-chat-btn').innerHTML = '✕';
@@ -107,6 +108,22 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
     document.getElementById('acd-chat-window').classList.add('acd-hidden');
     document.getElementById('acd-chat-btn').innerHTML = '🤖';
     saveSession();
+  }
+
+  function showTeaser() {
+    if (isOpen || document.getElementById('acd-teaser')) return;
+    const t = document.createElement('div');
+    t.id = 'acd-teaser';
+    t.innerHTML = `<span class="acd-teaser-text">👋 Hi! I'm ACD-Bot — ask me anything about Ken!</span><button class="acd-teaser-close" aria-label="Dismiss">✕</button>`;
+    t.querySelector('.acd-teaser-text').addEventListener('click', () => { removeTeaser(); openChat(); });
+    t.querySelector('.acd-teaser-close').addEventListener('click', (e) => { e.stopPropagation(); removeTeaser(); });
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('acd-teaser-visible'));
+  }
+
+  function removeTeaser() {
+    const t = document.getElementById('acd-teaser');
+    if (t) t.remove();
   }
 
   function appendBotMessage(text) {
