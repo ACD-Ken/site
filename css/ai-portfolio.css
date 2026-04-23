@@ -1,7 +1,7 @@
 /* ===================================
    AI Portfolio - Modern Dark Theme CSS
    Background: #0f172a, Text: #f8fafc
-   Accent: #10b981 (Emerald Green)
+   Accent: #0D9488 (Teal)
    =================================== */
 
 * {
@@ -17,14 +17,14 @@
     --bg-card: #1e293b;
     --text-light: #f8fafc;
     --text-muted: #cbd5e1;
-    --accent: #10b981;
-    --accent-dark: #047857;
-    --accent-light: #34d399;
+    --accent: #0D9488;
+    --accent-dark: #0F766E;
+    --accent-light: #2DD4BF;
     --border: #334155;
-    --success: #10b981;
+    --success: #0D9488;
     
     /* Typography */
-    --font-family: 'Inter', sans-serif;
+    --font-family: 'Plus Jakarta Sans', sans-serif;
     --font-size-base: 16px;
     --font-size-sm: 14px;
     --font-size-lg: 18px;
@@ -159,7 +159,7 @@ body {
 
 .theme-toggle:hover {
     border-color: var(--accent);
-    background: rgba(56, 189, 248, 0.1);
+    background: rgba(13, 148, 136, 0.1);
 }
 
 .mobile-menu-btn {
@@ -190,7 +190,7 @@ body {
     position: absolute;
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(13, 148, 136, 0.1) 0%, transparent 70%);
     border-radius: 50%;
     top: -100px;
     right: -100px;
@@ -202,7 +202,7 @@ body {
     position: absolute;
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(13, 148, 136, 0.05) 0%, transparent 70%);
     border-radius: 50%;
     bottom: -150px;
     left: -100px;
@@ -234,7 +234,7 @@ body {
 }
 
 .accent {
-    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    background: linear-gradient(135deg, #2DD4BF 0%, #38BDF8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -294,7 +294,7 @@ body {
 }
 
 .btn-secondary:hover {
-    background: rgba(56, 189, 248, 0.1);
+    background: rgba(13, 148, 136, 0.1);
     transform: translateY(-2px);
 }
 
@@ -355,8 +355,8 @@ body {
 .contact-row-icon {
     width: 34px;
     height: 34px;
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.25);
+    background: rgba(13, 148, 136, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.25);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -415,8 +415,8 @@ body {
 }
 
 .open-to-tag {
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.35);
+    background: rgba(13, 148, 136, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.35);
     color: var(--accent-light);
     padding: 0.3rem 0.85rem;
     border-radius: 6px;
@@ -478,7 +478,7 @@ body {
 .ai-graphic {
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(13, 148, 136, 0.2) 0%, transparent 70%);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -545,9 +545,8 @@ section {
 }
 
 .about-card:hover {
-    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(13, 148, 136, 0.4), 0 12px 32px rgba(13, 148, 136, 0.12);
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(56, 189, 248, 0.1);
 }
 
 .about-card h3 {
@@ -586,9 +585,8 @@ section {
 }
 
 .tech-card:hover {
-    border-color: var(--accent);
     transform: translateY(-8px);
-    box-shadow: 0 15px 40px rgba(56, 189, 248, 0.15);
+    box-shadow: 0 0 0 1px rgba(13, 148, 136, 0.4), 0 15px 40px rgba(13, 148, 136, 0.15);
 }
 
 .tech-icon {
@@ -634,9 +632,8 @@ section {
 }
 
 .project-card:hover {
-    border-color: var(--accent);
     transform: translateY(-8px);
-    box-shadow: 0 15px 40px rgba(56, 189, 248, 0.15);
+    box-shadow: 0 0 0 1px rgba(13, 148, 136, 0.4), 0 15px 40px rgba(13, 148, 136, 0.15);
 }
 
 .project-header {
@@ -658,7 +655,7 @@ section {
 }
 
 .tag {
-    background: rgba(56, 189, 248, 0.1);
+    background: rgba(13, 148, 136, 0.1);
     border: 1px solid var(--accent);
     color: var(--accent);
     padding: 0.25rem 0.75rem;
@@ -772,7 +769,7 @@ section {
 
 .contact-card:hover {
     border-color: var(--accent);
-    box-shadow: 0 10px 30px rgba(56, 189, 248, 0.1);
+    box-shadow: 0 10px 30px rgba(13, 148, 136, 0.1);
 }
 
 .contact-card h3 {
@@ -805,7 +802,7 @@ section {
 }
 
 .contact-link:hover {
-    background: rgba(56, 189, 248, 0.1);
+    background: rgba(13, 148, 136, 0.1);
     transform: translateX(5px);
 }
 
@@ -992,8 +989,8 @@ section {
 }
 
 .stat-badge {
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.4);
+    background: rgba(13, 148, 136, 0.12);
+    border: 1px solid rgba(13, 148, 136, 0.4);
     color: var(--accent-light);
     padding: 0.4rem 1rem;
     border-radius: 20px;
@@ -1025,7 +1022,7 @@ section {
 .skill-card:hover {
     border-color: var(--accent);
     transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.12);
+    box-shadow: 0 12px 30px rgba(13, 148, 136, 0.12);
 }
 
 .skill-card-icon {
@@ -1049,8 +1046,8 @@ section {
 }
 
 .skill-tag {
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: rgba(13, 148, 136, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.3);
     color: var(--text-muted);
     padding: 0.2rem 0.6rem;
     border-radius: 6px;
@@ -1113,8 +1110,8 @@ section {
     font-size: 12px;
     font-weight: 700;
     color: var(--accent);
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: rgba(13, 148, 136, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.3);
     padding: 0.15rem 0.5rem;
     border-radius: 4px;
     white-space: nowrap;
@@ -1202,7 +1199,7 @@ section {
     background: var(--accent);
     border-radius: 50%;
     border: 2px solid var(--bg-dark);
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
 }
 
 .timeline-header {

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
 </head>
@@ -311,11 +311,11 @@
                 });
 
             const homeGrad = defs.append("radialGradient").attr("id", "homeGrad");
-            homeGrad.append("stop").attr("offset", "0%").attr("stop-color", "#34d399");
-            homeGrad.append("stop").attr("offset", "100%").attr("stop-color", "#10b981");
+            homeGrad.append("stop").attr("offset", "0%").attr("stop-color", "#2DD4BF");
+            homeGrad.append("stop").attr("offset", "100%").attr("stop-color", "#0D9488");
 
             // ── Helpers ───────────────────────────────────────────
-            const colorMap = { main: "#10b981", project: "#059669", secondary: "#334155" };
+            const colorMap = { main: "#0D9488", project: "#0F766E", secondary: "#334155" };
             function nodeRadius(d) {
                 if (d.isHome)             return 18;
                 if (d.group === "main")   return 11;
@@ -344,7 +344,7 @@
             nodeGroup.append("circle")
                 .attr("r", nodeRadius)
                 .attr("fill", d => d.isHome ? "url(#homeGrad)" : colorMap[d.group])
-                .attr("stroke", d => d.isHome ? "#34d399" : (d.group === "secondary" ? "#475569" : "#10b981"))
+                .attr("stroke", d => d.isHome ? "#2DD4BF" : (d.group === "secondary" ? "#475569" : "#0D9488"))
                 .attr("stroke-width", d => d.isHome ? 2.5 : 1.5)
                 .attr("filter", d => d.isHome ? "url(#glow-home)" : (d.group !== "secondary" ? "url(#glow)" : null));
 
@@ -354,7 +354,7 @@
                 .attr("fill", d => d.group === "secondary" ? "#64748b" : "#cbd5e1")
                 .attr("font-size", d => d.isHome ? "11px" : "9px")
                 .attr("font-weight", d => d.isHome ? "600" : "400")
-                .attr("font-family", "Inter, sans-serif")
+                .attr("font-family", "Plus Jakarta Sans, sans-serif")
                 .text(d => d.label);
 
             // Staggered fade-in for nodes (safe in SVG — no transform needed)

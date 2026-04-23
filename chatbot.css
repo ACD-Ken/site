@@ -7,10 +7,10 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #0D9488, #0F766E);
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);
+  box-shadow: 0 4px 18px rgba(13, 148, 136, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,7 +21,7 @@
 
 #acd-chat-btn:hover {
   transform: scale(1.08);
-  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.55);
+  box-shadow: 0 6px 24px rgba(13, 148, 136, 0.55);
 }
 
 #acd-chat-window {
@@ -49,7 +49,7 @@
 }
 
 .acd-header {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #0D9488, #0F766E);
   color: #fff;
   padding: 14px 16px;
   display: flex;
@@ -136,7 +136,7 @@
 }
 
 .acd-msg.acd-user {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #0D9488, #0F766E);
   color: #fff;
   border-bottom-right-radius: 4px;
   align-self: flex-end;
@@ -198,7 +198,7 @@
 }
 
 #acd-input:focus {
-  border-color: #10b981;
+  border-color: #0D9488;
   background: #fff;
 }
 
@@ -206,7 +206,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #0D9488, #0F766E);
   border: none;
   cursor: pointer;
   color: #fff;
@@ -260,7 +260,7 @@
 }
 
 [data-theme="dark"] #acd-input:focus {
-  border-color: #10b981;
+  border-color: #0D9488;
   background: #374151;
 }
 
