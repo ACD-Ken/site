@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
 </head>
 <body>
@@ -33,55 +33,60 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-content">
-            <div class="hero-text">
-                <h1 class="hero-title">
-                    Building the Future with <span class="accent">AI & Automation</span>
-                </h1>
-                <p class="hero-subtitle">
-                    AI Developer | Automation Specialist | Continuous Learner
-                </p>
-                <p class="hero-description">
-                    I'm passionate about leveraging artificial intelligence and automation to solve real-world problems. With expertise in n8n, Python, and LLM integration, I help businesses transform their workflows and unlock new possibilities.
-                </p>
-                <div class="hero-cta">
-                    <a href="https://github.com/ACD-Ken" target="_blank" class="btn btn-primary">
-                        View My GitHub
-                        <span class="btn-arrow">→</span>
-                    </a>
-                    <a href="#projects" class="btn btn-secondary">
-                        Explore Projects
-                    </a>
-                </div>
-            </div>
-            <div class="hero-visual">
-                <div class="ai-graphic">
-                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="floating">
-                        <defs>
-                            <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#38bdf8;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <!-- Neural network nodes -->
-                        <circle cx="50" cy="50" r="8" fill="url(#aiGrad)"/>
-                        <circle cx="150" cy="50" r="8" fill="url(#aiGrad)"/>
-                        <circle cx="100" cy="150" r="8" fill="url(#aiGrad)"/>
-                        <circle cx="50" cy="150" r="8" fill="url(#aiGrad)"/>
-                        <circle cx="150" cy="150" r="8" fill="url(#aiGrad)"/>
-                        <circle cx="100" cy="100" r="10" fill="url(#aiGrad)"/>
-                        
-                        <!-- Connecting lines -->
-                        <line x1="50" y1="50" x2="100" y2="100" stroke="#38bdf8" stroke-width="1.5" opacity="0.5"/>
-                        <line x1="150" y1="50" x2="100" y2="100" stroke="#38bdf8" stroke-width="1.5" opacity="0.5"/>
-                        <line x1="50" y1="150" x2="100" y2="100" stroke="#38bdf8" stroke-width="1.5" opacity="0.5"/>
-                        <line x1="150" y1="150" x2="100" y2="100" stroke="#38bdf8" stroke-width="1.5" opacity="0.5"/>
-                        <line x1="50" y1="50" x2="150" y2="50" stroke="#38bdf8" stroke-width="1.5" opacity="0.3"/>
-                        <line x1="50" y1="150" x2="150" y2="150" stroke="#38bdf8" stroke-width="1.5" opacity="0.3"/>
-                    </svg>
-                </div>
-            </div>
+      <div class="hero-grid"></div>
+      <div class="hero-orb hero-orb-1"></div>
+      <div class="hero-orb hero-orb-2"></div>
+      <div class="hero-orb hero-orb-3"></div>
+      <div class="hero-orb hero-orb-4"></div>
+      <div class="hero-scan"></div>
+      <div class="hero-corner hero-corner-tl">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#2DD4BF" stroke-width="1.5"><path d="M0 20 L0 0 L20 0"/></svg>
+      </div>
+      <div class="hero-corner hero-corner-br">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#2DD4BF" stroke-width="1.5"><path d="M0 20 L0 0 L20 0"/></svg>
+      </div>
+      <div class="hero-inner">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          AI Developer &amp; Automation Specialist
         </div>
+        <h1 class="hero-headline">
+          Building the future<br>
+          with <em>AI &amp; Automation</em>
+        </h1>
+        <p class="hero-sub">
+          Leveraging n8n, Python, and LLM integration to help businesses transform
+          their workflows and unlock new possibilities through intelligent automation.
+        </p>
+        <div class="hero-ctas">
+          <a href="https://github.com/ACD-Ken" target="_blank" class="hero-btn hero-btn-primary">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"/></svg>
+            View My GitHub
+          </a>
+          <a href="#projects" class="hero-btn hero-btn-ghost">
+            Explore Projects
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+          </a>
+        </div>
+        <div class="hero-proof">
+          <span class="hero-proof-item">
+            <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+            n8n Automation
+          </span>
+          <span class="hero-proof-item">
+            <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+            LLM Integration
+          </span>
+          <span class="hero-proof-item">
+            <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+            Python &amp; APIs
+          </span>
+          <span class="hero-proof-item">
+            <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+            Open Source
+          </span>
+        </div>
+      </div>
     </section>
 
     <!-- About Section -->
