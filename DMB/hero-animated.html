@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DMsgBox — Animated Hero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #060d1f;
+      --teal:    #0D9488;
+      --teal-lt: #2DD4BF;
+      --cyan:    #22d3ee;
+      --white:   #ffffff;
+      --muted:   rgba(148,163,184,0.7);
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS ──────────────────────────────────────────────── */
+    #particle-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    /* ── GRADIENT ORBS ───────────────────────────────────────── */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;
+      z-index: 0;
+      animation: drift linear infinite;
+    }
+
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #0D9488, transparent 70%);
+      top: -200px; left: -100px;
+      animation-duration: 20s;
+    }
+
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #22d3ee, transparent 70%);
+      top: 10%; right: -150px;
+      animation-duration: 28s;
+      animation-direction: reverse;
+    }
+
+    .orb-3 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #6366f1, transparent 70%);
+      bottom: 0; left: 30%;
+      animation-duration: 22s;
+      opacity: 0.12;
+    }
+
+    @keyframes drift {
+      0%   { transform: translate(0, 0) scale(1); }
+      33%  { transform: translate(40px, -30px) scale(1.05); }
+      66%  { transform: translate(-30px, 20px) scale(0.97); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+
+    /* ── NOISE OVERLAY ───────────────────────────────────────── */
+    .noise {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 200px;
+      pointer-events: none;
+    }
+
+    /* ── SCANLINE GRID ───────────────────────────────────────── */
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background-image:
+        linear-gradient(rgba(13,148,136,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(13,148,136,0.04) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none;
+    }
+
+    /* ── VIGNETTE ────────────────────────────────────────────── */
+    .vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(6,13,31,0.85) 100%);
+      pointer-events: none;
+    }
+
+    /* ── HERO ────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 24px 80px;
+      overflow: hidden;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: rgba(6,13,31,0.6);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .nav-logo {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .nav-logo span {
+      background: linear-gradient(135deg, var(--teal-lt), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-cta {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 20px;
+      border: 1px solid rgba(45,212,191,0.3);
+      color: var(--teal-lt);
+      background: rgba(45,212,191,0.05);
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
+    .nav-cta:hover { background: rgba(45,212,191,0.1); border-color: rgba(45,212,191,0.5); }
+
+    /* ── HERO CONTENT ────────────────────────────────────────── */
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      max-width: 860px;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border: 1px solid rgba(45,212,191,0.25);
+      background: rgba(45,212,191,0.05);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal-lt);
+      margin-bottom: 40px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--teal-lt);
+      box-shadow: 0 0 6px var(--teal-lt);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--teal-lt); }
+      50%       { opacity: 0.4; box-shadow: 0 0 2px var(--teal-lt); }
+    }
+
+    /* Headline */
+    .headline {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(40px, 6.5vw, 80px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+      color: var(--white);
+      margin-bottom: 28px;
+      animation: fadeUp 0.8s ease 0.1s both;
+    }
+
+    .headline .line2 {
+      display: block;
+      background: linear-gradient(135deg, var(--teal-lt) 0%, var(--cyan) 50%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% auto;
+      animation: fadeUp 0.8s ease 0.1s both, shimmer 4s linear 1s infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    /* Subheading */
+    .sub {
+      font-size: clamp(16px, 2vw, 19px);
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 560px;
+      margin: 0 auto 48px;
+      animation: fadeUp 0.8s ease 0.2s both;
+    }
+
+    /* CTAs */
+    .ctas {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 72px;
+      animation: fadeUp 0.8s ease 0.3s both;
+    }
+
+    .btn-primary {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, var(--teal), #0891b2);
+      color: var(--white);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 0 32px rgba(13,148,136,0.35);
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 48px rgba(13,148,136,0.5); }
+    .btn-primary:hover::after { opacity: 1; }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 32px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.7);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      backdrop-filter: blur(4px);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.2); color: var(--white); }
+
+    /* Social proof */
+    .proof {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 40px;
+      animation: fadeUp 0.8s ease 0.4s both;
+    }
+
+    .proof-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: rgba(148,163,184,0.6);
+      letter-spacing: 0.02em;
+    }
+
+    .proof-icon {
+      width: 16px; height: 16px;
+      color: var(--teal-lt);
+      flex-shrink: 0;
+    }
+
+    /* ── SCROLL INDICATOR ────────────────────────────────────── */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      animation: fadeUp 1s ease 0.8s both;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(45,212,191,0.6), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50%       { opacity: 1;   transform: scaleY(1.1); }
+    }
+
+    .scroll-label {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(148,163,184,0.4);
+    }
+
+    /* ── ANIMATIONS ──────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      nav { padding: 0 24px; }
+      .ctas { flex-direction: column; align-items: center; }
+      .ctas a { width: 100%; justify-content: center; }
+      .orb-1 { width: 300px; height: 300px; }
+      .orb-2 { width: 250px; height: 250px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">DMsg<span>Box</span></a>
+    <a href="#" class="nav-cta">Get in Touch</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <!-- Animated canvas background -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Gradient orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Noise + grid + vignette overlays -->
+    <div class="noise"></div>
+    <div class="grid-overlay"></div>
+    <div class="vignette"></div>
+
+    <!-- Hero content -->
+    <div class="hero-content">
+
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Singapore-Based · Available Now
+      </div>
+
+      <h1 class="headline">
+        Cut through<br />
+        <span class="line2">every notification.</span>
+      </h1>
+
+      <p class="sub">
+        DMsgBox builds AI-powered mobile apps and automation tools that cut through the noise — so your people focus on work that matters.
+      </p>
+
+      <div class="ctas">
+        <a href="#" class="btn-primary">
+          Get a Free Consultation
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+        <a href="#" class="btn-secondary">
+          See What We Build
+        </a>
+      </div>
+
+      <div class="proof">
+        <div class="proof-item">
+          <svg class="proof-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          Delivered in weeks, not months
+        </div>
+        <div class="proof-item">
+          <svg class="proof-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          Built for Singapore compliance
+        </div>
+        <div class="proof-item">
+          <svg class="proof-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          Direct access to the engineer
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator">
+      <div class="scroll-line"></div>
+      <span class="scroll-label">Scroll</span>
+    </div>
+
+  </section>
+
+  <script>
+    // ── PARTICLE NETWORK CANVAS ───────────────────────────────
+    const canvas = document.getElementById('particle-canvas');
+    const ctx    = canvas.getContext('2d');
+
+    let W, H, particles, mouse = { x: null, y: null };
+
+    const CONFIG = {
+      count:          90,
+      maxDist:        160,
+      mouseRadius:    180,
+      speed:          0.35,
+      nodeRadius:     1.8,
+      colorPrimary:   '45,212,191',
+      colorSecondary: '34,211,238',
+      colorAccent:    '99,102,241',
+    };
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = canvas.closest('section').offsetHeight;
+    }
+
+    class Particle {
+      constructor() { this.reset(true); }
+
+      reset(init = false) {
+        this.x  = Math.random() * W;
+        this.y  = init ? Math.random() * H : -10;
+        this.vx = (Math.random() - 0.5) * CONFIG.speed;
+        this.vy = (Math.random() - 0.5) * CONFIG.speed;
+        this.r  = Math.random() * CONFIG.nodeRadius + 0.8;
+        const colors = [CONFIG.colorPrimary, CONFIG.colorSecondary, CONFIG.colorAccent];
+        this.color   = colors[Math.floor(Math.random() * colors.length)];
+        this.alpha   = Math.random() * 0.5 + 0.3;
+        this.pulse   = Math.random() * Math.PI * 2;
+      }
+
+      update() {
+        this.pulse += 0.02;
+        this.alpha = (Math.sin(this.pulse) * 0.2 + 0.55);
+
+        // Mouse repulsion
+        if (mouse.x !== null) {
+          const dx = this.x - mouse.x;
+          const dy = this.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < CONFIG.mouseRadius) {
+            const force = (CONFIG.mouseRadius - dist) / CONFIG.mouseRadius;
+            this.vx += (dx / dist) * force * 0.6;
+            this.vy += (dy / dist) * force * 0.6;
+          }
+        }
+
+        // Dampen velocity
+        this.vx *= 0.98;
+        this.vy *= 0.98;
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Wrap edges
+        if (this.x < -20) this.x = W + 20;
+        if (this.x > W + 20) this.x = -20;
+        if (this.y < -20) this.y = H + 20;
+        if (this.y > H + 20) this.y = -20;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color},${this.alpha})`;
+        ctx.fill();
+
+        // Glow
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r * 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color},${this.alpha * 0.15})`;
+        ctx.fill();
+      }
+    }
+
+    function connect() {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx   = particles[i].x - particles[j].x;
+          const dy   = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < CONFIG.maxDist) {
+            const opacity = (1 - dist / CONFIG.maxDist) * 0.25;
+            const grad = ctx.createLinearGradient(
+              particles[i].x, particles[i].y,
+              particles[j].x, particles[j].y
+            );
+            grad.addColorStop(0, `rgba(${particles[i].color},${opacity})`);
+            grad.addColorStop(1, `rgba(${particles[j].color},${opacity})`);
+
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = grad;
+            ctx.lineWidth   = 0.6;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function init() {
+      resize();
+      particles = Array.from({ length: CONFIG.count }, () => new Particle());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      connect();
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', () => { resize(); });
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    window.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+
+    init();
+    animate();
+  </script>
+
+</body>
+</html>
