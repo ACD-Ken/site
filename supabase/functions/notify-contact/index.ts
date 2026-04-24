@@ -1,7 +1,4 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-// Triggered by Supabase Database Webhook on INSERT to public.contact_submissions
-serve(async (req) => {
+Deno.serve(async (req) => {
   const payload = await req.json();
   const { name, email, message, created_at } = payload.record;
 
@@ -35,7 +32,7 @@ serve(async (req) => {
             </tr>
           </table>
           <div style="background:#f9f9f9;border-left:3px solid #0D9488;padding:16px 20px;border-radius:0 4px 4px 0">
-            <p style="color:#444;font-size:14px;line-height:1.7;margin:0">${message.replace(/\n/g, '<br/>')}</p>
+            <p style="color:#444;font-size:14px;line-height:1.7;margin:0">${message.replace(/\n/g, "<br/>")}</p>
           </div>
           <p style="margin-top:24px;font-size:13px;color:#aaa">
             Reply directly to this email to respond to ${name}.
@@ -47,6 +44,7 @@ serve(async (req) => {
 
   if (!res.ok) {
     const err = await res.text();
+    console.error("Resend error:", err);
     return new Response(`Resend error: ${err}`, { status: 500 });
   }
 
