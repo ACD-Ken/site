@@ -1,247 +1,664 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<!--
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║  DMsgBox Blog Admin Console                                      ║
+  ║                                                                  ║
+  ║  SUPABASE SETUP — run this SQL in the Supabase SQL editor:       ║
+  ║                                                                  ║
+  ║  create table blog_posts (                                       ║
+  ║    id          uuid        default gen_random_uuid() primary key,║
+  ║    title       text        not null,                             ║
+  ║    slug        text        unique not null,                      ║
+  ║    excerpt     text,                                             ║
+  ║    content     text        default '',                           ║
+  ║    category    text        default 'General',                    ║
+  ║    author      text        default 'DMsgBox Team',               ║
+  ║    read_time   text        default '5 min read',                 ║
+  ║    cover_image text,                                             ║
+  ║    published   boolean     default false,                        ║
+  ║    published_at timestamptz,                                     ║
+  ║    created_at  timestamptz default now(),                        ║
+  ║    updated_at  timestamptz default now()                         ║
+  ║  );                                                              ║
+  ║                                                                  ║
+  ║  alter table blog_posts enable row level security;               ║
+  ║                                                                  ║
+  ║  -- Public (anon) can read published posts only                  ║
+  ║  create policy "Public read published" on blog_posts             ║
+  ║    for select using (published = true);                          ║
+  ║                                                                  ║
+  ║  -- Authenticated admins have full access                        ║
+  ║  create policy "Admin full access" on blog_posts                 ║
+  ║    for all using (auth.role() = 'authenticated');                ║
+  ║                                                                  ║
+  ║  To create an admin user:                                        ║
+  ║    Supabase Dashboard → Authentication → Users → Add user        ║
+  ╚══════════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DMsgBox — Admin</title>
+  <title>Admin Console — DMsgBox</title>
+  <meta name="robots" content="noindex,nofollow" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .focus-ring:focus-visible { outline: 2px solid #2DD4BF; outline-offset: 3px; }
+    .gradient-text {
+      background: linear-gradient(135deg, #2DD4BF 0%, #38BDF8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* EasyMDE dark theme */
+    .EasyMDEContainer .CodeMirror {
+      background: #0F172A; color: #e2e8f0;
+      border-color: rgba(255,255,255,0.1);
+      border-radius: 0 0 0.75rem 0.75rem;
+      font-size: 14px; min-height: 300px;
+    }
+    .EasyMDEContainer .editor-toolbar {
+      background: #1E293B;
+      border-color: rgba(255,255,255,0.1);
+      border-radius: 0.75rem 0.75rem 0 0;
+    }
+    .EasyMDEContainer .editor-toolbar button { color: #94a3b8; }
+    .EasyMDEContainer .editor-toolbar button:hover,
+    .EasyMDEContainer .editor-toolbar button.active {
+      background: rgba(13,148,136,0.2); color: #2DD4BF; border-color: transparent;
+    }
+    .EasyMDEContainer .editor-toolbar i.separator { border-color: rgba(255,255,255,0.1); }
+    .EasyMDEContainer .CodeMirror-cursor { border-color: #2DD4BF; }
+    .editor-preview { background: #0F172A; color: #94a3b8; padding: 1rem 1.5rem; }
+    .editor-preview h1, .editor-preview h2, .editor-preview h3 { color: #f1f5f9; margin: 1rem 0 0.5rem; }
+    .editor-preview p { margin-bottom: 0.75rem; line-height: 1.75; }
+    .editor-preview a { color: #2DD4BF; }
+    .editor-preview code { background: #1E293B; color: #2DD4BF; padding: 0.1rem 0.35rem; border-radius: 0.25rem; }
+    .editor-preview pre { background: #1E293B; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
+    .editor-preview blockquote { border-left: 3px solid #0D9488; padding-left: 1rem; color: #64748b; }
+    .editor-preview ul { list-style: disc; padding-left: 1.5rem; }
+    .editor-preview ol { list-style: decimal; padding-left: 1.5rem; }
+    .editor-preview li { margin-bottom: 0.3rem; }
+    .CodeMirror-scroll { min-height: 300px; }
+
+    /* Table row hover */
+    #posts-tbody tr:hover { background: rgba(255,255,255,0.02); }
   </style>
 </head>
 
 <body class="bg-[#0F172A] text-slate-100 antialiased min-h-screen">
 
-  <!-- ── LOGIN SCREEN ─────────────────────────────────────────── -->
-  <div id="screen-login" class="min-h-screen flex items-center justify-center px-4">
-    <div class="w-full max-w-sm">
-      <div class="text-center mb-8">
-        <a href="index.html" class="text-lg font-bold tracking-tight text-white">
-          DMsg<span class="bg-gradient-to-r from-teal-400 to-sky-400 bg-clip-text text-transparent">Box</span>
+  <!-- ══ TOP BAR ══ -->
+  <header class="border-b border-white/5 bg-[#0B1120] sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="text-base font-bold text-white focus-ring rounded">
+          DMsg<span class="gradient-text">Box</span>
         </a>
-        <p class="mt-2 text-slate-400 text-sm">Admin — Waitlist Subscribers</p>
+        <span class="text-slate-700 hidden sm:block">/</span>
+        <span class="text-sm text-slate-400 hidden sm:block font-medium">Blog Admin</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="admin-email" class="text-xs text-slate-500 hidden sm:block truncate max-w-[200px]"></span>
+        <a href="blog.html" target="_blank" class="text-xs px-3 py-1.5 rounded-lg bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white transition-colors focus-ring hidden sm:block">
+          View Blog &rarr;
+        </a>
+        <button id="logout-btn" class="text-xs px-3 py-1.5 rounded-lg bg-white/5 text-slate-400 hover:bg-red-500/20 hover:text-red-400 transition-colors focus-ring">
+          Sign out
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-5 sm:px-8 py-10">
+
+    <!-- Page header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div>
+        <h1 class="text-2xl font-bold text-white">Blog Posts</h1>
+        <p class="text-sm text-slate-500 mt-1">Manage articles published to <a href="blog.html" target="_blank" class="text-teal-400 hover:text-teal-300 transition-colors">dmsgbox.com/blog</a>.</p>
+      </div>
+      <button id="new-post-btn" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 text-white font-semibold text-sm hover:bg-teal-500 active:scale-[0.98] transition-all duration-200 focus-ring self-start sm:self-auto">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+        New Article
+      </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="rounded-xl bg-[#1E293B] border border-white/5 p-5">
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Total</p>
+        <p id="stat-total" class="text-3xl font-extrabold text-white">—</p>
+      </div>
+      <div class="rounded-xl bg-[#1E293B] border border-white/5 p-5">
+        <p class="text-xs font-semibold text-teal-400 uppercase tracking-widest mb-2">Published</p>
+        <p id="stat-published" class="text-3xl font-extrabold text-teal-400">—</p>
+      </div>
+      <div class="rounded-xl bg-[#1E293B] border border-white/5 p-5">
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Drafts</p>
+        <p id="stat-drafts" class="text-3xl font-extrabold text-slate-400">—</p>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="rounded-2xl bg-[#1E293B] border border-white/5 overflow-hidden">
+
+      <div id="table-loading" class="text-center py-20 text-slate-500">
+        <svg class="w-7 h-7 mx-auto mb-3 animate-spin text-teal-400" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        Loading posts…
       </div>
 
-      <div class="rounded-2xl bg-[#1E293B] border border-white/5 p-8">
-        <form id="login-form" class="space-y-5">
-          <div>
-            <label for="admin-email" class="block text-sm font-semibold text-slate-300 mb-2">Email</label>
-            <input
-              id="admin-email"
-              type="email"
-              required
-              autocomplete="email"
-              placeholder="you@example.com"
-              class="w-full px-4 py-3 rounded-xl bg-[#0F172A] border border-white/10 text-white placeholder-slate-600 text-sm focus-ring focus:border-teal-500/50 transition-colors"
-            />
-          </div>
-          <div>
-            <label for="admin-password" class="block text-sm font-semibold text-slate-300 mb-2">Password</label>
-            <input
-              id="admin-password"
-              type="password"
-              required
-              autocomplete="current-password"
-              placeholder="••••••••"
-              class="w-full px-4 py-3 rounded-xl bg-[#0F172A] border border-white/10 text-white placeholder-slate-600 text-sm focus-ring focus:border-teal-500/50 transition-colors"
-            />
-          </div>
-          <div id="login-error" class="hidden text-sm text-red-400 font-medium"></div>
-          <button
-            type="submit"
-            id="login-btn"
-            class="w-full px-6 py-3.5 rounded-xl bg-teal-600 text-white font-bold text-sm hover:bg-teal-500 transition-colors focus-ring"
-          >
-            Sign In
-          </button>
-        </form>
+      <div id="table-empty" class="hidden text-center py-20 text-slate-500">
+        <svg class="w-10 h-10 mx-auto mb-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+        </svg>
+        <p class="font-semibold text-white mb-2">No articles yet</p>
+        <p class="text-sm">Click "New Article" to write your first blog post.</p>
       </div>
+
+      <table id="posts-table" class="hidden w-full text-sm">
+        <thead>
+          <tr class="border-b border-white/5 text-left">
+            <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Title</th>
+            <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider hidden sm:table-cell">Category</th>
+            <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">Last Updated</th>
+            <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="posts-tbody"></tbody>
+      </table>
     </div>
   </div>
 
-  <!-- ── DASHBOARD SCREEN ─────────────────────────────────────── -->
-  <div id="screen-dashboard" class="hidden min-h-screen">
+  <!-- ══ CREATE / EDIT MODAL ══ -->
+  <div id="post-modal" class="hidden fixed inset-0 z-50 flex items-start justify-center px-4 pt-8 pb-8 bg-black/70 backdrop-blur-sm overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="w-full max-w-4xl bg-[#1E293B] rounded-2xl border border-white/10 shadow-2xl my-auto">
 
-    <!-- Nav -->
-    <header class="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0F172A]/90 backdrop-blur-md">
-      <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <a href="index.html" class="text-lg font-bold tracking-tight text-white">
-            DMsg<span class="bg-gradient-to-r from-teal-400 to-sky-400 bg-clip-text text-transparent">Box</span>
-          </a>
-          <span class="text-slate-600">|</span>
-          <span class="text-sm text-slate-400 font-medium">Admin</span>
-        </div>
-        <div class="flex items-center gap-4">
-          <span id="admin-user-email" class="text-xs text-slate-500 hidden sm:block"></span>
-          <button
-            id="logout-btn"
-            class="text-sm font-semibold px-4 py-2 rounded-lg bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10 transition-colors focus-ring"
-          >
-            Sign Out
-          </button>
-        </div>
+      <!-- Modal header -->
+      <div class="flex items-center justify-between px-8 py-5 border-b border-white/5">
+        <h2 id="modal-title" class="text-lg font-bold text-white">New Article</h2>
+        <button id="modal-close" aria-label="Close modal" class="text-slate-500 hover:text-white transition-colors focus-ring rounded p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
       </div>
-    </header>
 
-    <main class="pt-24 pb-16 max-w-6xl mx-auto px-5 sm:px-8">
+      <!-- Modal form -->
+      <form id="post-form" class="px-8 py-6 space-y-5" novalidate>
+        <input type="hidden" id="edit-post-id" />
 
-      <!-- Stats bar -->
-      <div class="mb-8 flex flex-wrap gap-4">
-        <div class="rounded-xl bg-[#1E293B] border border-white/5 px-6 py-4 flex items-center gap-4">
+        <!-- Row 1: Title + Slug -->
+        <div class="grid sm:grid-cols-2 gap-5">
           <div>
-            <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold mb-1">Total Subscribers</p>
-            <p id="stat-total" class="text-3xl font-extrabold text-white">—</p>
+            <label for="post-title" class="block text-sm font-semibold text-slate-300 mb-2">
+              Title <span class="text-teal-400" aria-hidden="true">*</span>
+            </label>
+            <input id="post-title" type="text" required placeholder="e.g. AI Automation for Singapore SMEs"
+              class="w-full px-4 py-3 rounded-xl bg-[#0F172A] border border-white/10 text-white placeholder-slate-600 text-sm focus-ring focus:border-teal-500/50 transition-colors" />
+          </div>
+          <div>
+            <label for="post-slug" class="block text-sm font-semibold text-slate-300 mb-2">
+              URL Slug <span class="text-teal-400" aria-hidden="true">*</span>
+            </label>
+            <input id="post-slug" type="text" required placeholder="ai-automation-singapore-sme"
+              class="w-full px-4 py-3 rounded-xl bg-[#0F172A] border border-white/10 text-white placeholder-slate-600 text-sm focus-ring focus:border-teal-500/50 transition-colors font-mono" />
           </div>
         </div>
-        <div class="rounded-xl bg-[#1E293B] border border-white/5 px-6 py-4 flex items-center gap-4">
+
+        <!-- Row 2: Category + Author + Read time -->
+        <div class="grid sm:grid-cols-3 gap-5">
           <div>
-            <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold mb-1">Latest Signup</p>
-            <p id="stat-latest" class="text-sm font-semibold text-teal-400">—</p>
+            <label for="post-category" class="block text-sm font-semibold text-slate-300 mb-2">Category</label>
+            <select id="post-category"
+              class="w-full px-4 py-3 rounded-xl bg-[#0F172A] border border-white/10 text-white text-sm focus-ring focus:border-teal-500/50 transition-colors">
+              <option>AI Automation</option>
+              <option>Mobile Apps</option>
+              <option>Case Studies</option>
+              <option>Singapore SME</option>
+              <option>General</option>
+            </select>
+          </div>
+          <div>
+            <label for="post-author" class="block text-sm font-semibold text-slate-300 mb-2">Author</label>
+            <input id="post-author" type="text" placeholder="DMsgBox Team" value="DMsgBox Team"
+              class="w-full px-4 py-3 rounded-xl bg-[#0F172A] border border-white/10 text-white placeholder-slate-600 text-sm focus-ring focus:border-teal-500/50 transition-colors" />
+          </div>
+          <div>
+            <label for="post-read-time" class="block text-sm font-semibold text-slate-300 mb-2">Read Time</label>
+            <input id="post-read-time" type="text" placeholder="5 min read"
+              class="w-full px-4 py-3 rounded-xl bg-[#0F172A] border border-white/10 text-white placeholder-slate-600 text-sm focus-ring focus:border-teal-500/50 transition-colors" />
           </div>
         </div>
-      </div>
 
-      <!-- Table -->
-      <div class="rounded-2xl bg-[#1E293B] border border-white/5 overflow-hidden">
-        <div class="flex items-center justify-between px-6 py-4 border-b border-white/5">
-          <h2 class="text-sm font-bold text-white uppercase tracking-widest">Waitlist Subscribers</h2>
-          <button
-            id="refresh-btn"
-            class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-teal-600/10 text-teal-400 border border-teal-600/20 hover:bg-teal-600/20 transition-colors focus-ring"
-          >
-            Refresh
-          </button>
+        <!-- Excerpt -->
+        <div>
+          <label for="post-excerpt" class="block text-sm font-semibold text-slate-300 mb-2">
+            Excerpt / Meta Description
+          </label>
+          <textarea id="post-excerpt" rows="2"
+            placeholder="Short description for the blog listing and SEO (120–160 characters ideal)."
+            class="w-full px-4 py-3 rounded-xl bg-[#0F172A] border border-white/10 text-white placeholder-slate-600 text-sm focus-ring focus:border-teal-500/50 transition-colors resize-none"></textarea>
+          <p class="text-xs text-slate-500 mt-1">
+            <span id="excerpt-count">0</span> characters
+            <span id="excerpt-tip" class="hidden text-amber-400"> — aim for 120–160 for best SEO</span>
+          </p>
         </div>
 
-        <div id="table-loading" class="px-6 py-12 text-center text-slate-500 text-sm">Loading…</div>
-        <div id="table-empty"   class="hidden px-6 py-12 text-center text-slate-500 text-sm">No subscribers yet.</div>
-        <div id="table-error"   class="hidden px-6 py-12 text-center text-red-400 text-sm"></div>
-
-        <div id="table-wrap" class="hidden overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b border-white/5">
-                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-widest">#</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-widest">Name</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-widest">Email</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-widest">Signed Up (SGT)</th>
-              </tr>
-            </thead>
-            <tbody id="subscribers-tbody"></tbody>
-          </table>
+        <!-- Cover image -->
+        <div>
+          <label for="post-cover" class="block text-sm font-semibold text-slate-300 mb-2">
+            Cover Image URL <span class="text-slate-500 font-normal">(optional)</span>
+          </label>
+          <input id="post-cover" type="url" placeholder="https://example.com/image.jpg"
+            class="w-full px-4 py-3 rounded-xl bg-[#0F172A] border border-white/10 text-white placeholder-slate-600 text-sm focus-ring focus:border-teal-500/50 transition-colors" />
         </div>
-      </div>
 
-    </main>
+        <!-- Content editor -->
+        <div>
+          <label class="block text-sm font-semibold text-slate-300 mb-2">
+            Content <span class="text-teal-400" aria-hidden="true">*</span>
+            <span class="text-slate-500 font-normal ml-1">— Markdown supported</span>
+          </label>
+          <textarea id="post-content" placeholder="Write your article in Markdown…"></textarea>
+        </div>
+
+        <div id="form-error" class="hidden text-sm text-red-400 bg-red-400/10 rounded-lg px-4 py-3" role="alert"></div>
+
+        <!-- Footer -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/5">
+          <label class="flex items-center gap-2.5 text-sm text-slate-300 cursor-pointer select-none">
+            <input type="checkbox" id="post-published" class="w-4 h-4 rounded accent-teal-500" />
+            Publish immediately
+          </label>
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <button type="button" id="modal-cancel" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-white/5 text-slate-300 font-semibold text-sm hover:bg-white/10 transition-colors focus-ring">
+              Cancel
+            </button>
+            <button type="submit" id="save-btn" class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-teal-600 text-white font-bold text-sm hover:bg-teal-500 active:scale-[0.98] transition-all focus-ring">
+              Save Article
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══ DELETE CONFIRM ══ -->
+  <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/70 backdrop-blur-sm" role="dialog" aria-modal="true">
+    <div class="w-full max-w-sm bg-[#1E293B] rounded-2xl border border-white/10 shadow-2xl p-8 text-center">
+      <div class="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-5">
+        <svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-white mb-2">Delete this article?</h3>
+      <p class="text-slate-400 text-sm mb-6">This action is permanent and cannot be undone.</p>
+      <div class="flex gap-3">
+        <button id="delete-cancel" class="flex-1 px-5 py-2.5 rounded-xl bg-white/5 text-slate-300 font-semibold text-sm hover:bg-white/10 transition-colors focus-ring">Cancel</button>
+        <button id="delete-confirm" class="flex-1 px-5 py-2.5 rounded-xl bg-red-600 text-white font-bold text-sm hover:bg-red-500 active:scale-[0.98] transition-all focus-ring">Delete</button>
+      </div>
+    </div>
   </div>
 
   <script>
     const SUPABASE_URL      = 'https://bjpwckpmktnwtdzpmnvn.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqcHdja3Bta3Rud3RkenBtbnZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMDc1NTAsImV4cCI6MjA5MjU4MzU1MH0.BMHQDBEANQdZhm4_62Jh9sewdZnAxOZzvKcZCPUoDd0';
-
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const $ = id => document.getElementById(id);
+    let mde = null;
+    let posts = [];
+    let deleteTargetId = null;
 
-    // ── Auth state ───────────────────────────────────────────────
-    sb.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        showDashboard(session.user);
-        loadSubscribers();
-      } else {
-        showLogin();
-      }
-    });
-
-    function showLogin() {
-      $('screen-login').classList.remove('hidden');
-      $('screen-dashboard').classList.add('hidden');
+    // ── Auth guard ────────────────────────────────────────────────
+    async function initAuth() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = 'admin-login.html'; return; }
+      document.getElementById('admin-email').textContent = session.user.email;
+      loadPosts();
     }
 
-    function showDashboard(user) {
-      $('screen-login').classList.add('hidden');
-      $('screen-dashboard').classList.remove('hidden');
-      $('admin-user-email').textContent = user.email;
-    }
-
-    // ── Login ────────────────────────────────────────────────────
-    $('login-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email    = $('admin-email').value.trim();
-      const password = $('admin-password').value;
-      const btn      = $('login-btn');
-      const errEl    = $('login-error');
-
-      btn.disabled = true;
-      btn.textContent = 'Signing in…';
-      errEl.classList.add('hidden');
-
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-
-      btn.disabled = false;
-      btn.textContent = 'Sign In';
-
-      if (error) {
-        errEl.textContent = error.message;
-        errEl.classList.remove('hidden');
-      }
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await sb.auth.signOut();
+      window.location.href = 'admin-login.html';
     });
 
-    // ── Logout ───────────────────────────────────────────────────
-    $('logout-btn').addEventListener('click', () => sb.auth.signOut());
-
-    // ── Load subscribers ─────────────────────────────────────────
-    async function loadSubscribers() {
-      $('table-loading').classList.remove('hidden');
-      $('table-wrap').classList.add('hidden');
-      $('table-empty').classList.add('hidden');
-      $('table-error').classList.add('hidden');
-
+    // ── Load all posts ────────────────────────────────────────────
+    async function loadPosts() {
       const { data, error } = await sb
-        .from('subscribers')
-        .select('*')
+        .from('blog_posts')
+        .select('id, title, slug, category, published, published_at, created_at, updated_at')
         .order('created_at', { ascending: false });
 
-      $('table-loading').classList.add('hidden');
+      document.getElementById('table-loading').classList.add('hidden');
 
       if (error) {
-        $('table-error').textContent = 'Error loading subscribers: ' + error.message;
-        $('table-error').classList.remove('hidden');
+        console.error('Failed to load posts:', error);
+        document.getElementById('table-empty').classList.remove('hidden');
+        document.getElementById('table-empty').querySelector('p.font-semibold').textContent = 'Failed to load posts';
         return;
       }
 
-      if (!data.length) {
-        $('table-empty').classList.remove('hidden');
-        $('stat-total').textContent = '0';
-        return;
-      }
-
-      $('stat-total').textContent = data.length;
-      $('stat-latest').textContent = data[0].name + ' — ' + data[0].email;
-
-      const tbody = $('subscribers-tbody');
-      tbody.innerHTML = data.map((row, i) => `
-        <tr class="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-          <td class="px-6 py-4 text-slate-500">${data.length - i}</td>
-          <td class="px-6 py-4 font-semibold text-white">${escHtml(row.name)}</td>
-          <td class="px-6 py-4 text-teal-400">${escHtml(row.email)}</td>
-          <td class="px-6 py-4 text-slate-400">${new Date(row.created_at).toLocaleString('en-SG', { timeZone: 'Asia/Singapore', dateStyle: 'medium', timeStyle: 'short' })}</td>
-        </tr>
-      `).join('');
-
-      $('table-wrap').classList.remove('hidden');
+      posts = data || [];
+      updateStats();
+      renderTable();
     }
 
-    $('refresh-btn').addEventListener('click', loadSubscribers);
+    function updateStats() {
+      const pub = posts.filter(p => p.published).length;
+      document.getElementById('stat-total').textContent     = posts.length;
+      document.getElementById('stat-published').textContent = pub;
+      document.getElementById('stat-drafts').textContent    = posts.length - pub;
+    }
+
+    function formatDate(str) {
+      return new Date(str).toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
 
     function escHtml(str) {
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
-  </script>
 
+    function renderTable() {
+      const tbody = document.getElementById('posts-tbody');
+      const table = document.getElementById('posts-table');
+      const empty = document.getElementById('table-empty');
+
+      if (posts.length === 0) {
+        empty.classList.remove('hidden');
+        table.classList.add('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      table.classList.remove('hidden');
+
+      tbody.innerHTML = posts.map(p => `
+        <tr class="border-b border-white/5 last:border-0 transition-colors">
+          <td class="px-6 py-4">
+            <div class="font-semibold text-white leading-snug">${escHtml(p.title)}</div>
+            <div class="text-xs text-slate-500 mt-0.5 font-mono">${escHtml(p.slug)}</div>
+          </td>
+          <td class="px-6 py-4 hidden sm:table-cell">
+            <span class="text-xs text-slate-400">${escHtml(p.category || 'General')}</span>
+          </td>
+          <td class="px-6 py-4 hidden md:table-cell text-xs text-slate-500">
+            ${formatDate(p.updated_at || p.created_at)}
+          </td>
+          <td class="px-6 py-4">
+            <button
+              onclick="togglePublish('${p.id}', ${p.published})"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold transition-all duration-200 ${p.published ? 'bg-teal-500/20 text-teal-400 hover:bg-teal-500/30' : 'bg-slate-700 text-slate-400 hover:bg-slate-600'}"
+              title="${p.published ? 'Click to unpublish' : 'Click to publish'}"
+            >
+              <span class="w-1.5 h-1.5 rounded-full ${p.published ? 'bg-teal-400' : 'bg-slate-500'}"></span>
+              ${p.published ? 'Published' : 'Draft'}
+            </button>
+          </td>
+          <td class="px-6 py-4">
+            <div class="flex items-center justify-end gap-1">
+              ${p.published ? `
+                <a href="blog-post.html?slug=${encodeURIComponent(p.slug)}" target="_blank"
+                  class="text-xs text-slate-500 hover:text-teal-400 transition-colors px-2.5 py-1.5 rounded-lg hover:bg-white/5 focus-ring"
+                  title="View live article">View</a>
+              ` : ''}
+              <button onclick="openEdit('${p.id}')"
+                class="text-xs text-slate-400 hover:text-white transition-colors px-2.5 py-1.5 rounded-lg hover:bg-white/5 focus-ring">
+                Edit
+              </button>
+              <button onclick="openDelete('${p.id}')"
+                class="text-xs text-red-400/60 hover:text-red-400 transition-colors px-2.5 py-1.5 rounded-lg hover:bg-red-500/10 focus-ring">
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ── Toggle publish ────────────────────────────────────────────
+    async function togglePublish(id, currentlyPublished) {
+      const newState = !currentlyPublished;
+      const { error } = await sb.from('blog_posts').update({
+        published:    newState,
+        published_at: newState ? new Date().toISOString() : null,
+        updated_at:   new Date().toISOString(),
+      }).eq('id', id);
+
+      if (!error) {
+        posts = posts.map(p =>
+          p.id === id ? { ...p, published: newState, published_at: newState ? new Date().toISOString() : null } : p
+        );
+        updateStats();
+        renderTable();
+      }
+    }
+
+    // ── EasyMDE init ──────────────────────────────────────────────
+    function initMDE() {
+      if (mde) { try { mde.toTextArea(); } catch {} mde = null; }
+      mde = new EasyMDE({
+        element: document.getElementById('post-content'),
+        spellChecker: false,
+        autosave: { enabled: false },
+        toolbar: [
+          'bold', 'italic', 'heading-2', 'heading-3', '|',
+          'quote', 'unordered-list', 'ordered-list', '|',
+          'link', 'image', 'code', 'horizontal-rule', '|',
+          'preview', 'side-by-side', 'fullscreen', '|', 'guide'
+        ],
+        minHeight: '300px',
+        placeholder: '# Article Title\n\nStart writing in Markdown.\n\n## Section Heading\n\nYour paragraph text here...\n\n- Bullet point 1\n- Bullet point 2',
+        status: ['lines', 'words'],
+      });
+    }
+
+    // ── Open create modal ─────────────────────────────────────────
+    function openCreate() {
+      document.getElementById('modal-title').textContent = 'New Article';
+      document.getElementById('post-form').reset();
+      document.getElementById('edit-post-id').value = '';
+      document.getElementById('post-author').value = 'DMsgBox Team';
+      document.getElementById('excerpt-count').textContent = '0';
+      document.getElementById('excerpt-tip').classList.add('hidden');
+      document.getElementById('form-error').classList.add('hidden');
+      document.getElementById('post-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      setTimeout(initMDE, 60);
+    }
+
+    // ── Open edit modal ───────────────────────────────────────────
+    async function openEdit(id) {
+      const { data, error } = await sb.from('blog_posts').select('*').eq('id', id).single();
+      if (error || !data) { alert('Failed to load post. Please try again.'); return; }
+
+      document.getElementById('modal-title').textContent = 'Edit Article';
+      document.getElementById('edit-post-id').value   = data.id;
+      document.getElementById('post-title').value     = data.title;
+      document.getElementById('post-slug').value      = data.slug;
+      document.getElementById('post-category').value  = data.category || 'General';
+      document.getElementById('post-author').value    = data.author || 'DMsgBox Team';
+      document.getElementById('post-read-time').value = data.read_time || '';
+      document.getElementById('post-excerpt').value   = data.excerpt || '';
+      document.getElementById('post-cover').value     = data.cover_image || '';
+      document.getElementById('post-published').checked = data.published;
+      const excerptLen = (data.excerpt || '').length;
+      document.getElementById('excerpt-count').textContent = excerptLen;
+      document.getElementById('excerpt-tip').classList.toggle('hidden', excerptLen >= 100);
+      document.getElementById('form-error').classList.add('hidden');
+      document.getElementById('post-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+
+      setTimeout(() => {
+        initMDE();
+        mde.value(data.content || '');
+      }, 60);
+    }
+
+    // ── Close modal ───────────────────────────────────────────────
+    function closeModal() {
+      document.getElementById('post-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+      if (mde) { try { mde.toTextArea(); } catch {} mde = null; }
+    }
+
+    document.getElementById('new-post-btn').addEventListener('click', openCreate);
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('modal-cancel').addEventListener('click', closeModal);
+    document.getElementById('post-modal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+
+    // Escape key closes modal
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (!document.getElementById('post-modal').classList.contains('hidden')) closeModal();
+        if (!document.getElementById('delete-modal').classList.contains('hidden')) {
+          deleteTargetId = null;
+          document.getElementById('delete-modal').classList.add('hidden');
+        }
+      }
+    });
+
+    // ── Auto-slug from title ──────────────────────────────────────
+    document.getElementById('post-title').addEventListener('input', e => {
+      if (!document.getElementById('edit-post-id').value) {
+        document.getElementById('post-slug').value = slugify(e.target.value);
+      }
+    });
+
+    document.getElementById('post-excerpt').addEventListener('input', e => {
+      const len = e.target.value.length;
+      document.getElementById('excerpt-count').textContent = len;
+      document.getElementById('excerpt-tip').classList.toggle('hidden', len >= 100 && len <= 170);
+    });
+
+    function slugify(str) {
+      return str.toLowerCase().trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/(^-|-$)/g, '');
+    }
+
+    function estimateReadTime(content) {
+      const words = content.replace(/[#*_`>\[\]()!]/g, '').split(/\s+/).filter(Boolean).length;
+      return Math.max(1, Math.ceil(words / 200)) + ' min read';
+    }
+
+    // ── Save post ─────────────────────────────────────────────────
+    document.getElementById('post-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const errEl = document.getElementById('form-error');
+      const btn   = document.getElementById('save-btn');
+      errEl.classList.add('hidden');
+
+      const id        = document.getElementById('edit-post-id').value;
+      const published = document.getElementById('post-published').checked;
+      const content   = mde ? mde.value() : '';
+      const readTime  = document.getElementById('post-read-time').value.trim() || estimateReadTime(content);
+
+      const payload = {
+        title:       document.getElementById('post-title').value.trim(),
+        slug:        document.getElementById('post-slug').value.trim(),
+        category:    document.getElementById('post-category').value,
+        author:      document.getElementById('post-author').value.trim() || 'DMsgBox Team',
+        read_time:   readTime,
+        excerpt:     document.getElementById('post-excerpt').value.trim(),
+        cover_image: document.getElementById('post-cover').value.trim() || null,
+        content,
+        published,
+        updated_at:  new Date().toISOString(),
+      };
+
+      if (!payload.title || !payload.slug) {
+        errEl.textContent = 'Title and URL slug are required.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      if (published) {
+        const existing = posts.find(p => p.id === id);
+        if (!existing?.published_at) payload.published_at = new Date().toISOString();
+      } else {
+        payload.published_at = null;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      let error;
+      if (id) {
+        ({ error } = await sb.from('blog_posts').update(payload).eq('id', id));
+      } else {
+        payload.created_at = new Date().toISOString();
+        ({ error } = await sb.from('blog_posts').insert(payload));
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Save Article';
+
+      if (error) {
+        errEl.textContent = error.code === '23505'
+          ? 'This URL slug is already used by another article. Please choose a unique slug.'
+          : (error.message || 'Failed to save. Please try again.');
+        errEl.classList.remove('hidden');
+      } else {
+        closeModal();
+        loadPosts();
+      }
+    });
+
+    // ── Delete ────────────────────────────────────────────────────
+    function openDelete(id) {
+      deleteTargetId = id;
+      document.getElementById('delete-modal').classList.remove('hidden');
+    }
+
+    document.getElementById('delete-cancel').addEventListener('click', () => {
+      deleteTargetId = null;
+      document.getElementById('delete-modal').classList.add('hidden');
+    });
+
+    document.getElementById('delete-modal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) {
+        deleteTargetId = null;
+        document.getElementById('delete-modal').classList.add('hidden');
+      }
+    });
+
+    document.getElementById('delete-confirm').addEventListener('click', async () => {
+      if (!deleteTargetId) return;
+      const btn = document.getElementById('delete-confirm');
+      btn.disabled = true;
+      btn.textContent = 'Deleting…';
+
+      const { error } = await sb.from('blog_posts').delete().eq('id', deleteTargetId);
+      btn.disabled = false;
+      btn.textContent = 'Delete';
+
+      if (!error) {
+        deleteTargetId = null;
+        document.getElementById('delete-modal').classList.add('hidden');
+        loadPosts();
+      }
+    });
+
+    // ── Init ──────────────────────────────────────────────────────
+    initAuth();
+  </script>
 </body>
 </html>
