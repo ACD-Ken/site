@@ -2,7 +2,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '.env'), overri
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const Anthropic = require('@anthropic-ai/sdk');
+const OpenAI = require('openai');
 
 const app = express();
 app.set('trust proxy', 1); // Trust Railway's reverse proxy for correct IP detection
@@ -159,16 +159,18 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       content: m.content.replace(/\0/g, '').trim(),
     }));
 
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-    const response = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const response = await client.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4.1',
       max_tokens: 450,
-      system: SYSTEM_PROMPT,
-      messages: sanitised,
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        ...sanitised,
+      ],
     });
 
-    const reply = response.content[0]?.text || "Sorry, I couldn't generate a response.";
+    const reply = response.choices[0]?.message?.content || "Sorry, I couldn't generate a response.";
     res.json({ reply });
   } catch (err) {
     console.error('[ACD-Bot error]', err.message || err);
