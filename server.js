@@ -3,6 +3,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const OpenAI = require('openai');
+const { formatBotReply } = require('./reply-format');
 
 const app = express();
 app.set('trust proxy', 1); // Trust Railway's reverse proxy for correct IP detection
@@ -172,7 +173,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       ],
     });
 
-    const reply = response.choices[0]?.message?.content || "Sorry, I couldn't generate a response.";
+    const reply = formatBotReply(response.choices[0]?.message?.content || "Sorry, I couldn't generate a response.");
     res.json({ reply });
   } catch (err) {
     console.error('[ACD-Bot error]', err.message || err);
