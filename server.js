@@ -52,7 +52,7 @@ Ken Wong is a **Seasoned IT Leader & Agentic AI Specialist** based in Singapore 
 ## AI & Automation Projects
 - **AI TikTok Creator** — Fully automated short-video pipeline: script → voiceover (ElevenLabs) → avatar video (D-ID) → final cut (ffmpeg). Runs for ~$11/month.
 - **Lucky7 TOTO AI** — Full-stack lottery assistant (React Native app + Node.js backend + React PWA). Uses DeepSeek AI and numerological analysis for Singapore TOTO and 4D predictions.
-- **Exhibition Booth Designer AI** — AI tool that generates booth layout proposals from a brief, built with Streamlit and Claude.
+- **Exhibition Booth Designer AI** — AI tool that generates booth layout proposals from a brief, built with Streamlit and OAI.
 - **CustSAgent** — RAG-based customer support bot on n8n + GPT-4o-mini; auto-escalates queries it cannot answer.
 - **n8n Automation** — Telegram chatbot that reads, updates, and appends Google Sheets with real-time notifications.
 - **AWS S3 Migration** — Led multi-year migration of regional legacy server storage to AWS/S3 across 6 Southeast Asian markets.

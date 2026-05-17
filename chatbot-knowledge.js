@@ -67,8 +67,8 @@ const KNOWLEDGE_BASE = [
     id: 'project-booth',
     intent: 'projects',
     title: 'Exhibition Booth Designer AI',
-    keywords: ['booth', 'exhibition', 'designer', 'streamlit', 'claude', 'layout'],
-    content: 'Exhibition Booth Designer AI generates booth layout proposals from a brief. Ken built it with Streamlit and Claude to turn early requirements into practical layout concepts.',
+    keywords: ['booth', 'exhibition', 'designer', 'streamlit', 'oai', 'openai', 'layout'],
+    content: 'Exhibition Booth Designer AI generates booth layout proposals from a brief. Ken built it with Streamlit and OAI to turn early requirements into practical layout concepts.',
   },
   {
     id: 'certifications',
