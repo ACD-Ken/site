@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const OpenAI = require('openai');
 const { formatBotReply } = require('./reply-format');
+const { buildKnowledgeContext } = require('./chatbot-knowledge');
 
 const app = express();
 app.set('trust proxy', 1); // Trust Railway's reverse proxy for correct IP detection
@@ -161,6 +162,8 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       role: m.role,
       content: m.content.replace(/\0/g, '').trim(),
     }));
+    const latestUserMessage = [...sanitised].reverse().find((m) => m.role === 'user')?.content || '';
+    const knowledgeContext = buildKnowledgeContext(latestUserMessage);
 
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -169,6 +172,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       max_tokens: 450,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'system', content: knowledgeContext },
         ...sanitised,
       ],
     });
