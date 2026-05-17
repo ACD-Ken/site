@@ -50,7 +50,6 @@ Ken Wong is a **Seasoned IT Leader & Agentic AI Specialist** based in Singapore 
 7. **Singapore Housing Development Board (HDB)** — IT Technician (1995–1997). Technical support in the public sector.
 
 ## AI & Automation Projects
-- **AI TikTok Creator** — Fully automated short-video pipeline: script → voiceover (ElevenLabs) → avatar video (D-ID) → final cut (ffmpeg). Runs for ~$11/month.
 - **Lucky7 TOTO AI** — Full-stack lottery assistant (React Native app + Node.js backend + React PWA). Uses DeepSeek AI and numerological analysis for Singapore TOTO and 4D predictions.
 - **Exhibition Booth Designer AI** — AI tool that generates booth layout proposals from a brief, built with Streamlit and OAI.
 - **CustSAgent** — RAG-based customer support bot on n8n + GPT-4o-mini; auto-escalates queries it cannot answer.

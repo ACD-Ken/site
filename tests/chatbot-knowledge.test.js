@@ -34,6 +34,12 @@ test('retrieveKnowledge includes HR Agent V2 roadmap context', () => {
   assert.match(hrAgent.content, /V4 is planned/);
 });
 
+test('knowledge context does not mention removed TikTok AI project', () => {
+  const context = buildKnowledgeContext('Tell me about Ken projects');
+
+  assert.doesNotMatch(context, /tiktok/i);
+});
+
 test('buildKnowledgeContext formats intent and retrieved facts for the model', () => {
   const context = buildKnowledgeContext('What advertising experience does Ken have?');
 

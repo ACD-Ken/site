@@ -6,7 +6,7 @@ const STOP_WORDS = new Set([
 
 const INTENT_RULES = [
   ['hiring', /\b(hire|hiring|consult|consulting|collaborate|collaboration|available|availability|contact|email|linkedin|role|job|recruit)\b/i],
-  ['projects', /\b(project|projects|portfolio|lucky7|toto|tiktok|booth|custsagent|rag|automation|n8n|aws|migration)\b|\b(hr agent|agentic agent|resume screening)\b/i],
+  ['projects', /\b(project|projects|portfolio|lucky7|toto|booth|custsagent|rag|automation|n8n|aws|migration)\b|\b(hr agent|agentic agent|resume screening)\b/i],
   ['skills', /\b(skill|skills|python|node|react|docker|sql|data|infrastructure|agentic|ai|automation|llm|prompt)\b/i],
   ['work_history', /\b(experience|career|work|history|advertising|tbwa|saatchi|omd|hdb|tessag|regional)\b/i],
   ['certifications', /\b(cert|certificate|certification|bells|cissp|diploma|course|training|sctp)\b/i],
@@ -48,13 +48,6 @@ const KNOWLEDGE_BASE = [
     title: 'Lucky7 TOTO AI',
     keywords: ['lucky7', 'toto', '4d', 'lottery', 'react', 'native', 'node', 'deepseek', 'pwa'],
     content: 'Lucky7 TOTO AI is Ken\'s full-stack lottery assistant with a React Native app, Node.js backend, and React PWA. It uses DeepSeek AI and numerological analysis for Singapore TOTO and 4D prediction workflows.',
-  },
-  {
-    id: 'project-tiktok',
-    intent: 'projects',
-    title: 'AI TikTok Creator',
-    keywords: ['tiktok', 'creator', 'short', 'video', 'elevenlabs', 'd-id', 'ffmpeg'],
-    content: 'AI TikTok Creator is Ken\'s automated short-video pipeline: script generation to ElevenLabs voiceover, D-ID avatar video, and ffmpeg final cut. It is designed to run at roughly 11 dollars per month.',
   },
   {
     id: 'project-rag',
