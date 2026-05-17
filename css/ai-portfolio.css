@@ -676,6 +676,118 @@ section {
 }
 
 /* ===================================
+   Capabilities Section
+   =================================== */
+
+.capabilities {
+    background: var(--bg-dark);
+}
+
+.capabilities-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.6fr);
+    gap: var(--spacing-lg);
+    align-items: stretch;
+}
+
+.capabilities-proof,
+.capability-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.capabilities-proof {
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-top: 3px solid var(--accent);
+}
+
+.proof-eyebrow,
+.capability-label {
+    display: inline-flex;
+    width: fit-content;
+    color: var(--accent-light);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: var(--spacing-sm);
+}
+
+.capabilities-proof h3,
+.capability-card h3 {
+    color: var(--text-light);
+    line-height: 1.25;
+}
+
+.capabilities-proof h3 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-md);
+}
+
+.capabilities-proof p,
+.capability-card p {
+    color: var(--text-muted);
+    line-height: 1.7;
+}
+
+.proof-metrics {
+    display: grid;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xl);
+}
+
+.proof-metric {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: var(--spacing-md);
+    align-items: baseline;
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--border);
+}
+
+.proof-value {
+    color: var(--accent-light);
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 2.25rem;
+    line-height: 1;
+}
+
+.proof-label {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.capabilities-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-md);
+}
+
+.capability-card {
+    padding: var(--spacing-lg);
+    transition: var(--transition);
+}
+
+.capability-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(45, 212, 191, 0.6);
+    box-shadow: 0 12px 32px rgba(13, 148, 136, 0.12);
+}
+
+.capability-card h3 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-sm);
+}
+
+.capability-card p {
+    font-size: var(--font-size-sm);
+}
+
+/* ===================================
    Projects Section
    =================================== */
 
@@ -850,6 +962,79 @@ section {
 .contact-card p {
     color: var(--text-muted);
     margin-bottom: var(--spacing-lg);
+}
+
+.inquiry-card {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(260px, 0.75fr) minmax(0, 1.25fr);
+    gap: var(--spacing-xl);
+    align-items: stretch;
+    border-top: 3px solid var(--accent);
+}
+
+.inquiry-intro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.inquiry-intro h3 {
+    color: var(--text-light);
+    font-size: var(--font-size-2xl);
+    line-height: 1.25;
+    margin-bottom: var(--spacing-md);
+}
+
+.inquiry-intro p {
+    margin-bottom: 0;
+    line-height: 1.75;
+}
+
+.inquiry-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-md);
+}
+
+.inquiry-option {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-height: 100%;
+    padding: var(--spacing-md);
+    border: 1px solid rgba(13, 148, 136, 0.28);
+    border-radius: 8px;
+    background: rgba(13, 148, 136, 0.08);
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.inquiry-option:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-light);
+    background: rgba(13, 148, 136, 0.14);
+    box-shadow: 0 12px 28px rgba(13, 148, 136, 0.12);
+}
+
+.inquiry-type {
+    color: var(--accent-light);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.inquiry-option strong {
+    color: var(--text-light);
+    font-size: var(--font-size-lg);
+    line-height: 1.25;
+}
+
+.inquiry-option span:last-child {
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
 }
 
 .contact-links {
@@ -1337,6 +1522,24 @@ section {
 }
 
 /* Responsive: portfolio-specific */
+@media (max-width: 900px) {
+    .capabilities-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .capabilities-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .inquiry-card {
+        grid-template-columns: 1fr;
+    }
+
+    .inquiry-options {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 900px) {
     .contact-card-redesign {
         grid-template-columns: 1fr;

@@ -4,11 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projects - AI & Automation Portfolio</title>
+    <meta name="description" content="Explore Ken Wong's AI and automation projects, including website chatbots, HR agentic workflows, inventory AI agents, n8n automation, and web apps.">
+    <meta name="author" content="Ken Wong">
+    <meta name="keywords" content="AI projects, automation portfolio, AI agents, n8n workflows, website chatbot, HR agent, inventory AI agent">
+    <link rel="canonical" href="https://acd-ken.github.io/site/projects.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Ken Wong AI Portfolio">
+    <meta property="og:title" content="AI & Automation Projects - Ken Wong">
+    <meta property="og:description" content="Hands-on AI agents, workflow automation pipelines, and web apps built around practical business use cases.">
+    <meta property="og:url" content="https://acd-ken.github.io/site/projects.html">
+    <meta property="og:image" content="https://acd-ken.github.io/site/og-image.svg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI & Automation Projects - Ken Wong">
+    <meta name="twitter:description" content="Hands-on AI agents, workflow automation pipelines, and web apps built around practical business use cases.">
+    <meta name="twitter:image" content="https://acd-ken.github.io/site/og-image.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💼</text></svg>">
-    <meta name="description" content="AI and automation projects - n8n workflows, Docker monitoring, web applications">
     <style>
         :root {
             --bg-dark: #0f172a;
@@ -212,6 +225,121 @@
             font-size: 3rem;
             border-bottom: 1px solid var(--card-border);
         }
+
+        .project-image.visual-panel {
+            align-items: stretch;
+            justify-content: stretch;
+            padding: 1.25rem;
+            font-size: 1rem;
+        }
+
+        .project-visual {
+            width: 100%;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 1px solid rgba(56, 189, 248, 0.18);
+            border-radius: 0.75rem;
+            background: rgba(15, 23, 42, 0.72);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .visual-kicker,
+        .visual-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .visual-row,
+        .visual-flow,
+        .visual-grid {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .visual-flow {
+            justify-content: space-between;
+        }
+
+        .visual-node {
+            flex: 1;
+            min-width: 0;
+            padding: 0.55rem 0.45rem;
+            border: 1px solid rgba(45, 212, 191, 0.26);
+            border-radius: 0.5rem;
+            background: rgba(13, 148, 136, 0.12);
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .visual-arrow {
+            color: var(--accent-blue);
+            font-weight: 800;
+        }
+
+        .visual-card {
+            flex: 1;
+            min-width: 0;
+            padding: 0.6rem;
+            border-radius: 0.55rem;
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.16);
+        }
+
+        .visual-card strong {
+            display: block;
+            color: var(--text-primary);
+            font-size: 0.82rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .visual-card span {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+        }
+
+        .visual-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .visual-pill {
+            padding: 0.45rem 0.55rem;
+            border-radius: 999px;
+            background: rgba(45, 212, 191, 0.1);
+            border: 1px solid rgba(45, 212, 191, 0.2);
+            color: var(--text-secondary);
+            font-size: 0.74rem;
+            text-align: center;
+        }
+
+        .visual-bars {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            align-items: end;
+            min-height: 58px;
+        }
+
+        .visual-bar {
+            border-radius: 0.4rem 0.4rem 0.2rem 0.2rem;
+            background: linear-gradient(180deg, rgba(45, 212, 191, 0.9), rgba(56, 189, 248, 0.4));
+            min-height: 24px;
+        }
+
+        .visual-bar:nth-child(1) { height: 34px; }
+        .visual-bar:nth-child(2) { height: 54px; }
+        .visual-bar:nth-child(3) { height: 42px; }
+        .visual-bar:nth-child(4) { height: 64px; }
 
         .project-content {
             padding: 1.5rem;
@@ -554,7 +682,7 @@
       <div class="filters">
         <button class="filter-btn active" data-filter="all">All Projects</button>
         <button class="filter-btn" data-filter="automation">Automation</button>
-        <button class="filter-btn" data-filter="web">Web Apps</button>
+        <button class="filter-btn" data-filter="web-apps">Web Apps</button>
         <button class="filter-btn" data-filter="experiment">Experiments</button>
         <button class="filter-btn" data-filter="capstone">Capstone</button>
       </div>
@@ -564,7 +692,22 @@
         <div class="projects-grid">
             <!-- Project 1: n8n Workflow Orchestrator -->
             <article class="project-card" id="n8n-orchestrator" data-category="automation">
-                <div class="project-image"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" style="width:48px;height:48px;opacity:0.6"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28ZM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg></div>
+                <div class="project-image visual-panel">
+                    <div class="project-visual" aria-label="n8n workflow visual">
+                        <div class="visual-kicker">Automation Pipeline</div>
+                        <div class="visual-flow">
+                            <div class="visual-node">Trigger</div>
+                            <div class="visual-arrow">-&gt;</div>
+                            <div class="visual-node">n8n</div>
+                            <div class="visual-arrow">-&gt;</div>
+                            <div class="visual-node">Notify</div>
+                        </div>
+                        <div class="visual-row">
+                            <div class="visual-card"><strong>APIs</strong><span>Sync data</span></div>
+                            <div class="visual-card"><strong>Retries</strong><span>Recover safely</span></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="project-content">
                     <div class="project-header">
                         <div>
@@ -628,7 +771,23 @@
 
             <!-- Project 2: Docker Container Monitor -->
             <article class="project-card" id="docker-monitor" data-category="automation">
-                <div class="project-image"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" style="width:48px;height:48px;opacity:0.6"><path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg></div>
+                <div class="project-image visual-panel">
+                    <div class="project-visual" aria-label="Docker monitoring visual">
+                        <div class="visual-kicker">Container Health</div>
+                        <div class="visual-bars">
+                            <div class="visual-bar"></div>
+                            <div class="visual-bar"></div>
+                            <div class="visual-bar"></div>
+                            <div class="visual-bar"></div>
+                        </div>
+                        <div class="visual-grid">
+                            <div class="visual-pill">CPU</div>
+                            <div class="visual-pill">Logs</div>
+                            <div class="visual-pill">Alerts</div>
+                            <div class="visual-pill">Restart</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="project-content">
                     <div class="project-header">
                         <div>
@@ -692,7 +851,22 @@
 
             <!-- Project 3: Chatbot on Website -->
             <article class="project-card" id="chatbot-on-website" data-category="capstone">
-                <div class="project-image">💬</div>
+                <div class="project-image visual-panel">
+                    <div class="project-visual" aria-label="Website chatbot capstone visual">
+                        <div class="visual-kicker">Capstone Flow</div>
+                        <div class="visual-flow">
+                            <div class="visual-node">Visitor</div>
+                            <div class="visual-arrow">-&gt;</div>
+                            <div class="visual-node">Chat</div>
+                            <div class="visual-arrow">-&gt;</div>
+                            <div class="visual-node">Site Context</div>
+                        </div>
+                        <div class="visual-row">
+                            <div class="visual-card"><strong>Answers</strong><span>Portfolio questions</span></div>
+                            <div class="visual-card"><strong>Guide</strong><span>Relevant pages</span></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="project-content">
                     <div class="project-header">
                         <div>
@@ -706,27 +880,27 @@
                     </div>
 
                     <p class="project-description">
-                        Capstone placeholder for a website chatbot experience. Detailed scope, workflow, and outcomes will be added after the capstone write-up is finalized.
+                        Capstone placeholder for a website chatbot experience that helps visitors ask questions and find relevant portfolio content.
                     </p>
 
                     <div class="project-details">
                         <div class="detail-section">
                             <div class="detail-label">Overview</div>
-                            <p class="detail-text">A visitor-facing chatbot concept for answering website questions and guiding users to relevant portfolio content.</p>
+                            <p class="detail-text">A visitor-facing chatbot concept for answering website questions using curated site context.</p>
                         </div>
                         <div class="detail-section">
                             <div class="detail-label">Focus</div>
-                            <p class="detail-text">Conversation flow, site context retrieval, concise answers, and a lightweight embedded chat interface.</p>
+                            <p class="detail-text">Conversation flow, context retrieval, concise responses, and a lightweight embedded chat interface.</p>
                         </div>
                         <div class="detail-section">
                             <div class="detail-label">Next Update</div>
-                            <p class="detail-text">Add screenshots, architecture notes, and implementation details when the capstone documentation is ready.</p>
+                            <p class="detail-text">Add sample prompts, architecture notes, and screenshots once the capstone documentation is ready.</p>
                         </div>
                     </div>
 
                     <div class="key-insight">
                         <div class="detail-label">Focus Area</div>
-                        <p class="detail-text">Website assistance powered by LLM responses and curated portfolio context.</p>
+                        <p class="detail-text">Current stage: defining the assistant scope, answer boundaries, and source content for retrieval.</p>
                     </div>
 
                     <div class="metrics">
@@ -735,8 +909,8 @@
                             <span class="metric-value">Capstone</span>
                         </div>
                         <div class="metric">
-                            <span class="metric-label">Status</span>
-                            <span class="metric-value">Pending Details</span>
+                            <span class="metric-label">Milestone</span>
+                            <span class="metric-value">Flow Draft</span>
                         </div>
                     </div>
 
@@ -755,7 +929,22 @@
 
             <!-- Project 4: HR Agentic Agent -->
             <article class="project-card" id="hr-agentic-agent" data-category="capstone">
-                <div class="project-image">👥</div>
+                <div class="project-image visual-panel">
+                    <div class="project-visual" aria-label="HR agentic agent capstone visual">
+                        <div class="visual-kicker">Agentic Workflow</div>
+                        <div class="visual-flow">
+                            <div class="visual-node">Request</div>
+                            <div class="visual-arrow">-&gt;</div>
+                            <div class="visual-node">Agent</div>
+                            <div class="visual-arrow">-&gt;</div>
+                            <div class="visual-node">Review</div>
+                        </div>
+                        <div class="visual-row">
+                            <div class="visual-card"><strong>Route</strong><span>HR tasks</span></div>
+                            <div class="visual-card"><strong>Escalate</strong><span>Human checks</span></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="project-content">
                     <div class="project-header">
                         <div>
@@ -769,7 +958,7 @@
                     </div>
 
                     <p class="project-description">
-                        Capstone placeholder for an HR-focused agentic workflow. Detailed scope, workflow, and outcomes will be added after the capstone write-up is finalized.
+                        Capstone placeholder for an HR-focused agentic workflow that structures employee requests, routing, and review checkpoints.
                     </p>
 
                     <div class="project-details">
@@ -783,13 +972,13 @@
                         </div>
                         <div class="detail-section">
                             <div class="detail-label">Next Update</div>
-                            <p class="detail-text">Add workflow diagrams, use cases, and implementation notes when the capstone documentation is ready.</p>
+                            <p class="detail-text">Add workflow diagrams, sample HR use cases, and implementation notes when the capstone documentation is ready.</p>
                         </div>
                     </div>
 
                     <div class="key-insight">
                         <div class="detail-label">Focus Area</div>
-                        <p class="detail-text">Agentic HR workflow support with structured inputs and controlled escalation.</p>
+                        <p class="detail-text">Current stage: mapping request types, approval points, and safe escalation paths.</p>
                     </div>
 
                     <div class="metrics">
@@ -798,8 +987,8 @@
                             <span class="metric-value">Capstone</span>
                         </div>
                         <div class="metric">
-                            <span class="metric-label">Status</span>
-                            <span class="metric-value">Pending Details</span>
+                            <span class="metric-label">Milestone</span>
+                            <span class="metric-value">Use Cases</span>
                         </div>
                     </div>
 
@@ -818,7 +1007,24 @@
 
             <!-- Project 5: Inventory AI Agent -->
             <article class="project-card" id="inventory-ai-agent" data-category="capstone">
-                <div class="project-image">📦</div>
+                <div class="project-image visual-panel">
+                    <div class="project-visual" aria-label="Inventory AI agent capstone visual">
+                        <div class="visual-kicker">Inventory Assistant</div>
+                        <div class="visual-grid">
+                            <div class="visual-pill">Stock Check</div>
+                            <div class="visual-pill">Exceptions</div>
+                            <div class="visual-pill">Next Step</div>
+                            <div class="visual-pill">Report</div>
+                        </div>
+                        <div class="visual-flow">
+                            <div class="visual-node">Query</div>
+                            <div class="visual-arrow">-&gt;</div>
+                            <div class="visual-node">Analyze</div>
+                            <div class="visual-arrow">-&gt;</div>
+                            <div class="visual-node">Action</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="project-content">
                     <div class="project-header">
                         <div>
@@ -832,7 +1038,7 @@
                     </div>
 
                     <p class="project-description">
-                        Capstone placeholder for an inventory-focused AI agent. Detailed scope, workflow, and outcomes will be added after the capstone write-up is finalized.
+                        Capstone placeholder for an inventory-focused AI agent that helps review stock questions, exceptions, and next actions.
                     </p>
 
                     <div class="project-details">
@@ -852,7 +1058,7 @@
 
                     <div class="key-insight">
                         <div class="detail-label">Focus Area</div>
-                        <p class="detail-text">Inventory workflow assistance using AI-guided review and next-step suggestions.</p>
+                        <p class="detail-text">Current stage: defining inventory queries, exception patterns, and recommended response formats.</p>
                     </div>
 
                     <div class="metrics">
@@ -861,8 +1067,8 @@
                             <span class="metric-value">Capstone</span>
                         </div>
                         <div class="metric">
-                            <span class="metric-label">Status</span>
-                            <span class="metric-value">Pending Details</span>
+                            <span class="metric-label">Milestone</span>
+                            <span class="metric-value">Scenarios</span>
                         </div>
                     </div>
 
@@ -881,7 +1087,21 @@
 
             <!-- Project 6: Lucky7 TOTO AI -->
             <article class="project-card" id="lucky7-toto" data-category="web-apps">
-                <div class="project-image">🎯</div>
+                <div class="project-image visual-panel">
+                    <div class="project-visual" aria-label="Lucky7 app visual">
+                        <div class="visual-kicker">PWA Snapshot</div>
+                        <div class="visual-row">
+                            <div class="visual-card"><strong>8</strong><span>Strategies</span></div>
+                            <div class="visual-card"><strong>PWA</strong><span>Offline-ready</span></div>
+                        </div>
+                        <div class="visual-grid">
+                            <div class="visual-pill">Claude AI</div>
+                            <div class="visual-pill">Analytics</div>
+                            <div class="visual-pill">Draws</div>
+                            <div class="visual-pill">History</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="project-content">
                     <div class="project-header">
                         <div>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Ken Wong AI Portfolio</title>
+  <desc id="desc">Social preview image for Ken Wong's AI developer and automation specialist portfolio.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#080E1A"/>
+      <stop offset="0.55" stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#102A34"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#2DD4BF"/>
+      <stop offset="1" stop-color="#38BDF8"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="42"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <g opacity="0.28">
+    <path d="M0 120H1200M0 240H1200M0 360H1200M0 480H1200M160 0V630M320 0V630M480 0V630M640 0V630M800 0V630M960 0V630" stroke="#2DD4BF" stroke-width="1"/>
+  </g>
+  <circle cx="980" cy="90" r="220" fill="#0D9488" opacity="0.26" filter="url(#soft)"/>
+  <circle cx="180" cy="560" r="220" fill="#38BDF8" opacity="0.16" filter="url(#soft)"/>
+  <rect x="76" y="72" width="1048" height="486" rx="32" fill="rgba(15,23,42,0.72)" stroke="rgba(45,212,191,0.36)" stroke-width="2"/>
+  <text x="112" y="148" fill="#2DD4BF" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" letter-spacing="4">AI DEVELOPER &amp; AUTOMATION SPECIALIST</text>
+  <text x="112" y="260" fill="#F8FAFC" font-family="Georgia, 'Times New Roman', serif" font-size="82">Ken Wong</text>
+  <text x="112" y="345" fill="#F8FAFC" font-family="Georgia, 'Times New Roman', serif" font-size="64">Practical AI Agents</text>
+  <text x="112" y="420" fill="url(#accent)" font-family="Georgia, 'Times New Roman', serif" font-size="64">and Workflow Automation</text>
+  <text x="112" y="500" fill="#CBD5E1" font-family="Arial, Helvetica, sans-serif" font-size="30">Website chatbots, agentic workflows, n8n automation, and LLM integration.</text>
+  <g transform="translate(844 188)">
+    <rect width="196" height="196" rx="28" fill="rgba(45,212,191,0.10)" stroke="rgba(45,212,191,0.35)" stroke-width="2"/>
+    <path d="M52 116C52 79.55 81.55 50 118 50H146V78H118C97.01 78 80 95.01 80 116V144H52V116Z" fill="#2DD4BF"/>
+    <path d="M144 80C144 116.45 114.45 146 78 146H50V118H78C98.99 118 116 100.99 116 80V52H144V80Z" fill="#38BDF8"/>
+  </g>
+</svg>
