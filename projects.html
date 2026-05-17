@@ -147,6 +147,9 @@
         .hero-proof-item { display:flex;align-items:center;gap:8px;font-size:0.82rem;color:#64748B;font-weight:500; }
         .hero-proof-icon { width:16px;height:16px;color:#2DD4BF;flex-shrink:0; }
         @keyframes heroFadeUp { from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)} }
+        .hero.page-hero { min-height:64vh;padding:88px 0 64px; }
+        .hero.page-hero .hero-headline { font-size:clamp(2.4rem,5.8vw,4.6rem); }
+        .hero.page-hero .hero-proof { margin-top:48px; }
 
         /* Header (filter bar) */
         .header {
@@ -624,7 +627,7 @@
     </nav>
 
     <!-- Hero -->
-    <section class="hero">
+    <section class="hero page-hero">
       <div class="hero-grid"></div>
       <div class="hero-orb hero-orb-1"></div>
       <div class="hero-orb hero-orb-2"></div>

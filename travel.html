@@ -4,13 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travel Photos Gallery</title>
+    <meta name="description" content="Ken Wong's travel photography gallery featuring landscapes, cities, and moments captured across Asia and Europe.">
+    <meta name="author" content="Ken Wong">
+    <link rel="canonical" href="https://acd-ken.github.io/site/travel.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Ken Wong AI Portfolio">
+    <meta property="og:title" content="Travel Gallery - Ken Wong">
+    <meta property="og:description" content="A private travel photography gallery with landscapes, cities, and moments captured along the way.">
+    <meta property="og:url" content="https://acd-ken.github.io/site/travel.html">
+    <meta property="og:image" content="https://acd-ken.github.io/site/og-image.svg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Travel Gallery - Ken Wong">
+    <meta name="twitter:description" content="A private travel photography gallery with landscapes, cities, and moments captured along the way.">
+    <meta name="twitter:image" content="https://acd-ken.github.io/site/og-image.svg">
     <link rel="stylesheet" href="css/ai-portfolio.css">
     <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
-    <meta name="description" content="Travel photography gallery with responsive masonry layout">
 </head>
 <body>
     <nav class="navbar">
@@ -34,7 +46,7 @@
     </nav>
 
     <!-- Hero -->
-    <section class="hero">
+    <section class="hero page-hero">
       <div class="hero-grid"></div>
       <div class="hero-orb hero-orb-1"></div>
       <div class="hero-orb hero-orb-2"></div>
@@ -114,14 +126,14 @@
         </div>
     </div>
 
-    <footer>
+    <footer class="footer">
         <div class="footer-content">
-            <p>All photos are for demonstration purposes. Add your own images to /images/travel/</p>
+            <p>&copy; 2026 AlsoCanDo. Built with passion for AI and automation.</p>
             <div class="footer-links">
                 <a href="index.html">Home</a>
+                <a href="kw-portfolio.html">Portfolio</a>
                 <a href="setup-guide.html">Setup Guide</a>
                 <a href="projects.html">Projects</a>
-                <a href="#" class="theme-toggle-footer">Toggle Theme</a>
                 <a href="privacy.html">Privacy</a>
             </div>
         </div>
@@ -150,11 +162,6 @@
                 document.querySelector('.nav-links').classList.toggle('show');
             });
             
-            // Add theme toggle to footer
-            document.querySelector('.theme-toggle-footer').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelector('.theme-toggle').click();
-            });
         });
     </script>
   <link rel="stylesheet" href="chatbot.css">

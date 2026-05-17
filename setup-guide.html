@@ -4,11 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My MacAir Setup - Development Environment Guide</title>
+    <meta name="description" content="Ken Wong's macOS AI developer setup guide for Docker, n8n, ngrok, and local automation development.">
+    <meta name="author" content="Ken Wong">
+    <link rel="canonical" href="https://acd-ken.github.io/site/setup-guide.html">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Ken Wong AI Portfolio">
+    <meta property="og:title" content="AI Developer Setup Guide - Ken Wong">
+    <meta property="og:description" content="Step-by-step macOS setup guide for Docker, n8n, ngrok, and local AI automation development.">
+    <meta property="og:url" content="https://acd-ken.github.io/site/setup-guide.html">
+    <meta property="og:image" content="https://acd-ken.github.io/site/og-image.svg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI Developer Setup Guide - Ken Wong">
+    <meta name="twitter:description" content="Step-by-step macOS setup guide for Docker, n8n, ngrok, and local AI automation development.">
+    <meta name="twitter:image" content="https://acd-ken.github.io/site/og-image.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
-    <meta name="description" content="Complete setup guide for macOS development environment with Docker, n8n, and ngrok">
     <meta name="keywords" content="macOS, Docker, n8n, ngrok, automation, setup guide, development environment">
     <style>
         :root {
@@ -104,6 +116,15 @@
 
         .nav-link:hover, .nav-link.active {
             color: var(--blue-400);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 0;
+            color: var(--slate-100);
+            font-size: 1.5rem;
+            cursor: pointer;
         }
 
         /* Breadcrumb */
@@ -503,6 +524,27 @@
                 padding: 1rem;
             }
 
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav-links.show {
+                display: flex;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+                background: rgba(15, 23, 42, 0.98);
+                border-bottom: 1px solid var(--slate-800);
+            }
+
             .breadcrumb, .hero, .guide-container {
                 padding-left: 1rem;
                 padding-right: 1rem;
@@ -534,6 +576,7 @@
                 <a href="projects.html" class="nav-link">Projects</a>
                 <a href="travel.html" class="nav-link">Travel</a>
             </div>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
         </div>
     </nav>
 
@@ -912,6 +955,10 @@ ngrok config add-authtoken &lt;YOUR_AUTH_TOKEN&gt;
     </footer>
 
     <script>
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('show');
+        });
+
         // Copy code functionality
         function copyCode(button) {
             const codeBlock = button.closest('.code-block-wrapper').querySelector('code');
