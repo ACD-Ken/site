@@ -2,9 +2,9 @@ def test_setup_guide_loads_and_toc(page):
     # Ensure the site is being served at http://localhost:8000
     page.goto("http://localhost:8000/setup-guide.html")
 
-    assert page.locator('#markdown-content').is_visible()
+    assert page.locator(".main-content").is_visible()
 
-    first_toc = page.locator('#toc a').first
+    first_toc = page.locator(".toc-sidebar a").first
     assert first_toc.is_visible()
 
     href = first_toc.get_attribute('href')
