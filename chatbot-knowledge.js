@@ -6,7 +6,7 @@ const STOP_WORDS = new Set([
 
 const INTENT_RULES = [
   ['hiring', /\b(hire|hiring|consult|consulting|collaborate|collaboration|available|availability|contact|email|linkedin|role|job|recruit)\b/i],
-  ['projects', /\b(project|projects|portfolio|lucky7|toto|tiktok|booth|custsagent|rag|automation|n8n|aws|migration)\b/i],
+  ['projects', /\b(project|projects|portfolio|lucky7|toto|tiktok|booth|custsagent|rag|automation|n8n|aws|migration)\b|\b(hr agent|agentic agent|resume screening)\b/i],
   ['skills', /\b(skill|skills|python|node|react|docker|sql|data|infrastructure|agentic|ai|automation|llm|prompt)\b/i],
   ['work_history', /\b(experience|career|work|history|advertising|tbwa|saatchi|omd|hdb|tessag|regional)\b/i],
   ['certifications', /\b(cert|certificate|certification|bells|cissp|diploma|course|training|sctp)\b/i],
@@ -69,6 +69,13 @@ const KNOWLEDGE_BASE = [
     title: 'Exhibition Booth Designer AI',
     keywords: ['booth', 'exhibition', 'designer', 'streamlit', 'oai', 'openai', 'layout'],
     content: 'Exhibition Booth Designer AI generates booth layout proposals from a brief. Ken built it with Streamlit and OAI to turn early requirements into practical layout concepts.',
+  },
+  {
+    id: 'project-hr-agent',
+    intent: 'projects',
+    title: 'HR Agentic Agent',
+    keywords: ['hr', 'agentic', 'agent', 'resume', 'screening', 'n8n', 'mistral', 'ocr', 'v2', 'v3', 'v4'],
+    content: 'HR Agentic Agent is Ken\'s completed V2 capstone workflow for auditable HR screening. It uses an AI Agent to score resumes, deterministic n8n nodes to validate totals and OCR quality, Google Sheets logging for every candidate, and recruiter email only on the shortlist branch. V3 is planned as a multi-agent evidence audit, and V4 is planned as autonomous triage with a route-planning agent.',
   },
   {
     id: 'certifications',

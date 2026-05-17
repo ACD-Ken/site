@@ -42,6 +42,11 @@ test('public pages use standardized shell metadata and page hero treatment', asy
       path: '/privacy.html',
       canonical: 'https://acd-ken.github.io/site/privacy.html',
       title: 'Privacy & Cookie Settings - Ken Wong'
+    },
+    {
+      path: '/hr-agent-v2.html',
+      canonical: 'https://acd-ken.github.io/site/hr-agent-v2.html',
+      title: 'HR Agent V2 - Auditable Agentic Workflow'
     }
   ];
 

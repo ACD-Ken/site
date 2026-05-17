@@ -1,0 +1,773 @@
+{
+  "name": "05 HR Agent v3 - Multi-Agent Evidence Audit Screening",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Job Application",
+        "formDescription": "Submit your application. AI screening powered by OpenAI + Mistral OCR with v3 multi-agent evidence audit.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Phone"
+            },
+            {
+              "fieldLabel": "Job Role Applied",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "CV (PDF)",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "90d55937-2032-4afe-a335-39a5cb4ab16c",
+      "name": "Form: Job Application",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -2016,
+        112
+      ],
+      "webhookId": "c0e1598e-0814-4bcc-b721-8fece67b75c8"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract form fields + pass binary PDF through for Mistral OCR node\nconst item = $input.first();\nconst candidateName = item.json['Full Name'] || '';\nconst candidateEmail = item.json['Email'] || '';\nconst candidatePhone = item.json['Phone'] || '';\nconst jobRole = item.json['Job Role Applied'] || 'AI Automation Engineer';\n\n// Pass binary key name so the OCR node can find the file\nconst binaryKeys = Object.keys(item.binary || {});\nconst binaryKey = binaryKeys[0] || 'CV (PDF)';\n\nreturn [{\n  json: {\n    candidateName,\n    candidateEmail,\n    candidatePhone,\n    jobRole\n  },\n  binary: item.binary\n}];"
+      },
+      "id": "7e565415-9f31-48dc-b8f0-2a46d20f1532",
+      "name": "Extract Form Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1776,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst binaryKeys = Object.keys(item.binary || {});\nconst binaryKey = binaryKeys[0] || 'CV (PDF)';\nconst binaryData = item.binary[binaryKey];\n\nif (!binaryData) {\n  throw new Error('No binary PDF found in input. Check the form upload field name.');\n}\n\n// binaryMode:'separate' stores files on disk — binaryData.data is a filesystem\n// reference, not base64. getBinaryDataBuffer() fetches the actual bytes.\nconst buffer = await this.helpers.getBinaryDataBuffer(0, binaryKey);\nconst pdfBase64 = buffer.toString('base64');\n\nreturn [{\n  json: {\n    ...item.json,\n    pdfBase64,\n    pdfMimeType: binaryData.mimeType || 'application/pdf'\n  }\n}];"
+      },
+      "id": "e5c1b2c8-64ed-4dde-af00-0dcfb03e6f1f",
+      "name": "Prepare PDF for OCR",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1536,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mistral.ai/v1/ocr",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "mistralCloudApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"mistral-ocr-latest\",\n  \"document\": {\n    \"type\": \"document_url\",\n    \"document_url\": \"data:{{ $json.pdfMimeType }};base64,{{ $json.pdfBase64 }}\"\n  }\n}",
+        "options": {}
+      },
+      "id": "f2f497e3-b68f-4096-b8b5-962e4854a215",
+      "name": "Mistral OCR",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1296,
+        112
+      ],
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "SsdebPssesxk6DaW",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -1136,
+        416
+      ],
+      "id": "ac790b4b-c5c1-4b49-a265-f83ef56d6372",
+      "name": "OpenAI Chat Model: Evaluator",
+      "credentials": {
+        "openAiApi": {
+          "id": "ShukBsu4qwMNwoi6",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "score_guardrail",
+        "description": "Checks HR rubric score bounds, recalculates total_score, and confirms the expected decision threshold. Input must be a JSON string with scores and decision. This tool has no side effects and does not write to Sheets or send email.",
+        "jsCode": "let data;\ntry {\n  data = JSON.parse(input);\n} catch (error) {\n  return JSON.stringify({ valid: false, issues: ['Input is not valid JSON: ' + error.message] });\n}\n\nconst maxScores = {\n  skills: 30,\n  industry: 20,\n  experience: 15,\n  education: 10,\n  projects: 15,\n  portfolio: 10,\n};\nconst issues = [];\nconst normalized_scores = {};\n\nfor (const [key, max] of Object.entries(maxScores)) {\n  const raw = data.scores && data.scores[key] !== undefined ? data.scores[key] : data['score_' + key];\n  let value = Number(raw);\n  if (!Number.isFinite(value)) {\n    issues.push(key + ' score is missing or not numeric; using 0');\n    value = 0;\n  }\n  if (value < 0 || value > max) {\n    issues.push(key + ' score ' + value + ' is outside 0-' + max + '; clamp needed');\n  }\n  normalized_scores[key] = Math.min(max, Math.max(0, value));\n}\n\nconst calculated_total = Object.values(normalized_scores).reduce((sum, value) => sum + value, 0);\nconst expected_decision = calculated_total >= 75 ? 'Shortlist' : calculated_total >= 50 ? 'Moderate' : 'Reject';\n\nif (Number(data.total_score) !== calculated_total) {\n  issues.push('total_score should equal ' + calculated_total + ', not ' + data.total_score);\n}\nif (data.decision && data.decision !== expected_decision) {\n  issues.push('decision should be ' + expected_decision + ' for total_score ' + calculated_total);\n}\n\nreturn JSON.stringify({\n  valid: issues.length === 0,\n  issues,\n  normalized_scores,\n  calculated_total,\n  expected_decision,\n  qualificationRate: Number((calculated_total / 100).toFixed(2)),\n});"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.1,
+      "position": [
+        -944,
+        416
+      ],
+      "id": "e6893639-76b8-4987-a379-5115812e4675",
+      "name": "Tool: score_guardrail"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"qualificationRate\": 0.82,\n  \"explanation\": \"2-3 sentence justification grounded only in CV evidence.\",\n  \"scores\": {\n    \"skills\": 25,\n    \"industry\": 18,\n    \"experience\": 13,\n    \"education\": 10,\n    \"projects\": 12,\n    \"portfolio\": 4\n  },\n  \"total_score\": 82,\n  \"decision\": \"Shortlist\",\n  \"key_strengths\": [\n    \"Strong Python and REST API experience\",\n    \"Shipped n8n automation projects\"\n  ],\n  \"key_gaps\": [\n    \"No clear vector database experience\"\n  ],\n  \"evidence\": {\n    \"skills\": \"CV states Python, REST APIs, n8n, and LLM integration in project descriptions.\",\n    \"industry\": \"Candidate worked in SaaS automation roles for more than 2 years.\",\n    \"experience\": \"CV shows 5 years of relevant engineering experience.\",\n    \"education\": \"Computer Science degree listed.\",\n    \"projects\": \"CV lists shipped workflow automation and RAG projects.\",\n    \"portfolio\": \"GitHub link is present but project depth is unclear.\"\n  }\n}"
+      },
+      "id": "4fcf44f5-87e8-4cd1-aba7-8354c871aee6",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -752,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Evaluate this candidate for the AI Automation Engineer role.\n\nCandidate: {{ $('Extract Form Data').item.json.candidateName }}\nEmail: {{ $('Extract Form Data').item.json.candidateEmail }}\nPhone: {{ $('Extract Form Data').item.json.candidatePhone }}\nRole Applied: {{ $('Extract Form Data').item.json.jobRole }}\n\nCV TEXT (extracted by Mistral OCR):\n{{ ($json.pages || []).map(function(p) { return p.markdown || p.extracted_text || ''; }).join('\\n\\n') }}\n\nTASK:\n1. Score the candidate against the ICP rubric using only CV evidence.\n2. Call score_guardrail with your proposed scores, total_score, and decision.\n3. Return the structured JSON required by the parser.\n4. Do not write to Google Sheets and do not send email. n8n workflow nodes handle side effects after validation.\n5. A second evidence-auditor agent will review your evidence, so be precise and conservative.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a strict AI hiring evaluator for DMsgBox, powered by OpenAI.\n\nICP - AI Automation Engineer:\n- Industry: AI, Automation, SaaS, Tech\n- Experience: 3-8 years\n- Core Skills: Python, REST APIs, n8n/Zapier/Make, prompt engineering, LLM integration\n- Education: CS, Data Science, Software Engineering\n- Preferred: DevOps, AI Agents, Vector DBs, LangChain/RAG\n\nSCORING (max 100, be strict; no full marks without clear evidence):\n- skills /30 - Python + APIs + automation tool + LLM/prompt work\n- industry /20 - 2+ years at AI/automation/SaaS/Tech\n- experience /15 - within 3-8 yrs, increasing scope\n- education /10 - CS/Data Sci/SWE degree\n- projects /15 - concrete shipped AI/automation/RAG projects\n- portfolio /10 - public GitHub or portfolio link with real artifacts\n\nTHRESHOLDS:\n- total >= 75 -> Shortlist\n- total 50-74 -> Moderate\n- total < 50 -> Reject\n\nRULES:\n- Never invent skills or experience not present in the CV text.\n- If CV text is empty or unreadable, score all dimensions 0 and decision='Reject'.\n- Include short evidence notes for each scoring dimension.\n- Use score_guardrail before final output.\n- Your only job is initial evaluation. External actions are enforced by deterministic n8n nodes after a separate evidence audit.",
+          "maxIterations": 5
+        }
+      },
+      "id": "a898dd51-3e27-4f02-b23f-c0e70be845f3",
+      "name": "AI Agent: HR Screening Evaluation",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1024,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst codeFence = '```';\n\nfunction parseAgentOutput(value) {\n  if (value && typeof value === 'object') return value;\n  if (typeof value !== 'string') return {};\n\n  let text = value.trim();\n  if (text.startsWith(codeFence)) {\n    text = text.replace(/^```(?:json)?\\s*/i, '').replace(/```$/i, '').trim();\n  }\n\n  const firstBrace = text.indexOf('{');\n  const lastBrace = text.lastIndexOf('}');\n  if (firstBrace >= 0 && lastBrace > firstBrace) {\n    text = text.slice(firstBrace, lastBrace + 1);\n  }\n\n  try {\n    return JSON.parse(text);\n  } catch (error) {\n    return { explanation: 'Agent output could not be parsed as JSON: ' + error.message };\n  }\n}\n\nfunction normalizeArray(value) {\n  if (Array.isArray(value)) return value.map((entry) => String(entry)).filter(Boolean);\n  if (value === undefined || value === null || value === '') return [];\n  return [String(value)];\n}\n\nconst evaluatorItems = $items('AI Agent: HR Screening Evaluation');\nconst rawEvaluation = evaluatorItems[0]\n  ? (evaluatorItems[0].json.output !== undefined ? evaluatorItems[0].json.output : evaluatorItems[0].json)\n  : {};\nconst evaluation = parseAgentOutput(rawEvaluation);\n\nconst rawAudit = item.json.output !== undefined ? item.json.output : item.json;\nconst audit = parseAgentOutput(rawAudit);\n\nconst formItems = $items('Extract Form Data');\nconst ocrItems = $items('Mistral OCR');\nconst form = formItems[0] ? formItems[0].json : {};\nconst ocr = ocrItems[0] ? ocrItems[0].json : {};\nconst pages = Array.isArray(ocr.pages) ? ocr.pages : [];\nconst cvText = pages.map((page) => page.markdown || page.extracted_text || '').join('\\\\n\\\\n').trim();\n\nconst maxScores = {\n  skills: 30,\n  industry: 20,\n  experience: 15,\n  education: 10,\n  projects: 15,\n  portfolio: 10,\n};\nconst validationNotes = [];\nconst scores = {};\n\nfor (const [key, max] of Object.entries(maxScores)) {\n  const rawScore = evaluation.scores && evaluation.scores[key] !== undefined ? evaluation.scores[key] : evaluation['score_' + key];\n  let value = Number(rawScore);\n  if (!Number.isFinite(value)) {\n    validationNotes.push(key + ' score missing or not numeric; set to 0');\n    value = 0;\n  }\n  if (value < 0 || value > max) {\n    validationNotes.push(key + ' score ' + value + ' outside 0-' + max + '; clamped');\n  }\n  scores[key] = Math.min(max, Math.max(0, value));\n}\n\nif (cvText.length < 50) {\n  validationNotes.push('OCR text is empty or too short; forced Reject with zero scores');\n  for (const key of Object.keys(scores)) scores[key] = 0;\n}\n\nconst totalScore = Object.values(scores).reduce((sum, value) => sum + value, 0);\nconst providedTotal = Number(evaluation.total_score);\nif (Number.isFinite(providedTotal) && providedTotal !== totalScore) {\n  validationNotes.push('Agent total_score ' + providedTotal + ' replaced with recalculated total ' + totalScore);\n}\n\nconst decision = totalScore >= 75 ? 'Shortlist' : totalScore >= 50 ? 'Moderate' : 'Reject';\nif (evaluation.decision && evaluation.decision !== decision) {\n  validationNotes.push('Agent decision ' + evaluation.decision + ' replaced with threshold decision ' + decision);\n}\n\nconst allowedAuditStatuses = ['Pass', 'Warn', 'Fail'];\nlet auditStatus = String(audit.audit_status || 'Warn').trim();\nif (!allowedAuditStatuses.includes(auditStatus)) {\n  validationNotes.push('Audit status ' + auditStatus + ' is invalid; set to Warn');\n  auditStatus = 'Warn';\n}\n\nlet auditConfidence = Number(audit.confidence);\nif (!Number.isFinite(auditConfidence)) {\n  validationNotes.push('Audit confidence missing or not numeric; set to 0');\n  auditConfidence = 0;\n}\nauditConfidence = Math.min(1, Math.max(0, auditConfidence));\n\nconst unsupportedClaims = normalizeArray(audit.unsupported_claims);\nconst scoreRisks = normalizeArray(audit.score_risks);\nconst emailAllowed = decision === 'Shortlist' && auditStatus === 'Pass';\nif (decision === 'Shortlist' && auditStatus !== 'Pass') {\n  validationNotes.push('Recruiter email blocked because evidence audit status is ' + auditStatus);\n}\n\nconst strengths = Array.isArray(evaluation.key_strengths) ? evaluation.key_strengths : [];\nconst gaps = Array.isArray(evaluation.key_gaps) ? evaluation.key_gaps : [];\nconst baseExplanation = String(evaluation.explanation || 'Candidate evaluated against the AI Automation Engineer rubric.').trim();\nconst auditExplanation = String(audit.audit_explanation || 'No audit explanation returned.').trim();\nconst recommendedAction = String(audit.recommended_action || (emailAllowed ? 'Allow automated shortlist email.' : 'Log result without automated recruiter email.')).trim();\nconst validationSummary = validationNotes.length ? ' Validation notes: ' + validationNotes.join('; ') + '.' : '';\n\nreturn [{\n  json: {\n    workflow_version: 'v3-multi-agent-audited',\n    screening_id: 'HR-' + Date.now(),\n    timestamp: new Date().toISOString(),\n    candidate_name: form.candidateName || '',\n    candidate_email: form.candidateEmail || '',\n    phone: form.candidatePhone || '',\n    job_role: form.jobRole || 'AI Automation Engineer',\n    score_skills: scores.skills,\n    score_industry: scores.industry,\n    score_experience: scores.experience,\n    score_education: scores.education,\n    score_projects: scores.projects,\n    score_portfolio: scores.portfolio,\n    total_score: totalScore,\n    qualification_rate: Number((totalScore / 100).toFixed(2)),\n    decision,\n    email_allowed: emailAllowed,\n    audit_status: auditStatus,\n    audit_confidence: Number(auditConfidence.toFixed(2)),\n    unsupported_claims: unsupportedClaims.join('; '),\n    score_risks: scoreRisks.join('; '),\n    recommended_action: recommendedAction,\n    audit_explanation: auditExplanation,\n    explanation: baseExplanation + validationSummary,\n    strengths: strengths.join('; '),\n    gaps: gaps.join('; '),\n    validation_notes: validationNotes.join('; ') || 'passed',\n    ocr_pages: pages.length,\n    cv_text_length: cvText.length,\n    evaluator_raw_output: rawEvaluation,\n    audit_raw_output: rawAudit,\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        112
+      ],
+      "id": "2d338f54-06af-4ca9-9344-127bd3ca79f8",
+      "name": "Validate AI Evaluation"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c",
+          "mode": "list",
+          "cachedResultName": "Candidates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 128548096,
+          "mode": "list",
+          "cachedResultName": "Candidates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c/edit#gid=128548096"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $json.timestamp }}",
+            "candidate_name": "={{ $json.candidate_name }}",
+            "candidate_email": "={{ $json.candidate_email }}",
+            "phone": "={{ $json.phone }}",
+            "job_role": "={{ $json.job_role }}",
+            "score_skills": "={{ $json.score_skills }}",
+            "score_industry": "={{ $json.score_industry }}",
+            "score_experience": "={{ $json.score_experience }}",
+            "score_education": "={{ $json.score_education }}",
+            "score_projects": "={{ $json.score_projects }}",
+            "score_portfolio": "={{ $json.score_portfolio }}",
+            "total_score": "={{ $json.total_score }}",
+            "qualification_rate": "={{ $json.qualification_rate }}",
+            "decision": "={{ $json.decision }}",
+            "explanation": "={{ $json.explanation }}",
+            "strengths": "={{ $json.strengths }}",
+            "gaps": "={{ $json.gaps }}",
+            "workflow_version": "={{ $json.workflow_version }}",
+            "audit_status": "={{ $json.audit_status }}",
+            "audit_confidence": "={{ $json.audit_confidence }}",
+            "unsupported_claims": "={{ $json.unsupported_claims }}",
+            "score_risks": "={{ $json.score_risks }}",
+            "email_allowed": "={{ $json.email_allowed }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "candidate_name",
+              "displayName": "candidate_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "candidate_email",
+              "displayName": "candidate_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "job_role",
+              "displayName": "job_role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score_skills",
+              "displayName": "score_skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score_industry",
+              "displayName": "score_industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score_experience",
+              "displayName": "score_experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score_education",
+              "displayName": "score_education",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score_projects",
+              "displayName": "score_projects",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score_portfolio",
+              "displayName": "score_portfolio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total_score",
+              "displayName": "total_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "qualification_rate",
+              "displayName": "qualification_rate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "decision",
+              "displayName": "decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "explanation",
+              "displayName": "explanation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "strengths",
+              "displayName": "strengths",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "gaps",
+              "displayName": "gaps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_version",
+              "displayName": "workflow_version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "audit_status",
+              "displayName": "audit_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "audit_confidence",
+              "displayName": "audit_confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "unsupported_claims",
+              "displayName": "unsupported_claims",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "score_risks",
+              "displayName": "score_risks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email_allowed",
+              "displayName": "email_allowed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "1a958535-8dd1-4bc9-9960-0e6f298e37f8",
+      "name": "Log Candidate Evaluation",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        0,
+        112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "488RS47ylU5cV3YP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "email-allowed-after-audit",
+              "leftValue": "={{ $('Validate AI Evaluation').item.json.email_allowed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        112
+      ],
+      "id": "d6ac2159-c18a-4b65-823c-b4ec5eeb8ba7",
+      "name": "Email Allowed?"
+    },
+    {
+      "parameters": {
+        "sendTo": "alsocando@gmail.com",
+        "subject": "=Shortlisted after audit: {{ $('Validate AI Evaluation').item.json.candidate_name }} - Score {{ $('Validate AI Evaluation').item.json.total_score }}/100",
+        "emailType": "text",
+        "message": "=SHORTLISTED CANDIDATE - AUDIT PASSED\n\nName: {{ $('Validate AI Evaluation').item.json.candidate_name }}\nEmail: {{ $('Validate AI Evaluation').item.json.candidate_email }}\nPhone: {{ $('Validate AI Evaluation').item.json.phone }}\nRole: {{ $('Validate AI Evaluation').item.json.job_role }}\nScore: {{ $('Validate AI Evaluation').item.json.total_score }}/100\nQualification Rate: {{ $('Validate AI Evaluation').item.json.qualification_rate }}\n\nEvidence Audit:\nStatus: {{ $('Validate AI Evaluation').item.json.audit_status }}\nConfidence: {{ $('Validate AI Evaluation').item.json.audit_confidence }}\nRisks: {{ $('Validate AI Evaluation').item.json.score_risks || 'none' }}\nUnsupported Claims: {{ $('Validate AI Evaluation').item.json.unsupported_claims || 'none' }}\nRecommended Action: {{ $('Validate AI Evaluation').item.json.recommended_action }}\n\nStrengths:\n{{ $('Validate AI Evaluation').item.json.strengths }}\n\nGaps:\n{{ $('Validate AI Evaluation').item.json.gaps }}\n\nAI Evaluation:\n{{ $('Validate AI Evaluation').item.json.explanation }}\n\nAudit Explanation:\n{{ $('Validate AI Evaluation').item.json.audit_explanation }}\n\nWorkflow validation:\n{{ $('Validate AI Evaluation').item.json.validation_notes }}\n\nReview full evaluation in Google Sheets -> HR Candidates tab.\n\nDMsgBox HR Agent v3",
+        "options": {}
+      },
+      "id": "aee40794-7f8b-421f-92ed-4c58ea6b1a06",
+      "name": "Notify Recruiter",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        512,
+        0
+      ],
+      "webhookId": "c396ec20-b669-45aa-926e-62842474f2ff",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6WaA5cRM9MH4BFXc",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -640,
+        416
+      ],
+      "id": "dcadcc7a-e908-41aa-89b3-aa2d3c5867cb",
+      "name": "OpenAI Chat Model: Auditor",
+      "credentials": {
+        "openAiApi": {
+          "id": "ShukBsu4qwMNwoi6",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"audit_status\": \"Pass\",\n  \"confidence\": 0.91,\n  \"unsupported_claims\": [\n    \"No unsupported claims identified.\"\n  ],\n  \"score_risks\": [\n    \"Portfolio score is high but GitHub artifact depth is not fully verifiable from the CV text.\"\n  ],\n  \"recommended_action\": \"Allow automated shortlist email.\",\n  \"audit_explanation\": \"The evaluation is mostly supported by explicit CV evidence. Scores and shortlist decision are consistent with the documented rubric.\"\n}"
+      },
+      "id": "1271127c-54f6-4de4-9faf-a01b295410f7",
+      "name": "Structured Audit Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -432,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Review the first HR screening evaluation as an evidence auditor.\n\nCandidate: {{ $('Extract Form Data').item.json.candidateName }}\nRole Applied: {{ $('Extract Form Data').item.json.jobRole }}\n\nCV TEXT (source of truth from Mistral OCR):\n{{ ($('Mistral OCR').item.json.pages || []).map(function(p) { return p.markdown || p.extracted_text || ''; }).join('\\n\\n') }}\n\nFIRST AGENT EVALUATION TO AUDIT:\n{{ JSON.stringify($json.output !== undefined ? $json.output : $json) }}\n\nAUDIT TASK:\n1. Check whether the scores, decision, strengths, gaps, and evidence are supported by the CV text.\n2. Do not rescore the candidate directly. You are a flag-only auditor.\n3. Return audit_status:\n   - Pass: evaluation is well supported and safe for automated routing.\n   - Warn: mostly reasonable, but at least one material score, claim, or decision has weak support.\n   - Fail: evaluation is unsupported, contradictory, unreadable, or unsafe to automate.\n4. List unsupported_claims and score_risks when present.\n5. Keep the audit_explanation concise and grounded in CV evidence only.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an evidence-audit reviewer for an HR screening workflow.\n\nYour role is to challenge the first agent's evaluation using only the OCR CV text as source of truth. You do not contact candidates, write to Google Sheets, send email, or make final business decisions.\n\nAUDIT POLICY:\n- Be strict about unsupported claims.\n- Do not reward keyword mentions without clear evidence.\n- Flag overconfident scores when the CV evidence is thin.\n- If the first agent's shortlist decision depends on weak or missing evidence, return Warn or Fail.\n- Return Pass only when the decision and major score categories are clearly supported.\n\nOUTPUT POLICY:\n- Use audit_status exactly: Pass, Warn, or Fail.\n- confidence must be a number from 0 to 1.\n- unsupported_claims and score_risks must be arrays.\n- recommended_action should be one sentence.\n- audit_explanation should be concise and evidence-based.",
+          "maxIterations": 3
+        }
+      },
+      "id": "42f9f450-8d20-4730-a194-1a962b53cb75",
+      "name": "AI Agent: Evidence Audit Review",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -640,
+        112
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Form: Job Application": {
+      "main": [
+        [
+          {
+            "node": "Extract Form Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Form Data": {
+      "main": [
+        [
+          {
+            "node": "Prepare PDF for OCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare PDF for OCR": {
+      "main": [
+        [
+          {
+            "node": "Mistral OCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral OCR": {
+      "main": [
+        [
+          {
+            "node": "AI Agent: HR Screening Evaluation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model: Evaluator": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent: HR Screening Evaluation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: score_guardrail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent: HR Screening Evaluation",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent: HR Screening Evaluation",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: HR Screening Evaluation": {
+      "main": [
+        [
+          {
+            "node": "AI Agent: Evidence Audit Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model: Auditor": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent: Evidence Audit Review",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Audit Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent: Evidence Audit Review",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: Evidence Audit Review": {
+      "main": [
+        [
+          {
+            "node": "Validate AI Evaluation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate AI Evaluation": {
+      "main": [
+        [
+          {
+            "node": "Log Candidate Evaluation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Candidate Evaluation": {
+      "main": [
+        [
+          {
+            "node": "Email Allowed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Allowed?": {
+      "main": [
+        [
+          {
+            "node": "Notify Recruiter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all",
+    "availableInMCP": false
+  },
+  "versionId": "0e09391e-2d92-4758-9979-0cea6756515e",
+  "meta": {
+    "instanceId": "c504f8794af7523bd0694c5177e1e8d3cb761dc6897c1899efc5062c2878ff30"
+  },
+  "id": "vLJzT7m6uIeSytlM",
+  "tags": [
+    {
+      "updatedAt": "2026-04-30T07:07:14.523Z",
+      "createdAt": "2026-04-30T07:07:14.523Z",
+      "id": "Nd2ffksPH9JSNHqd",
+      "name": "AI Agents"
+    },
+    {
+      "updatedAt": "2026-04-30T07:07:14.524Z",
+      "createdAt": "2026-04-30T07:07:14.524Z",
+      "id": "bgRllxNMS4myZZ8A",
+      "name": "Production"
+    },
+    {
+      "updatedAt": "2026-04-30T08:35:20.302Z",
+      "createdAt": "2026-04-30T08:35:20.302Z",
+      "id": "vpr7ZAjlNZmyiVOl",
+      "name": "HR"
+    }
+  ]
+}

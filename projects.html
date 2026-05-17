@@ -934,17 +934,17 @@
             <article class="project-card" id="hr-agentic-agent" data-category="capstone">
                 <div class="project-image visual-panel">
                     <div class="project-visual" aria-label="HR agentic agent capstone visual">
-                        <div class="visual-kicker">Agentic Workflow</div>
+                        <div class="visual-kicker">V2 Auditable Workflow</div>
                         <div class="visual-flow">
-                            <div class="visual-node">Request</div>
+                            <div class="visual-node">CV</div>
                             <div class="visual-arrow">-&gt;</div>
-                            <div class="visual-node">Agent</div>
+                            <div class="visual-node">AI Score</div>
                             <div class="visual-arrow">-&gt;</div>
-                            <div class="visual-node">Review</div>
+                            <div class="visual-node">Validate</div>
                         </div>
                         <div class="visual-row">
-                            <div class="visual-card"><strong>Route</strong><span>HR tasks</span></div>
-                            <div class="visual-card"><strong>Escalate</strong><span>Human checks</span></div>
+                            <div class="visual-card"><strong>Log</strong><span>Google Sheets</span></div>
+                            <div class="visual-card"><strong>Notify</strong><span>Safe shortlist</span></div>
                         </div>
                     </div>
                 </div>
@@ -954,56 +954,64 @@
                             <span class="project-category">Capstone</span>
                             <h3 class="project-title">HR Agentic Agent</h3>
                         </div>
-                        <span class="status-badge in-progress">
-                            <span class="status-dot pulse"></span>
-                            In Progress
+                        <span class="status-badge completed">
+                            <span class="status-dot"></span>
+                            Completed
                         </span>
                     </div>
 
                     <p class="project-description">
-                        Capstone placeholder for an HR-focused agentic workflow that structures employee requests, routing, and review checkpoints.
+                        Completed V2 capstone workflow for auditable HR screening, combining AI candidate scoring with deterministic validation, logging, shortlist routing, and recruiter notification.
                     </p>
 
                     <div class="project-details">
                         <div class="detail-section">
-                            <div class="detail-label">Overview</div>
-                            <p class="detail-text">An agentic assistant concept for supporting HR workflows through structured prompts and guided task handling.</p>
+                            <div class="detail-label">Problem</div>
+                            <p class="detail-text">A single agent can evaluate resumes, but production HR workflows need reliable score checks, audit logs, and controlled email side effects.</p>
                         </div>
                         <div class="detail-section">
-                            <div class="detail-label">Focus</div>
-                            <p class="detail-text">Task orchestration, policy-aware responses, workflow routing, and human review checkpoints.</p>
+                            <div class="detail-label">Solution</div>
+                            <p class="detail-text">V2 keeps the AI Agent for reasoning, then uses deterministic n8n nodes to recalculate totals, reject unreadable OCR, log every candidate, and email recruiters only on the shortlist branch.</p>
                         </div>
                         <div class="detail-section">
-                            <div class="detail-label">Next Update</div>
-                            <p class="detail-text">Add workflow diagrams, sample HR use cases, and implementation notes when the capstone documentation is ready.</p>
+                            <div class="detail-label">Roadmap</div>
+                            <p class="detail-text">V3 is planned as a multi-agent evidence audit, and V4 is planned as autonomous triage with a dedicated route-planning agent.</p>
                         </div>
                     </div>
 
                     <div class="key-insight">
-                        <div class="detail-label">Focus Area</div>
-                        <p class="detail-text">Current stage: mapping request types, approval points, and safe escalation paths.</p>
+                        <div class="detail-label">Key AI Insight</div>
+                        <p class="detail-text">The capstone pattern is agentic but controlled: AI reasons about fit, code validates the score, and n8n enforces logging plus safe notification routing.</p>
                     </div>
 
                     <div class="metrics">
                         <div class="metric">
-                            <span class="metric-label">Stage</span>
-                            <span class="metric-value">Capstone</span>
+                            <span class="metric-label">Version</span>
+                            <span class="metric-value">V2</span>
                         </div>
                         <div class="metric">
-                            <span class="metric-label">Milestone</span>
-                            <span class="metric-value">Use Cases</span>
+                            <span class="metric-label">Status</span>
+                            <span class="metric-value">Auditable</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Next</span>
+                            <span class="metric-value">V3/V4</span>
                         </div>
                     </div>
 
                     <div class="tech-stack">
+                        <span class="tech-badge">n8n</span>
                         <span class="tech-badge">Agentic AI</span>
                         <span class="tech-badge">HR</span>
-                        <span class="tech-badge">Workflow</span>
-                        <span class="tech-badge">Automation</span>
+                        <span class="tech-badge">Mistral OCR</span>
+                        <span class="tech-badge">OpenAI</span>
+                        <span class="tech-badge">Google Sheets</span>
+                        <span class="tech-badge">Gmail</span>
                     </div>
 
                     <div class="project-actions">
-                        <a href="#" class="btn btn-primary btn-disabled" title="Coming soon">Coming Soon</a>
+                        <a href="hr-agent-v2.html" class="btn btn-primary">View V2</a>
+                        <a href="hr-agent-v2.html#roadmap" class="btn btn-secondary">V3/V4 Planned</a>
                     </div>
                 </div>
             </article>
@@ -1217,6 +1225,12 @@
                 });
             });
         });
+
+        // Support shared links that include a trailing slash in the hash.
+        if (window.location.hash === '#hr-agentic-agent/') {
+            window.history.replaceState(null, '', '#hr-agentic-agent');
+            document.getElementById('hr-agentic-agent')?.scrollIntoView();
+        }
     </script>
   <link rel="stylesheet" href="chatbot.css">
   <script src="chatbot.js" defer></script>
