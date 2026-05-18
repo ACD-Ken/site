@@ -1,5 +1,5 @@
 const TRAVEL_PASSWORD = 'AlsoCanDo';
-const TRAVEL_DATA_URL = 'data/travel-stories.json?v=20260518-facebook-review';
+const TRAVEL_DATA_URL = 'data/travel-stories.json?v=20260518-facebook-details';
 
 const travelState = {
     stories: [],
@@ -11,6 +11,7 @@ const travelFilters = [
     { id: 'all', label: 'All', matches: () => true },
     { id: 'business', label: 'Business Trips', matches: story => story.type === 'business' },
     { id: 'personal', label: 'Personal Travel', matches: story => story.type === 'personal' },
+    { id: 'event', label: 'Events', matches: story => story.tags.includes('event') },
     { id: 'city', label: 'Cities', matches: story => story.tags.includes('city') },
     { id: 'nature', label: 'Nature', matches: story => story.tags.includes('nature') }
 ];
@@ -135,12 +136,8 @@ function createStoryCard(story) {
     const imageWrap = document.createElement('button');
     imageWrap.type = 'button';
     imageWrap.className = 'travel-story-image';
-    imageWrap.setAttribute('aria-label', `View ${story.title} image`);
-    imageWrap.addEventListener('click', () => openModal({
-        title: story.title,
-        description: `${story.location} · ${formatTravelDate(story.date)}`,
-        url: story.image || createFallbackImage(story)
-    }));
+    imageWrap.setAttribute('aria-label', `View details for ${story.title}`);
+    imageWrap.addEventListener('click', () => openModal(story));
 
     const image = document.createElement('img');
     image.src = story.image || createFallbackImage(story);
@@ -166,7 +163,7 @@ function createStoryCard(story) {
 
     const badges = document.createElement('div');
     badges.className = 'travel-story-tags';
-    [story.type, ...story.tags].forEach(tag => {
+    uniqueTags(story).forEach(tag => {
         const badge = document.createElement('span');
         badge.textContent = formatTag(tag);
         badges.appendChild(badge);
@@ -190,6 +187,17 @@ function formatTag(tag) {
     return tag
         .replace(/-/g, ' ')
         .replace(/\b\w/g, letter => letter.toUpperCase());
+}
+
+function formatSource(source) {
+    if (!source) return 'Manual review';
+
+    const words = source.replace(/-/g, ' ');
+    return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+function uniqueTags(story) {
+    return [...new Set([story.type, ...story.tags])];
 }
 
 function createFallbackImage(story) {
@@ -217,6 +225,16 @@ function renderErrorState(container) {
 }
 
 function renderEmptyState(container) {
+    if (travelState.activeFilter === 'personal' && !travelState.personalUnlocked) {
+        container.innerHTML = `
+            <div class="travel-empty-state">
+                <h2>Unlock personal travel</h2>
+                <p>Personal travel stories are hidden until you enter the password.</p>
+            </div>
+        `;
+        return;
+    }
+
     container.innerHTML = `
         <div class="travel-empty-state">
             <h2>No stories match this filter</h2>
@@ -261,17 +279,27 @@ function initModal() {
     });
 }
 
-function openModal(image) {
+function openModal(story) {
     const modal = document.getElementById('imageModal');
     const modalImg = document.getElementById('modalImage');
     const modalTitle = document.getElementById('modalTitle');
     const modalDesc = document.getElementById('modalDescription');
     if (!modal || !modalImg || !modalTitle || !modalDesc) return;
 
-    modalImg.src = image.url;
-    modalImg.alt = image.title;
-    modalTitle.textContent = image.title;
-    modalDesc.textContent = image.description || '';
+    const fallbackUrl = createFallbackImage(story);
+    modalImg.onerror = () => {
+        modalImg.onerror = null;
+        modalImg.src = fallbackUrl;
+    };
+    modalImg.src = story.image || fallbackUrl;
+    modalImg.alt = story.title;
+    modalTitle.textContent = story.title;
+    modalDesc.textContent = [
+        `${story.location} · ${formatTravelDate(story.date)}`,
+        story.summary,
+        `Tags: ${uniqueTags(story).map(formatTag).join(', ')}`,
+        `Source: ${formatSource(story.source)}`
+    ].filter(Boolean).join('\n\n');
 
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden';
