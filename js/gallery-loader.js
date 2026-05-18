@@ -1,5 +1,5 @@
 const TRAVEL_PASSWORD = 'AlsoCanDo';
-const TRAVEL_DATA_URL = 'data/travel-stories.json';
+const TRAVEL_DATA_URL = 'data/travel-stories.json?v=20260518-facebook-review';
 
 const travelState = {
     stories: [],
@@ -22,7 +22,7 @@ async function loadTravelJournal() {
     renderLoadingState(journalContainer);
 
     try {
-        const response = await fetch(TRAVEL_DATA_URL);
+        const response = await fetch(TRAVEL_DATA_URL, { cache: 'no-store' });
         if (!response.ok) {
             throw new Error(`Unable to load ${TRAVEL_DATA_URL}`);
         }
