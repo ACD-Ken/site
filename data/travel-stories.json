@@ -1,0 +1,50 @@
+[
+  {
+    "id": "tokyo-ai-business-2026",
+    "title": "Tokyo Business Trip",
+    "location": "Tokyo, Japan",
+    "date": "2026-04",
+    "type": "business",
+    "visibility": "public",
+    "summary": "A business-focused city note from a fast Tokyo week: client conversations, AI workflow ideas, and the quiet discipline of observing how good systems move people through a busy city.",
+    "source": "facebook-manual-review",
+    "image": "images/travel/tokyo-ai-business-2026.jpg",
+    "tags": ["business", "ai", "city"]
+  },
+  {
+    "id": "singapore-meeting-rhythm-2026",
+    "title": "Singapore Meeting Rhythm",
+    "location": "Singapore",
+    "date": "2026-03",
+    "type": "business",
+    "visibility": "public",
+    "summary": "A local business-travel reflection on moving between meetings, prototypes, and follow-ups while keeping enough margin to notice what clients actually need.",
+    "source": "facebook-manual-review",
+    "image": "images/travel/singapore-meeting-rhythm-2026.jpg",
+    "tags": ["business", "city"]
+  },
+  {
+    "id": "taiwan-mountain-reset-2025",
+    "title": "Taiwan Mountain Reset",
+    "location": "Taiwan",
+    "date": "2025-11",
+    "type": "personal",
+    "visibility": "public",
+    "summary": "A public-friendly personal note on stepping away from screens, taking in mountain air, and returning with clearer thinking for the next build.",
+    "source": "facebook-manual-review",
+    "image": "images/travel/taiwan-mountain-reset-2025.jpg",
+    "tags": ["nature", "personal"]
+  },
+  {
+    "id": "kyoto-family-weekend-2025",
+    "title": "Kyoto Family Weekend",
+    "location": "Kyoto, Japan",
+    "date": "2025-09",
+    "type": "personal",
+    "visibility": "private",
+    "summary": "A low-key family travel memory kept for invited viewers: quiet streets, good food, and small moments between the bigger sightseeing plans.",
+    "source": "facebook-manual-review",
+    "image": "images/travel/kyoto-family-weekend-2025.jpg",
+    "tags": ["personal", "city"]
+  }
+]

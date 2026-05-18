@@ -1,216 +1,286 @@
-/**
- * Gallery image loader
- * Automatically loads images from /images/travel folder
- */
+const TRAVEL_PASSWORD = 'AlsoCanDo';
+const TRAVEL_DATA_URL = 'data/travel-stories.json';
 
-// Sample image data (in production, this would be generated server-side or from a JSON file)
-const sampleImages = [
-    {
-        filename: "mountain-view.jpg",
-        title: "Mountain Landscape",
-        description: "Scenic view of mountains during sunrise",
-        category: "nature"
-    },
-    {
-        filename: "city-skyline.jpg",
-        title: "City Skyline",
-        description: "Downtown skyline at dusk",
-        category: "urban"
-    },
-    {
-        filename: "beach-sunset.jpg",
-        title: "Beach Sunset",
-        description: "Golden hour at the beach",
-        category: "nature"
-    },
-    {
-        filename: "architecture-detail.jpg",
-        title: "Architectural Detail",
-        description: "Historical building details",
-        category: "architecture"
-    },
-    {
-        filename: "forest-path.jpg",
-        title: "Forest Path",
-        description: "Walking path through dense forest",
-        category: "nature"
-    },
-    {
-        filename: "market-street.jpg",
-        title: "Local Market",
-        description: "Busy street market scene",
-        category: "urban"
-    },
-    {
-        filename: "lake-reflection.jpg",
-        title: "Lake Reflection",
-        description: "Perfect reflection in mountain lake",
-        category: "nature"
-    },
-    {
-        filename: "modern-building.jpg",
-        title: "Modern Architecture",
-        description: "Contemporary building design",
-        category: "architecture"
-    }
+const travelState = {
+    stories: [],
+    activeFilter: 'all',
+    personalUnlocked: sessionStorage.getItem('travelAuth') === 'true'
+};
+
+const travelFilters = [
+    { id: 'all', label: 'All', matches: () => true },
+    { id: 'business', label: 'Business Trips', matches: story => story.type === 'business' },
+    { id: 'personal', label: 'Personal Travel', matches: story => story.type === 'personal' },
+    { id: 'city', label: 'Cities', matches: story => story.tags.includes('city') },
+    { id: 'nature', label: 'Nature', matches: story => story.tags.includes('nature') }
 ];
 
-async function loadGalleryImages() {
-    const galleryContainer = document.getElementById('gallery-container');
-    if (!galleryContainer) return;
-    
+async function loadTravelJournal() {
+    const journalContainer = document.getElementById('travel-journal');
+    if (!journalContainer) return;
+
+    renderLoadingState(journalContainer);
+
     try {
-        // In a real implementation, you would fetch a list of images from the server
-        // For this demo, we'll use the sample data
-        const images = await getImageList();
-        
-        // Update image count
-        document.getElementById('image-count').textContent = `${images.length} images loaded`;
-        
-        // Clear loading state
-        galleryContainer.innerHTML = '';
-        
-        // Create gallery items
-        images.forEach((image, index) => {
-            const galleryItem = createGalleryItem(image, index);
-            galleryContainer.appendChild(galleryItem);
-        });
-        
-        // Initialize modal functionality
-        initModal();
-        
+        const response = await fetch(TRAVEL_DATA_URL);
+        if (!response.ok) {
+            throw new Error(`Unable to load ${TRAVEL_DATA_URL}`);
+        }
+
+        const stories = await response.json();
+        travelState.stories = stories.map(normalizeStory);
+        renderTravelJournal();
     } catch (error) {
-        console.error('Error loading gallery:', error);
-        galleryContainer.innerHTML = `
-            <div class="error">
-                <p>Unable to load images. Make sure the /images/travel folder exists.</p>
-                <p>For demo purposes, placeholder images are shown.</p>
-            </div>
-        `;
-        
-        // Load sample images as fallback
-        loadSampleImages();
+        console.error('Error loading travel stories:', error);
+        renderErrorState(journalContainer);
     }
 }
 
-async function getImageList() {
-    // In a real implementation, this would fetch from an API or directory listing
-    // Since we're static, we'll return sample data with placeholder images
-    
-    return sampleImages.map(img => ({
-        ...img,
-        // Using placeholder images since we don't have actual files
-        url: `https://images.unsplash.com/photo-${['1506905925346-21bda4d32df4','1519681393784-d120267933ba','1505142468610-359e5e6f785e','1519996529931-28324d5a630e','1491553895911-0055eca6402d','1501854140801-50d01698950b','1464822759023-fed622ff2c3b','1506905925346-21bda4d32df4'][sampleImages.indexOf(img) % 8]}?auto=format&fit=crop&w=800&q=80`,
-        localPath: `images/travel/${img.filename}`
-    }));
+function normalizeStory(story) {
+    return {
+        id: story.id,
+        title: story.title,
+        location: story.location,
+        date: story.date,
+        type: story.type,
+        visibility: story.visibility,
+        summary: story.summary,
+        source: story.source,
+        image: story.image,
+        tags: Array.isArray(story.tags) ? story.tags : []
+    };
 }
 
-function createGalleryItem(image, index) {
-    const item = document.createElement('div');
-    item.className = 'gallery-item';
-    item.dataset.index = index;
-    
-    // Create filename from title if not provided
-    const filename = image.filename || image.title.toLowerCase().replace(/\s+/g, '-') + '.jpg';
-    const altText = image.title || filename.replace(/\.(jpg|jpeg|png|gif)$/i, '').replace(/[-_]/g, ' ');
-    
-    item.innerHTML = `
-        <img 
-            src="${image.url}" 
-            alt="${altText}"
-            loading="lazy"
-            data-src="${image.localPath}"
-            onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\"><rect width=\"100%\" height=\"100%\" fill=\"%23333\"/><text x=\"50%\" y=\"50%\" font-family=\"Arial\" font-size=\"16\" fill=\"white\" text-anchor=\"middle\" dy=\".3em\">${image.title}</text></svg>'"
-        >
-        <div class="image-caption">
-            <strong>${image.title}</strong>
-            <p>${image.description || ''}</p>
+function renderTravelJournal() {
+    renderFilters();
+    renderUnlockState();
+    renderStoryCards();
+}
+
+function renderFilters() {
+    const filterContainer = document.getElementById('travel-filters');
+    if (!filterContainer) return;
+
+    filterContainer.innerHTML = '';
+
+    travelFilters.forEach(filter => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `travel-filter${travelState.activeFilter === filter.id ? ' active' : ''}`;
+        button.textContent = filter.label;
+        button.setAttribute('aria-pressed', String(travelState.activeFilter === filter.id));
+        button.addEventListener('click', () => {
+            travelState.activeFilter = filter.id;
+            renderTravelJournal();
+        });
+        filterContainer.appendChild(button);
+    });
+}
+
+function renderUnlockState() {
+    const unlockButton = document.getElementById('unlock-personal-travel');
+    const unlockNote = document.getElementById('travel-unlock-note');
+    if (!unlockButton || !unlockNote) return;
+
+    if (travelState.personalUnlocked) {
+        unlockButton.textContent = 'Personal travel unlocked';
+        unlockButton.disabled = true;
+        unlockNote.textContent = 'Private personal stories are visible in this browser session.';
+        return;
+    }
+
+    unlockButton.textContent = 'Unlock personal travel';
+    unlockButton.disabled = false;
+    unlockNote.textContent = 'Personal stories stay private until unlocked.';
+}
+
+function renderStoryCards() {
+    const journalContainer = document.getElementById('travel-journal');
+    const countElement = document.getElementById('image-count');
+    if (!journalContainer) return;
+
+    const visibleStories = getVisibleStories();
+    journalContainer.innerHTML = '';
+
+    if (visibleStories.length === 0) {
+        renderEmptyState(journalContainer);
+    } else {
+        visibleStories.forEach(story => {
+            journalContainer.appendChild(createStoryCard(story));
+        });
+    }
+
+    if (countElement) {
+        const publicCount = travelState.stories.filter(story => story.visibility === 'public').length;
+        const privateCount = travelState.stories.length - publicCount;
+        countElement.textContent = travelState.personalUnlocked
+            ? `${visibleStories.length} stories shown`
+            : `${publicCount} public stories · ${privateCount} private`;
+    }
+}
+
+function getVisibleStories() {
+    const activeFilter = travelFilters.find(filter => filter.id === travelState.activeFilter) || travelFilters[0];
+
+    return travelState.stories.filter(story => {
+        const canShow = story.visibility === 'public' || travelState.personalUnlocked;
+        return canShow && activeFilter.matches(story);
+    });
+}
+
+function createStoryCard(story) {
+    const article = document.createElement('article');
+    article.className = `travel-story-card ${story.type === 'business' ? 'business-trip' : 'personal-trip'}`;
+
+    const imageWrap = document.createElement('button');
+    imageWrap.type = 'button';
+    imageWrap.className = 'travel-story-image';
+    imageWrap.setAttribute('aria-label', `View ${story.title} image`);
+    imageWrap.addEventListener('click', () => openModal({
+        title: story.title,
+        description: `${story.location} · ${formatTravelDate(story.date)}`,
+        url: story.image || createFallbackImage(story)
+    }));
+
+    const image = document.createElement('img');
+    image.src = story.image || createFallbackImage(story);
+    image.alt = story.title;
+    image.loading = 'lazy';
+    image.addEventListener('error', () => {
+        image.src = createFallbackImage(story);
+    }, { once: true });
+    imageWrap.appendChild(image);
+
+    const body = document.createElement('div');
+    body.className = 'travel-story-body';
+
+    const meta = document.createElement('div');
+    meta.className = 'travel-story-meta';
+    meta.textContent = `${story.location} · ${formatTravelDate(story.date)}`;
+
+    const title = document.createElement('h2');
+    title.textContent = story.title;
+
+    const summary = document.createElement('p');
+    summary.textContent = story.summary;
+
+    const badges = document.createElement('div');
+    badges.className = 'travel-story-tags';
+    [story.type, ...story.tags].forEach(tag => {
+        const badge = document.createElement('span');
+        badge.textContent = formatTag(tag);
+        badges.appendChild(badge);
+    });
+
+    body.append(meta, title, summary, badges);
+    article.append(imageWrap, body);
+    return article;
+}
+
+function formatTravelDate(value) {
+    if (!value) return 'Date to confirm';
+    const [year, month] = value.split('-');
+    if (!month) return year;
+
+    const date = new Date(Number(year), Number(month) - 1, 1);
+    return new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric' }).format(date);
+}
+
+function formatTag(tag) {
+    return tag
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, letter => letter.toUpperCase());
+}
+
+function createFallbackImage(story) {
+    const title = encodeURIComponent(story.title);
+    const typeColor = story.type === 'business' ? '0D9488' : '38BDF8';
+    return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="%23020617"/><stop offset="1" stop-color="%23${typeColor}"/></linearGradient></defs><rect width="900" height="620" fill="url(%23g)"/><text x="60" y="310" font-family="Arial, sans-serif" font-size="48" font-weight="700" fill="white">${title}</text><text x="60" y="370" font-family="Arial, sans-serif" font-size="24" fill="%23dbeafe">${encodeURIComponent(story.location)}</text></svg>`;
+}
+
+function renderLoadingState(container) {
+    container.innerHTML = `
+        <div class="loading-gallery">
+            <div class="spinner"></div>
+            <p>Loading travel stories...</p>
         </div>
     `;
-    
-    // Add click event for modal
-    item.addEventListener('click', () => openModal(image, index));
-    
-    return item;
 }
 
-function loadSampleImages() {
-    const galleryContainer = document.getElementById('gallery-container');
-    
-    sampleImages.forEach((image, index) => {
-        const item = document.createElement('div');
-        item.className = 'gallery-item';
-        
-        // Create a placeholder image using Unsplash
-        const unsplashId = ['1506905925346-21bda4d32df4', '1519681393784-d120267933ba', '1505142468610-359e5e6f785e', 
-                           '1519996529931-28324d5a630e', '1506905925346-21bda4d32df4', '1519681393784-d120267933ba'][index % 6];
-        
-        item.innerHTML = `
-            <img 
-                src="https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=800&q=80" 
-                alt="${image.title}"
-                loading="lazy"
-            >
-            <div class="image-caption">
-                <strong>${image.title}</strong>
-                <p>${image.description} (Sample Image)</p>
-            </div>
-        `;
-        
-        item.addEventListener('click', () => openModal({
-            ...image,
-            url: `https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=1200&q=80`
-        }, index));
-        
-        galleryContainer.appendChild(item);
+function renderErrorState(container) {
+    container.innerHTML = `
+        <div class="travel-empty-state">
+            <h2>Travel stories could not be loaded</h2>
+            <p>Check that data/travel-stories.json is available.</p>
+        </div>
+    `;
+}
+
+function renderEmptyState(container) {
+    container.innerHTML = `
+        <div class="travel-empty-state">
+            <h2>No stories match this filter</h2>
+            <p>Try another travel category or unlock personal travel.</p>
+        </div>
+    `;
+}
+
+function initTravelUnlock() {
+    const unlockButton = document.getElementById('unlock-personal-travel');
+    if (!unlockButton) return;
+
+    unlockButton.addEventListener('click', () => {
+        const password = prompt('Enter password to view personal travel:');
+        if (password !== TRAVEL_PASSWORD) {
+            renderUnlockState();
+            return;
+        }
+
+        sessionStorage.setItem('travelAuth', 'true');
+        travelState.personalUnlocked = true;
+        renderTravelJournal();
     });
-    
-    initModal();
-    document.getElementById('image-count').textContent = `${sampleImages.length} sample images loaded`;
 }
 
 function initModal() {
     const modal = document.getElementById('imageModal');
     const closeBtn = document.querySelector('.modal-close');
-    
-    // Close modal when clicking X
+    if (!modal || !closeBtn) return;
+
     closeBtn.addEventListener('click', closeModal);
-    
-    // Close modal when clicking outside
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
+    modal.addEventListener('click', event => {
+        if (event.target === modal) {
             closeModal();
         }
     });
-    
-    // Close with Escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.style.display === 'block') {
+
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && modal.style.display === 'block') {
             closeModal();
         }
     });
 }
 
-function openModal(image, index) {
+function openModal(image) {
     const modal = document.getElementById('imageModal');
     const modalImg = document.getElementById('modalImage');
     const modalTitle = document.getElementById('modalTitle');
     const modalDesc = document.getElementById('modalDescription');
-    
-    // Use higher resolution image for modal
-    const hiResUrl = image.url.replace(/w=\d+/, 'w=1200').replace(/&q=\d+/, '&q=90');
-    
-    modalImg.src = hiResUrl;
+    if (!modal || !modalImg || !modalTitle || !modalDesc) return;
+
+    modalImg.src = image.url;
     modalImg.alt = image.title;
     modalTitle.textContent = image.title;
     modalDesc.textContent = image.description || '';
-    
+
     modal.style.display = 'block';
-    document.body.style.overflow = 'hidden'; // Prevent scrolling
+    document.body.style.overflow = 'hidden';
 }
 
 function closeModal() {
     const modal = document.getElementById('imageModal');
+    if (!modal) return;
+
     modal.style.display = 'none';
     document.body.style.overflow = 'auto';
 }

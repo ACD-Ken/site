@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Photos Gallery</title>
-    <meta name="description" content="Ken Wong's travel photography gallery featuring landscapes, cities, and moments captured across Asia and Europe.">
+    <title>Travel Journal - Ken Wong</title>
+    <meta name="description" content="Ken Wong's split travel journal featuring public business trip notes and private personal travel memories.">
     <meta name="author" content="Ken Wong">
     <link rel="canonical" href="https://acd-ken.github.io/site/travel.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Ken Wong AI Portfolio">
-    <meta property="og:title" content="Travel Gallery - Ken Wong">
-    <meta property="og:description" content="A private travel photography gallery with landscapes, cities, and moments captured along the way.">
+    <meta property="og:title" content="Travel Journal - Ken Wong">
+    <meta property="og:description" content="A split travel journal with public business trip notes and private personal travel memories.">
     <meta property="og:url" content="https://acd-ken.github.io/site/travel.html">
     <meta property="og:image" content="https://acd-ken.github.io/site/og-image.svg">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Travel Gallery - Ken Wong">
-    <meta name="twitter:description" content="A private travel photography gallery with landscapes, cities, and moments captured along the way.">
+    <meta name="twitter:title" content="Travel Journal - Ken Wong">
+    <meta name="twitter:description" content="A split travel journal with public business trip notes and private personal travel memories.">
     <meta name="twitter:image" content="https://acd-ken.github.io/site/og-image.svg">
     <link rel="stylesheet" href="css/ai-portfolio.css">
     <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled>
@@ -62,56 +62,63 @@
       <div class="hero-inner">
         <div class="hero-badge">
           <span class="hero-badge-dot"></span>
-          Travel Photography
+          Travel Journal
         </div>
         <h1 class="hero-headline">
-          Snapshots from<br>
-          around the <em>World</em>
+          Trips that shape<br>
+          the next <em>Build</em>
         </h1>
         <p class="hero-sub">
-          A visual journal of places visited — landscapes, cities, and moments
-          captured along the way.
+          Public business-trip notes, city observations, and selected travel
+          memories, with personal stories kept behind a private soft gate.
         </p>
         <div class="hero-ctas">
-          <a href="#gallery-container" class="hero-btn hero-btn-primary">
+          <a href="#travel-journal" class="hero-btn hero-btn-primary">
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
-            View Gallery
+            View Stories
           </a>
         </div>
         <div class="hero-proof">
           <span class="hero-proof-item">
             <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
-            Asia
+            Business Trips
           </span>
           <span class="hero-proof-item">
             <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
-            Europe
+            Personal Travel
           </span>
           <span class="hero-proof-item">
             <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
-            Landscapes &amp; Cities
+            Cities &amp; Nature
           </span>
           <span class="hero-proof-item">
             <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
-            Click to Enlarge
+            Manual Facebook Review
           </span>
         </div>
       </div>
     </section>
-    <div class="gallery-info" style="text-align:center;padding:1.5rem 0 0;color:#64748b;font-size:0.85rem;">
-      <span id="image-count">Loading images...</span>
-      <span style="margin:0 8px;">·</span>
-      <span class="info-tip">Click any image to view larger</span>
-    </div>
+    <main class="container travel-journal-shell">
+        <section class="travel-toolbar" aria-label="Travel journal controls">
+            <div class="travel-toolbar-copy">
+                <p class="travel-kicker">Split access journal</p>
+                <h2>Public work travel, private personal memories</h2>
+                <p id="travel-unlock-note">Personal stories stay private until unlocked.</p>
+            </div>
+            <div class="travel-toolbar-actions">
+                <button type="button" class="travel-unlock-btn" id="unlock-personal-travel">Unlock personal travel</button>
+                <span id="image-count">Loading stories...</span>
+            </div>
+        </section>
 
-    <main class="container">
-        <div class="masonry-grid" id="gallery-container">
-            <!-- Images will be dynamically loaded here -->
+        <div class="travel-filters" id="travel-filters" aria-label="Filter travel stories"></div>
+
+        <section class="travel-story-grid" id="travel-journal" aria-live="polite">
             <div class="loading-gallery">
                 <div class="spinner"></div>
-                <p>Loading travel images...</p>
+                <p>Loading travel stories...</p>
             </div>
-        </div>
+        </section>
     </main>
 
     <!-- Modal for enlarged image -->
@@ -143,19 +150,9 @@
     <script src="js/gallery-loader.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const isAuthed = sessionStorage.getItem('travelAuth') === 'true';
-            if (!isAuthed) {
-                const password = prompt('Enter password to view the travel page:');
-                if (password !== 'AlsoCanDo') {
-                    alert('Incorrect password. Redirecting to home.');
-                    window.location.href = 'index.html';
-                    return;
-                }
-                sessionStorage.setItem('travelAuth', 'true');
-            }
-
-            // Load gallery images
-            loadGalleryImages();
+            initModal();
+            initTravelUnlock();
+            loadTravelJournal();
             
             // Mobile menu toggle
             document.querySelector('.mobile-menu-btn').addEventListener('click', function() {

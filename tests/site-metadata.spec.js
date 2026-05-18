@@ -61,13 +61,37 @@ test('public pages use standardized shell metadata and page hero treatment', asy
   }
 });
 
-test('travel page keeps the shared shell behind its password prompt', async ({ page }) => {
-  page.once('dialog', dialog => dialog.accept('AlsoCanDo'));
-
+test('travel page shows public travel stories without a password', async ({ page }) => {
+  page.on('dialog', async dialog => {
+    throw new Error(`Unexpected dialog: ${dialog.message()}`);
+  });
   await page.goto('/travel.html');
 
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://acd-ken.github.io/site/travel.html');
-  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Travel Gallery - Ken Wong');
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Travel Journal - Ken Wong');
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', 'https://acd-ken.github.io/site/og-image.svg');
   await expect(page.locator('.hero.page-hero')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Tokyo Business Trip' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Kyoto Family Weekend' })).toBeHidden();
+});
+
+test('travel page keeps personal stories hidden when unlock password is wrong', async ({ page }) => {
+  page.once('dialog', dialog => dialog.accept('wrong-password'));
+
+  await page.goto('/travel.html');
+  await page.getByRole('button', { name: 'Unlock personal travel' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Tokyo Business Trip' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Kyoto Family Weekend' })).toBeHidden();
+  await expect(page.getByText('Personal stories stay private until unlocked.')).toBeVisible();
+});
+
+test('travel page reveals personal stories after the correct password', async ({ page }) => {
+  page.once('dialog', dialog => dialog.accept('AlsoCanDo'));
+
+  await page.goto('/travel.html');
+  await page.getByRole('button', { name: 'Unlock personal travel' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Kyoto Family Weekend' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Personal Travel', exact: true })).toBeVisible();
 });
