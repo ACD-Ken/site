@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Code Journey - Ken Wong</title>
+    <meta name="description" content="Ken Wong's AI-assisted coding journey with VS Code, GitHub Copilot Pro, Claude Code Pro, OpenAI Codex, GitHub Pages, and capstone projects.">
+    <meta name="author" content="Ken Wong">
+    <meta name="keywords" content="vibe coding, AI-assisted coding, GitHub Copilot Pro, Claude Code Pro, OpenAI Codex, GitHub Pages, capstone projects">
+    <link rel="canonical" href="https://acd-ken.github.io/site/vibe-code.html">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Ken Wong AI Portfolio">
+    <meta property="og:title" content="Vibe Code Journey - Ken Wong">
+    <meta property="og:description" content="A personal-professional journey through four months of AI-assisted coding, from Copilot and Claude Code to OpenAI Codex.">
+    <meta property="og:url" content="https://acd-ken.github.io/site/vibe-code.html">
+    <meta property="og:image" content="https://acd-ken.github.io/site/og-image.svg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vibe Code Journey - Ken Wong">
+    <meta name="twitter:description" content="Four months of learning by building with AI-assisted coding tools and capstone projects.">
+    <meta name="twitter:image" content="https://acd-ken.github.io/site/og-image.svg">
+    <link rel="stylesheet" href="css/ai-portfolio.css">
+    <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💻</text></svg>">
+    <style>
+        .journey-section {
+            background: var(--bg-dark);
+            padding: var(--spacing-3xl) 0;
+        }
+
+        .journey-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+            gap: var(--spacing-2xl);
+            align-items: start;
+        }
+
+        .journey-intro {
+            position: sticky;
+            top: 110px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+        }
+
+        .journey-kicker {
+            color: var(--accent);
+            font-size: var(--font-size-sm);
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--spacing-sm);
+            text-transform: uppercase;
+        }
+
+        .journey-intro h2 {
+            color: var(--text-light);
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            line-height: 1.2;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .journey-intro p,
+        .journey-closing p {
+            color: var(--text-muted);
+            line-height: 1.75;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .journey-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+        }
+
+        .journey-stat {
+            background: rgba(13, 148, 136, 0.1);
+            border: 1px solid rgba(13, 148, 136, 0.28);
+            border-radius: 8px;
+            padding: var(--spacing-sm);
+        }
+
+        .journey-stat strong {
+            color: var(--accent-light);
+            display: block;
+            font-size: 1.2rem;
+            line-height: 1;
+            margin-bottom: 0.35rem;
+        }
+
+        .journey-stat span {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            line-height: 1.35;
+        }
+
+        .journey-timeline {
+            position: relative;
+            padding-left: var(--spacing-xl);
+        }
+
+        .journey-timeline::before {
+            background: linear-gradient(180deg, var(--accent), rgba(56, 189, 248, 0.1));
+            border-radius: 999px;
+            content: '';
+            left: 0;
+            position: absolute;
+            top: 0.4rem;
+            bottom: 0;
+            width: 2px;
+        }
+
+        .journey-milestone {
+            background: rgba(30, 41, 59, 0.72);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-xl);
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .journey-milestone:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 16px 36px rgba(13, 148, 136, 0.12);
+        }
+
+        .journey-milestone::before {
+            background: var(--accent);
+            border: 4px solid var(--bg-dark);
+            border-radius: 50%;
+            box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.45);
+            content: '';
+            height: 14px;
+            left: calc(-1 * var(--spacing-xl) - 6px);
+            position: absolute;
+            top: 1.55rem;
+            width: 14px;
+        }
+
+        .journey-milestone time {
+            color: var(--accent-light);
+            display: block;
+            font-size: var(--font-size-sm);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .journey-milestone h3 {
+            color: var(--text-light);
+            font-size: 1.3rem;
+            line-height: 1.35;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .journey-milestone p {
+            color: var(--text-muted);
+            line-height: 1.75;
+        }
+
+        .journey-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: var(--spacing-md);
+        }
+
+        .journey-tool {
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.22);
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0.28rem 0.65rem;
+        }
+
+        .journey-closing {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.14), rgba(56, 189, 248, 0.08));
+            border: 1px solid rgba(45, 212, 191, 0.25);
+            border-radius: var(--radius);
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-xl);
+        }
+
+        .journey-closing h2 {
+            color: var(--text-light);
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .journey-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+        }
+
+        @media (max-width: 900px) {
+            .journey-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .journey-intro {
+                position: static;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .journey-section {
+                padding: var(--spacing-2xl) 0;
+            }
+
+            .journey-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .journey-timeline {
+                padding-left: var(--spacing-lg);
+            }
+
+            .journey-milestone {
+                padding: var(--spacing-lg);
+            }
+
+            .journey-milestone::before {
+                left: calc(-1 * var(--spacing-lg) - 6px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" style="width:20px;height:20px;display:inline-block;vertical-align:middle"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/></svg></span>
+                <span class="logo-text">Ken Wong</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="kw-portfolio.html" class="nav-link">Portfolio</a>
+                <a href="vibe-code.html" class="nav-link active">Vibe Code</a>
+                <a href="setup-guide.html" class="nav-link">Setup</a>
+                <a href="projects.html" class="nav-link">Projects</a>
+                <a href="travel.html" class="nav-link">Travel</a>
+                <button class="theme-toggle" aria-label="Toggle dark mode">
+                    <span class="toggle-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" style="width:18px;height:18px;display:inline-block;vertical-align:middle"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998z"/></svg></span>
+                </button>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+        </div>
+    </nav>
+
+    <section class="hero page-hero">
+      <div class="hero-grid"></div>
+      <div class="hero-orb hero-orb-1"></div>
+      <div class="hero-orb hero-orb-2"></div>
+      <div class="hero-orb hero-orb-3"></div>
+      <div class="hero-orb hero-orb-4"></div>
+      <div class="hero-scan"></div>
+      <div class="hero-corner hero-corner-tl">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#2DD4BF" stroke-width="1.5"><path d="M0 20 L0 0 L20 0"/></svg>
+      </div>
+      <div class="hero-corner hero-corner-br">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#2DD4BF" stroke-width="1.5"><path d="M0 20 L0 0 L20 0"/></svg>
+      </div>
+      <div class="hero-inner">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Vibe Code Journey
+        </div>
+        <h1 class="hero-headline">Four months of learning by building with AI</h1>
+        <p class="hero-sub">
+          From VS Code and GitHub Copilot Pro to Claude Code and OpenAI Codex,
+          this is the hands-on journey behind my webpages, AI agents, and capstone projects.
+        </p>
+        <div class="hero-ctas">
+          <a href="#journey" class="hero-btn hero-btn-primary">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m6-2a10 10 0 1 1-20 0 10 10 0 0 1 20 0z"/></svg>
+            Read The Journey
+          </a>
+          <a href="projects.html" class="hero-btn hero-btn-ghost">
+            View Capstone Projects
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+          </a>
+        </div>
+        <div class="hero-proof">
+          <span class="hero-proof-item">
+            <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+            GitHub Copilot Pro
+          </span>
+          <span class="hero-proof-item">
+            <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+            Claude Code Pro
+          </span>
+          <span class="hero-proof-item">
+            <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+            OpenAI Codex
+          </span>
+          <span class="hero-proof-item">
+            <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+            GitHub Pages
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <main class="journey-section" id="journey">
+        <div class="container journey-layout">
+            <aside class="journey-intro" aria-label="Vibe coding journey summary">
+                <p class="journey-kicker">February to May 2026</p>
+                <h2>From curiosity to practical AI delivery</h2>
+                <p>
+                    Over the past four months, my coding journey has moved quickly from curiosity into real hands-on delivery.
+                    What started as experiments with VS Code, GitHub Copilot Pro, and GitHub Pages became a practical workflow
+                    for building personal webpages, training projects, AI agents, and capstone work.
+                </p>
+                <p>
+                    This page documents that transition: the tools I tried, the lessons I kept, and how AI-assisted coding became
+                    part of my daily build process.
+                </p>
+                <div class="journey-stats">
+                    <div class="journey-stat">
+                        <strong>4</strong>
+                        <span>months of focused practice</span>
+                    </div>
+                    <div class="journey-stat">
+                        <strong>3</strong>
+                        <span>main AI coding tools</span>
+                    </div>
+                    <div class="journey-stat">
+                        <strong>1</strong>
+                        <span>continuing build journey</span>
+                    </div>
+                </div>
+            </aside>
+
+            <div>
+                <section class="journey-timeline" aria-label="AI-assisted coding timeline">
+                    <article class="journey-milestone">
+                        <time datetime="2026-02">February 2026</time>
+                        <h3>February 2026: Starting with VS Code and GitHub Copilot Pro</h3>
+                        <p>
+                            I began by setting up VS Code as my main development environment and using GitHub Copilot Pro to help
+                            write, debug, and understand code faster. Around the same time, I started using GitHub to host and
+                            publish my webpages, turning ideas into visible projects instead of keeping them as local experiments.
+                        </p>
+                        <div class="journey-tools">
+                            <span class="journey-tool">VS Code</span>
+                            <span class="journey-tool">GitHub Copilot Pro</span>
+                            <span class="journey-tool">GitHub Pages</span>
+                        </div>
+                    </article>
+
+                    <article class="journey-milestone">
+                        <time datetime="2026-03">March to Mid-May 2026</time>
+                        <h3>March to Mid-May 2026: Building with Claude Code Pro</h3>
+                        <p>
+                            In March, I subscribed to Anthropic Claude Code Pro for a three-month learning cycle. Claude helped me
+                            move faster on personal and training projects, especially when planning page structures, improving code,
+                            and experimenting with AI-assisted development patterns. This period helped me understand what an AI
+                            coding partner could do well: explain, refactor, troubleshoot, and keep projects moving.
+                        </p>
+                        <div class="journey-tools">
+                            <span class="journey-tool">Claude Code Pro</span>
+                            <span class="journey-tool">Training projects</span>
+                            <span class="journey-tool">AI-assisted refactoring</span>
+                        </div>
+                    </article>
+
+                    <article class="journey-milestone">
+                        <time datetime="2026-05">Mid-May 2026</time>
+                        <h3>Mid-May 2026: Switching toward OpenAI Codex</h3>
+                        <p>
+                            In mid-May, I was given access to OpenAI Codex Pro 20x and started shifting more of my workflow from
+                            Claude to Codex. This also became the point where I began cleaning up Anthropic Claude API and AI agent
+                            code, replacing parts of the stack with OpenAI-based implementations. Codex is now helping me vibe code
+                            my capstone projects, refine my portfolio, and turn experiments into more complete systems.
+                        </p>
+                        <div class="journey-tools">
+                            <span class="journey-tool">OpenAI Codex Pro 20x</span>
+                            <span class="journey-tool">OpenAI API</span>
+                            <span class="journey-tool">Capstone projects</span>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="journey-closing" aria-label="What comes next">
+                    <h2>The journey continues</h2>
+                    <p>
+                        Each project teaches me something new about prompts, agents, APIs, automation, debugging, and how to work
+                        with AI without losing ownership of the final result. My goal is not just to use AI to write code faster,
+                        but to become better at designing, testing, explaining, and shipping useful systems.
+                    </p>
+                    <div class="journey-actions">
+                        <a href="projects.html" class="btn btn-primary">Explore Capstone Projects</a>
+                        <a href="setup-guide.html" class="btn btn-secondary">See My Setup</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AlsoCanDo. Built with passion for AI and automation.</p>
+            <div class="footer-links">
+                <a href="kw-portfolio.html">Portfolio</a>
+                <a href="vibe-code.html">Vibe Code</a>
+                <a href="setup-guide.html">Setup Guide</a>
+                <a href="projects.html">Projects</a>
+                <a href="travel.html">Travel</a>
+                <a href="privacy.html">Privacy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/theme-toggle.js"></script>
+    <script>
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('show');
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (event) {
+                event.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        });
+    </script>
+    <link rel="stylesheet" href="chatbot.css">
+    <script src="chatbot.js" defer></script>
+</body>
+</html>

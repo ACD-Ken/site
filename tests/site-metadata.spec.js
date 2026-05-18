@@ -15,6 +15,9 @@ test('homepage includes capabilities proof and sharing metadata', async ({ page 
   await expect(page.getByRole('link', { name: /AI Website Chatbot/ })).toHaveAttribute('href', /subject=AI%20Website%20Chatbot%20Inquiry/);
   await expect(page.getByRole('link', { name: /Workflow Automation/ })).toHaveAttribute('href', /subject=Workflow%20Automation%20Inquiry/);
   await expect(page.getByRole('link', { name: /Business AI Agent/ })).toHaveAttribute('href', /subject=AI%20Agent%20Inquiry/);
+
+  const navLinks = await page.locator('nav .nav-links a.nav-link').evaluateAll(links => links.map(link => link.textContent.trim()));
+  expect(navLinks).toEqual(['Home', 'Portfolio', 'Vibe Code', 'Setup', 'Projects', 'Travel']);
 });
 
 test('projects page includes project-specific sharing metadata', async ({ page }) => {
@@ -39,6 +42,11 @@ test('public pages use standardized shell metadata and page hero treatment', asy
       title: 'AI Developer Setup Guide - Ken Wong'
     },
     {
+      path: '/vibe-code.html',
+      canonical: 'https://acd-ken.github.io/site/vibe-code.html',
+      title: 'Vibe Code Journey - Ken Wong'
+    },
+    {
       path: '/privacy.html',
       canonical: 'https://acd-ken.github.io/site/privacy.html',
       title: 'Privacy & Cookie Settings - Ken Wong'
@@ -59,6 +67,15 @@ test('public pages use standardized shell metadata and page hero treatment', asy
     await expect(page.locator('.nav-links')).toBeVisible();
     await expect(page.locator('.hero, .hero.page-hero').first()).toBeVisible();
   }
+});
+
+test('vibe code page tells the AI-assisted coding journey', async ({ page }) => {
+  await page.goto('/vibe-code.html');
+
+  await expect(page.getByRole('heading', { name: 'Four months of learning by building with AI' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'February 2026: Starting with VS Code and GitHub Copilot Pro' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Mid-May 2026: Switching toward OpenAI Codex' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'View Capstone Projects' })).toHaveAttribute('href', 'projects.html');
 });
 
 test('travel page shows public travel stories without a password', async ({ page }) => {
