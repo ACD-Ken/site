@@ -36,11 +36,14 @@ test('HR Agentic Agent card links to completed V2 page with planned roadmap', as
   await expect(hrCard.locator('.status-badge.completed')).toContainText('Completed');
   await expect(hrCard.getByText('Completed V2 capstone workflow')).toBeVisible();
   await expect(hrCard.getByRole('link', { name: 'View V2' })).toHaveAttribute('href', 'hr-agent-v2.html');
+  await expect(hrCard.getByRole('link', { name: '60s n8n Demo' })).toHaveAttribute('href', 'content/hr-agent/n8n-demo-60s.mp4');
   await expect(hrCard.getByRole('link', { name: 'V3/V4 Planned' })).toHaveAttribute('href', 'hr-agent-v2.html#roadmap');
 
   await hrCard.getByRole('link', { name: 'View V2' }).click();
   await expect(page).toHaveURL(/hr-agent-v2\.html$/);
   await expect(page.getByRole('heading', { name: /HR Agent/ })).toBeVisible();
+  await expect(page.locator('.hero-actions').getByRole('link', { name: '60s n8n Demo' })).toHaveAttribute('href', 'content/hr-agent/n8n-demo-60s.mp4');
+  await expect(page.locator('#artifacts').getByRole('link', { name: '60s n8n Demo' })).toHaveAttribute('href', 'content/hr-agent/n8n-demo-60s.mp4');
   await expect(page.locator('.version-tag', { hasText: 'V2 Done' })).toBeVisible();
   await expect(page.locator('.version-tag', { hasText: 'V3 Planned' })).toBeVisible();
   await expect(page.locator('.version-tag', { hasText: 'V4 Planned' })).toBeVisible();
