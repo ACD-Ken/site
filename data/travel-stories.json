@@ -1,50 +1,38 @@
 [
   {
-    "id": "tokyo-ai-business-2026",
-    "title": "Tokyo Business Trip",
-    "location": "Tokyo, Japan",
-    "date": "2026-04",
+    "id": "bangkok-first-business-trip-after-covid",
+    "title": "Bangkok Business Trip After Covid",
+    "location": "Bangkok, Thailand",
+    "date": "2022-05",
     "type": "business",
     "visibility": "public",
-    "summary": "A business-focused city note from a fast Tokyo week: client conversations, AI workflow ideas, and the quiet discipline of observing how good systems move people through a busy city.",
+    "summary": "A first business trip after more than two years of pandemic restrictions, returning to Bangkok for office setup work, regional relationships, and the familiar energy of Thailand's land of smiles.",
     "source": "facebook-manual-review",
-    "image": "images/travel/tokyo-ai-business-2026.jpg",
-    "tags": ["business", "ai", "city"]
+    "image": "images/travel/bangkok-first-business-trip-after-covid.jpg",
+    "tags": ["business", "city", "thailand", "covid-period"]
   },
   {
-    "id": "singapore-meeting-rhythm-2026",
-    "title": "Singapore Meeting Rhythm",
+    "id": "singapore-tbwa-events",
+    "title": "Singapore TBWA Events",
     "location": "Singapore",
-    "date": "2026-03",
+    "date": "2026-05",
     "type": "business",
     "visibility": "public",
-    "summary": "A local business-travel reflection on moving between meetings, prototypes, and follow-ups while keeping enough margin to notice what clients actually need.",
+    "summary": "A Singapore work memory from the TBWA\\Group farewell lunch and events, marking 19 years of shared laughter, growth, pirate spirit, and close team relationships.",
     "source": "facebook-manual-review",
-    "image": "images/travel/singapore-meeting-rhythm-2026.jpg",
-    "tags": ["business", "city"]
+    "image": "images/travel/singapore-tbwa-events.jpg",
+    "tags": ["business", "city", "tbwa", "event"]
   },
   {
-    "id": "taiwan-mountain-reset-2025",
-    "title": "Taiwan Mountain Reset",
-    "location": "Taiwan",
-    "date": "2025-11",
-    "type": "personal",
-    "visibility": "public",
-    "summary": "A public-friendly personal note on stepping away from screens, taking in mountain air, and returning with clearer thinking for the next build.",
-    "source": "facebook-manual-review",
-    "image": "images/travel/taiwan-mountain-reset-2025.jpg",
-    "tags": ["nature", "personal"]
-  },
-  {
-    "id": "kyoto-family-weekend-2025",
-    "title": "Kyoto Family Weekend",
-    "location": "Kyoto, Japan",
-    "date": "2025-09",
+    "id": "genting-camping-mountain-reset",
+    "title": "Genting Camping Mountain Reset",
+    "location": "Genting Sempah, Malaysia",
+    "date": "2025-08",
     "type": "personal",
     "visibility": "private",
-    "summary": "A low-key family travel memory kept for invited viewers: quiet streets, good food, and small moments between the bigger sightseeing plans.",
+    "summary": "A personal mountain reset from the yearly camping trip at Rainforest Park and Rainforest Campsite Genting, with five old friends, fresh air, and a slower rhythm away from daily work.",
     "source": "facebook-manual-review",
-    "image": "images/travel/kyoto-family-weekend-2025.jpg",
-    "tags": ["personal", "city"]
+    "image": "images/travel/genting-camping-mountain-reset.jpg",
+    "tags": ["personal", "nature", "mountain", "camping"]
   }
 ]
