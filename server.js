@@ -4,7 +4,11 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const OpenAI = require('openai');
 const { formatBotReply } = require('./reply-format');
-const { buildKnowledgeContext } = require('./chatbot-knowledge');
+const {
+  buildKnowledgeContext,
+  getRemovedProjectReply,
+  shouldBlockRemovedProjectQuery,
+} = require('./chatbot-knowledge');
 
 const app = express();
 app.set('trust proxy', 1); // Trust Railway's reverse proxy for correct IP detection
@@ -50,9 +54,9 @@ Ken Wong is a **Seasoned IT Leader & Agentic AI Specialist** based in Singapore 
 7. **Singapore Housing Development Board (HDB)** — IT Technician (1995–1997). Technical support in the public sector.
 
 ## AI & Automation Projects
+- **ACD-Bot** — Live Phase 1 RAG-assisted portfolio assistant with a GitHub Pages chat frontend, Railway backend, OpenAI API, local keyword-scored knowledge retrieval, structured JSON replies, output formatting, and privacy/scope guardrails.
 - **Lucky7 TOTO AI** — Full-stack lottery assistant (React Native app + Node.js backend + React PWA). Uses DeepSeek AI and numerological analysis for Singapore TOTO and 4D predictions.
 - **Exhibition Booth Designer AI** — AI tool that generates booth layout proposals from a brief, built with Streamlit and OAI.
-- **CustSAgent** — RAG-based customer support bot on n8n + GPT-4o-mini; auto-escalates queries it cannot answer.
 - **n8n Automation** — Telegram chatbot that reads, updates, and appends Google Sheets with real-time notifications.
 - **AWS S3 Migration** — Led multi-year migration of regional legacy server storage to AWS/S3 across 6 Southeast Asian markets.
 
@@ -162,6 +166,10 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       content: m.content.replace(/\0/g, '').trim(),
     }));
     const latestUserMessage = [...sanitised].reverse().find((m) => m.role === 'user')?.content || '';
+    if (shouldBlockRemovedProjectQuery(latestUserMessage)) {
+      return res.json({ reply: getRemovedProjectReply() });
+    }
+
     const knowledgeContext = buildKnowledgeContext(latestUserMessage);
 
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

@@ -6,7 +6,7 @@ const STOP_WORDS = new Set([
 
 const INTENT_RULES = [
   ['hiring', /\b(hire|hiring|consult|consulting|collaborate|collaboration|available|availability|contact|email|linkedin|role|job|recruit)\b/i],
-  ['projects', /\b(project|projects|portfolio|lucky7|toto|booth|custsagent|rag|automation|n8n|aws|migration)\b|\b(hr agent|agentic agent|resume screening)\b/i],
+  ['projects', /\b(project|projects|portfolio|lucky7|toto|booth|chatbot|automation|n8n|aws|migration)\b|\b(acd[\s-]?bot|hr agent|agentic agent|resume screening)\b/i],
   ['skills', /\b(skill|skills|python|node|react|docker|sql|data|infrastructure|agentic|ai|automation|llm|prompt)\b/i],
   ['work_history', /\b(experience|career|work|history|advertising|tbwa|saatchi|omd|hdb|tessag|regional)\b/i],
   ['certifications', /\b(cert|certificate|certification|bells|cissp|diploma|course|training|sctp)\b/i],
@@ -50,11 +50,11 @@ const KNOWLEDGE_BASE = [
     content: 'Lucky7 TOTO AI is Ken\'s full-stack lottery assistant with a React Native app, Node.js backend, and React PWA. It uses DeepSeek AI and numerological analysis for Singapore TOTO and 4D prediction workflows.',
   },
   {
-    id: 'project-rag',
+    id: 'project-acd-bot',
     intent: 'projects',
-    title: 'CustSAgent RAG bot',
-    keywords: ['custsagent', 'rag', 'customer', 'support', 'n8n', 'gpt', 'escalation'],
-    content: 'CustSAgent is Ken\'s RAG-based customer support bot built on n8n and GPT-4o-mini. It retrieves knowledge-base answers and escalates queries it cannot answer.',
+    title: 'ACD-Bot',
+    keywords: ['acd-bot', 'acdbot', 'chatbot', 'portfolio', 'assistant', 'railway', 'openai', 'guardrails', 'intent', 'knowledge'],
+    content: 'ACD-Bot is Ken\'s live Phase 1 RAG-assisted portfolio assistant. It uses a GitHub Pages chat frontend, Railway backend, OpenAI API, local keyword-scored knowledge retrieval, structured JSON replies, output formatting, and privacy/scope guardrails to answer visitor questions about Ken\'s work, projects, skills, setup, and contact routes.',
   },
   {
     id: 'project-booth',
@@ -92,6 +92,25 @@ const KNOWLEDGE_BASE = [
     content: 'Ken\'s MacAir development setup guide covers Homebrew, Docker Desktop, n8n on port 5678 with Docker Compose, and ngrok tunnelling for local n8n testing. His listed system is MacBook Air M4, macOS Tahoe 26.2, 16 GB RAM, and 512 GB storage.',
   },
 ];
+
+const REMOVED_PROJECT_PATTERNS = [
+  new RegExp(['tik', 'tok'].join('\\s*'), 'i'),
+  new RegExp(['custs', 'agent'].join('\\s*'), 'i'),
+];
+
+function shouldBlockRemovedProjectQuery(query) {
+  const text = String(query || '');
+  return REMOVED_PROJECT_PATTERNS.some((pattern) => pattern.test(text));
+}
+
+function getRemovedProjectReply() {
+  return [
+    'That removed project is not part of Ken’s current portfolio.',
+    '',
+    '- I can help with current work like Lucky7 TOTO AI, Exhibition Booth Designer AI, HR Agentic Agent, n8n automation, or AWS S3 migration.',
+    '- For collaboration or hiring, contact Ken by email or LinkedIn.',
+  ].join('\n');
+}
 
 function tokenize(text) {
   return String(text || '')
@@ -147,5 +166,7 @@ module.exports = {
   classifyIntent,
   retrieveKnowledge,
   buildKnowledgeContext,
+  shouldBlockRemovedProjectQuery,
+  getRemovedProjectReply,
   KNOWLEDGE_BASE,
 };

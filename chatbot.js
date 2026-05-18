@@ -15,13 +15,21 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
   let isWaiting = false;
 
   const STORAGE_KEY = 'acd_chat';
+  const STORAGE_VERSION = 2;
 
   function saveSession() {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ messages, isOpen }));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ version: STORAGE_VERSION, messages, isOpen }));
   }
 
   function loadSession() {
-    try { return JSON.parse(sessionStorage.getItem(STORAGE_KEY)) || {}; }
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY)) || {};
+      if (saved.version !== STORAGE_VERSION) {
+        sessionStorage.removeItem(STORAGE_KEY);
+        return {};
+      }
+      return saved;
+    }
     catch { return {}; }
   }
 

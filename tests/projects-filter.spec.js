@@ -15,6 +15,8 @@ test('project filters show the expected project groups', async ({ page }) => {
   await page.getByRole('button', { name: 'Capstone' }).click();
   await expect(visibleProjectCards(page)).toHaveCount(3);
   await expect(page.locator('#chatbot-on-website')).toBeVisible();
+  await expect(page.locator('#chatbot-on-website').getByRole('heading', { name: 'ACD-Bot' })).toBeVisible();
+  await expect(page.locator('#chatbot-on-website')).toContainText('Phase 1 RAG-assisted portfolio assistant');
   await expect(page.locator('#hr-agentic-agent')).toBeVisible();
   await expect(page.locator('#inventory-ai-agent')).toBeVisible();
 
