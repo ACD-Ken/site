@@ -17,7 +17,7 @@ jobs:
       - name: Start simple HTTP server
         run: python3 -m http.server 8000 &
       - name: Run Playwright tests
-        run: npx playwright test --reporter=list
+        run: npx playwright test
       - name: Upload JUnit result
         if: always()
         uses: actions/upload-artifact@v7
