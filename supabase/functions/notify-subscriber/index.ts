@@ -1,5 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+function escapeHtml(value: unknown) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // Triggered by Supabase Database Webhook on INSERT to public.subscribers
 serve(async (req) => {
   const payload = await req.json();
@@ -19,8 +28,8 @@ serve(async (req) => {
         <div style="font-family:sans-serif;max-width:480px;margin:0 auto">
           <h2 style="color:#0D9488">New DMsgBox Waitlist Signup</h2>
           <table style="width:100%;border-collapse:collapse">
-            <tr><td style="padding:8px 0;color:#666">Name</td><td style="padding:8px 0;font-weight:600">${name}</td></tr>
-            <tr><td style="padding:8px 0;color:#666">Email</td><td style="padding:8px 0;font-weight:600">${email}</td></tr>
+            <tr><td style="padding:8px 0;color:#666">Name</td><td style="padding:8px 0;font-weight:600">${escapeHtml(name)}</td></tr>
+            <tr><td style="padding:8px 0;color:#666">Email</td><td style="padding:8px 0;font-weight:600">${escapeHtml(email)}</td></tr>
             <tr><td style="padding:8px 0;color:#666">Signed up</td><td style="padding:8px 0">${new Date(created_at).toLocaleString("en-SG", { timeZone: "Asia/Singapore" })}</td></tr>
           </table>
           <p style="margin-top:24px;color:#999;font-size:12px">Sent automatically by DMsgBox waitlist.</p>

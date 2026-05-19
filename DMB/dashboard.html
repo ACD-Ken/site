@@ -204,12 +204,16 @@
       const referralLink = `${baseUrl}?ref=${refCode}`;
 
       // Waitlist status + position
-      const { data: allSubs } = await sb.from('subscribers').select('id, email, created_at').order('created_at', { ascending: true });
-      const sub = allSubs?.find(s => s.email === user.email);
-      const position = sub ? allSubs.indexOf(sub) + 1 : null;
+      const { data: waitlistStatus, error: waitlistError } = await sb
+        .rpc('get_waitlist_status')
+        .single();
+      if (waitlistError) console.error('Failed to load waitlist status:', waitlistError);
 
-      // Referral count
-      const { count: refCount } = await sb.from('subscribers').select('*', { count: 'exact', head: true }).eq('referred_by', refCode);
+      const sub = waitlistStatus?.is_subscribed
+        ? { created_at: waitlistStatus.joined_at }
+        : null;
+      const position = waitlistStatus?.position ?? null;
+      const refCount = waitlistStatus?.referral_count ?? 0;
 
       // ── Populate UI ──────────────────────────────────────────
       $('welcome-msg').textContent   = `Welcome back, ${name.split(' ')[0]}`;

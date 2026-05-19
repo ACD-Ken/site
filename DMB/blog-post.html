@@ -208,6 +208,65 @@
       return new Date(dateStr).toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(value, location.href);
+        return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+      } catch {
+        return '';
+      }
+    }
+
+    function sanitizeBlogHtml(html) {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const allowedTags = new Set([
+        'a', 'blockquote', 'br', 'code', 'del', 'em', 'h1', 'h2', 'h3', 'h4',
+        'hr', 'img', 'li', 'ol', 'p', 'pre', 'strong', 'table', 'tbody', 'td',
+        'th', 'thead', 'tr', 'ul',
+      ]);
+      const allowedAttrs = {
+        a: new Set(['href', 'title']),
+        img: new Set(['alt', 'src', 'title']),
+      };
+
+      doc.body.querySelectorAll('*').forEach(el => {
+        const tag = el.tagName.toLowerCase();
+        if (!allowedTags.has(tag)) {
+          if (['script', 'style', 'iframe', 'object', 'embed'].includes(tag)) {
+            el.remove();
+          } else {
+            el.replaceWith(...el.childNodes);
+          }
+          return;
+        }
+
+        [...el.attributes].forEach(attr => {
+          const name = attr.name.toLowerCase();
+          const allowedForTag = allowedAttrs[tag];
+          if (name.startsWith('on') || !allowedForTag?.has(name)) {
+            el.removeAttribute(attr.name);
+            return;
+          }
+
+          if ((tag === 'a' && name === 'href') || (tag === 'img' && name === 'src')) {
+            const safeUrl = safeHttpUrl(attr.value);
+            if (!safeUrl && !(tag === 'a' && attr.value.startsWith('mailto:'))) {
+              el.removeAttribute(attr.name);
+            } else {
+              el.setAttribute(attr.name, safeUrl || attr.value);
+            }
+          }
+        });
+
+        if (tag === 'a') {
+          el.setAttribute('rel', 'nofollow noopener noreferrer');
+          el.setAttribute('target', '_blank');
+        }
+      });
+
+      return doc.body.innerHTML;
+    }
+
     function showNotFound() {
       document.getElementById('loading-state').classList.add('hidden');
       document.getElementById('not-found').classList.remove('hidden');
@@ -231,13 +290,14 @@
       dateEl.textContent = formatDate(pubDate);
       dateEl.setAttribute('datetime', pubDate);
 
-      if (post.cover_image) {
-        document.getElementById('article-cover-img').src = post.cover_image;
+      const coverUrl = safeHttpUrl(post.cover_image);
+      if (coverUrl) {
+        document.getElementById('article-cover-img').src = coverUrl;
         document.getElementById('article-cover-img').alt = post.title;
         document.getElementById('article-cover').classList.remove('hidden');
       }
 
-      document.getElementById('article-body').innerHTML = marked.parse(post.content || '');
+      document.getElementById('article-body').innerHTML = sanitizeBlogHtml(marked.parse(post.content || ''));
 
       document.getElementById('loading-state').classList.add('hidden');
       document.getElementById('article').classList.remove('hidden');

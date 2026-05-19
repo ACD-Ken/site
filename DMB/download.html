@@ -148,12 +148,14 @@
       const user = session.user;
 
       // Check waitlist membership
-      const { data: sub } = await sb.from('subscribers').select('id').eq('email', user.email).maybeSingle();
+      const { data: waitlistStatus } = await sb
+        .rpc('get_waitlist_status')
+        .single();
       const { data: profile } = await sb.from('profiles').select('tier').eq('id', user.id).single();
 
       $('loading').classList.add('hidden');
 
-      if (!sub) {
+      if (!waitlistStatus?.is_subscribed) {
         $('gate-waitlist').classList.remove('hidden');
         return;
       }

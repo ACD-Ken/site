@@ -1,3 +1,12 @@
+function escapeHtml(value: unknown) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 Deno.serve(async (req) => {
   const payload = await req.json();
   const { name, email, message, created_at } = payload.record;
@@ -22,20 +31,20 @@ Deno.serve(async (req) => {
           <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
             <tr style="border-bottom:1px solid #eee">
               <td style="padding:10px 0;color:#666;width:100px;font-size:14px">Name</td>
-              <td style="padding:10px 0;font-weight:600;font-size:14px">${name}</td>
+              <td style="padding:10px 0;font-weight:600;font-size:14px">${escapeHtml(name)}</td>
             </tr>
             <tr style="border-bottom:1px solid #eee">
               <td style="padding:10px 0;color:#666;font-size:14px">Email</td>
               <td style="padding:10px 0;font-size:14px">
-                <a href="mailto:${email}" style="color:#0D9488">${email}</a>
+                <a href="mailto:${escapeHtml(email)}" style="color:#0D9488">${escapeHtml(email)}</a>
               </td>
             </tr>
           </table>
           <div style="background:#f9f9f9;border-left:3px solid #0D9488;padding:16px 20px;border-radius:0 4px 4px 0">
-            <p style="color:#444;font-size:14px;line-height:1.7;margin:0">${message.replace(/\n/g, "<br/>")}</p>
+            <p style="color:#444;font-size:14px;line-height:1.7;margin:0">${escapeHtml(message).replace(/\n/g, "<br/>")}</p>
           </div>
           <p style="margin-top:24px;font-size:13px;color:#aaa">
-            Reply directly to this email to respond to ${name}.
+            Reply directly to this email to respond to ${escapeHtml(name)}.
           </p>
         </div>
       `,

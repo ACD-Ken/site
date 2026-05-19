@@ -27,9 +27,12 @@
   ║  create policy "Public read published" on blog_posts             ║
   ║    for select using (published = true);                          ║
   ║                                                                  ║
-  ║  -- Authenticated admins have full access                        ║
-  ║  create policy "Admin full access" on blog_posts                 ║
-  ║    for all using (auth.role() = 'authenticated');                ║
+  ║  -- Blog admins have full access                                 ║
+  ║  create table blog_admins (                                      ║
+  ║    user_id uuid primary key references auth.users(id)             ║
+  ║  );                                                              ║
+  ║  create policy "Blog admins can insert posts" on blog_posts      ║
+  ║    for insert with check (public.is_blog_admin());               ║
   ║                                                                  ║
   ║  To create an admin user:                                        ║
   ║    Supabase Dashboard → Authentication → Users → Add user        ║
@@ -325,9 +328,25 @@
     let deleteTargetId = null;
 
     // ── Auth guard ────────────────────────────────────────────────
+    async function assertBlogAdmin(session) {
+      const { data, error } = await sb
+        .from('blog_admins')
+        .select('user_id')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+
+      if (error || !data) {
+        await sb.auth.signOut();
+        window.location.href = 'admin-login.html';
+        return false;
+      }
+      return true;
+    }
+
     async function initAuth() {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { window.location.href = 'admin-login.html'; return; }
+      if (!(await assertBlogAdmin(session))) return;
       document.getElementById('admin-email').textContent = session.user.email;
       loadPosts();
     }

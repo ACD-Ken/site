@@ -103,20 +103,24 @@ Portfolio: https://acd-ken.github.io/site
 - Never share a phone number or WhatsApp — email and LinkedIn only.
 - End with a short, natural follow-up question when it would genuinely help the conversation — not forced.`;
 
+function getRateLimitKey(req) {
+  return req.socket.remoteAddress || req.ip || 'unknown-client';
+}
+
 // Rate limiter: max 50 messages per IP per 15 minutes
 const chatLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 50,
   standardHeaders: true,
   legacyHeaders: false,
-  // Use X-Forwarded-For directly to get the real client IP behind Railway's proxies
-  keyGenerator: (req) => req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip,
+  // Use the direct peer for this public cost-control endpoint; X-Forwarded-For is spoofable.
+  keyGenerator: getRateLimitKey,
   message: { error: 'Too many requests. Please try again in a few minutes.' },
 });
 
 // Request logger — logs method, IP, origin and final HTTP status
 app.use('/api/chat', (req, res, next) => {
-  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip;
+  const ip = getRateLimitKey(req);
   const start = Date.now();
   res.on('finish', () => {
     const ms = Date.now() - start;
