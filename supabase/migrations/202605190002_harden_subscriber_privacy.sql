@@ -1,6 +1,8 @@
 alter table public.subscribers enable row level security;
 
-create or replace function public.get_waitlist_status()
+create schema if not exists private;
+
+create or replace function private.get_waitlist_status()
 returns table (
   is_subscribed boolean,
   position integer,
@@ -10,7 +12,7 @@ returns table (
 language sql
 stable
 security definer
-set search_path = public
+set search_path = public, private
 as $$
   with current_identity as (
     select
@@ -49,6 +51,26 @@ as $$
       join current_profile p on s.referred_by = p.referral_code
     ) as referral_count;
 $$;
+
+create or replace function public.get_waitlist_status()
+returns table (
+  is_subscribed boolean,
+  position integer,
+  joined_at timestamptz,
+  referral_count bigint
+)
+language sql
+stable
+security invoker
+set search_path = public, private
+as $$
+  select *
+  from private.get_waitlist_status();
+$$;
+
+revoke all on function private.get_waitlist_status() from public;
+grant usage on schema private to authenticated;
+grant execute on function private.get_waitlist_status() to authenticated;
 
 revoke all on function public.get_waitlist_status() from public;
 grant execute on function public.get_waitlist_status() to authenticated;

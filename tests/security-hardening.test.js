@@ -45,9 +45,10 @@ test('blog admin write access is restricted to explicit admins in RLS', () => {
 
   const migration = source(migrationPath);
   assert.match(migration, /create table if not exists public\.blog_admins/i);
-  assert.match(migration, /create or replace function public\.is_blog_admin/i);
+  assert.match(migration, /create schema if not exists private/i);
+  assert.match(migration, /create or replace function private\.is_blog_admin/i);
   assert.match(migration, /drop policy if exists "Admin full access" on public\.blog_posts/i);
-  assert.match(migration, /public\.is_blog_admin\(\)/i);
+  assert.match(migration, /private\.is_blog_admin\(\)/i);
   assert.doesNotMatch(migration, /auth\.role\(\)\s*=\s*'authenticated'/i);
 
   const admin = source('DMB/admin.html');
@@ -78,7 +79,10 @@ test('waitlist status does not expose all subscriber emails to authenticated bro
   assert.equal(exists(migrationPath), true);
 
   const migration = source(migrationPath);
+  assert.match(migration, /create schema if not exists private/i);
+  assert.match(migration, /create or replace function private\.get_waitlist_status/i);
   assert.match(migration, /create or replace function public\.get_waitlist_status/i);
+  assert.match(migration, /security invoker/i);
   assert.match(migration, /returns table\s*\(\s*is_subscribed boolean/i);
   assert.match(migration, /\(row_number\(\) over\s*\(order by created_at asc, id asc\)\)::integer/i);
   assert.match(migration, /drop policy if exists "Subscribers can read own row" on public\.subscribers/i);

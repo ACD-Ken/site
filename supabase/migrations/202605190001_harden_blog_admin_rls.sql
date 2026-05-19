@@ -3,15 +3,17 @@ create table if not exists public.blog_admins (
   created_at timestamptz not null default now()
 );
 
+create schema if not exists private;
+
 alter table public.blog_admins enable row level security;
 alter table public.blog_posts enable row level security;
 
-create or replace function public.is_blog_admin()
+create or replace function private.is_blog_admin()
 returns boolean
 language sql
 stable
 security definer
-set search_path = public
+set search_path = public, private
 as $$
   select exists (
     select 1
@@ -20,8 +22,9 @@ as $$
   );
 $$;
 
-revoke all on function public.is_blog_admin() from public;
-grant execute on function public.is_blog_admin() to anon, authenticated;
+revoke all on function private.is_blog_admin() from public;
+grant usage on schema private to authenticated;
+grant execute on function private.is_blog_admin() to authenticated;
 
 drop policy if exists "Blog admins can read own admin grant" on public.blog_admins;
 create policy "Blog admins can read own admin grant"
@@ -39,23 +42,23 @@ drop policy if exists "Blog admins can delete posts" on public.blog_posts;
 create policy "Public read published"
   on public.blog_posts
   for select
-  using (published = true or public.is_blog_admin());
+  using (published = true or private.is_blog_admin());
 
 create policy "Blog admins can insert posts"
   on public.blog_posts
   for insert
   to authenticated
-  with check (public.is_blog_admin());
+  with check (private.is_blog_admin());
 
 create policy "Blog admins can update posts"
   on public.blog_posts
   for update
   to authenticated
-  using (public.is_blog_admin())
-  with check (public.is_blog_admin());
+  using (private.is_blog_admin())
+  with check (private.is_blog_admin());
 
 create policy "Blog admins can delete posts"
   on public.blog_posts
   for delete
   to authenticated
-  using (public.is_blog_admin());
+  using (private.is_blog_admin());
