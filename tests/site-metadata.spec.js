@@ -74,6 +74,7 @@ test('vibe code page tells the AI-assisted coding journey', async ({ page }) => 
 
   await expect(page.getByRole('heading', { name: 'Four months of learning by building with AI' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'February 2026: Starting with VS Code and GitHub Copilot Pro' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Late April 2026: Testing OpenCode with free models' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Mid-May 2026: Switching toward OpenAI Codex' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'View Capstone Projects' })).toHaveAttribute('href', 'projects.html');
 });
