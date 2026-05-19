@@ -1,0 +1,94 @@
+{
+  "id": "supplierEmailSmokeTest001",
+  "name": "Supplier_Email_Smoke_Test_Send_To_DMsgBox",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "7e7e4024-2f41-4a88-a3fe-5bdc0605b3e7",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "b6ae6adf-5738-4ecf-a8db-a923474d2e8a",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "dmsgbox@gmail.com",
+        "subject": "=Supplier email smoke test - {{ $now.toISO() }}",
+        "message": "=Hello supplier team,\n\nThis is a controlled smoke-test email from the DMsgBox Inventory Agent workflow setup.\n\nPurpose: confirm the n8n Gmail credential can send supplier-facing inventory notifications.\nRecipient: dmsgbox@gmail.com\nRun time: {{ $now.toISO() }}\n\nNo purchase action is required for this test.\n\nDMsgBox Inventory Agent",
+        "options": {}
+      },
+      "id": "f993db59-5700-4c3a-b906-6098dfeb6096",
+      "name": "Send Supplier Smoke Test Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -160,
+        0
+      ],
+      "webhookId": "d16aca6f-6c93-4429-a20f-7cf923af6ea8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6WaA5cRM9MH4BFXc",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send Supplier Smoke Test Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send Supplier Smoke Test Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {},
+  "versionId": "3f1ee617-81eb-4adc-a1dc-7fd7f8fcd7d8",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "name": "Inventory"
+    },
+    {
+      "name": "Smoke Test"
+    },
+    {
+      "name": "Gmail"
+    }
+  ]
+}

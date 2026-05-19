@@ -1030,19 +1030,23 @@
             <article class="project-card" id="inventory-ai-agent" data-category="capstone">
                 <div class="project-image visual-panel">
                     <div class="project-visual" aria-label="Inventory AI agent capstone visual">
-                        <div class="visual-kicker">Inventory Assistant</div>
+                        <div class="visual-kicker">V2 Reliable Audit + V3 Planner</div>
                         <div class="visual-grid">
-                            <div class="visual-pill">Stock Check</div>
-                            <div class="visual-pill">Exceptions</div>
-                            <div class="visual-pill">Next Step</div>
-                            <div class="visual-pill">Report</div>
+                            <div class="visual-pill">Normalize</div>
+                            <div class="visual-pill">Structured Output</div>
+                            <div class="visual-pill">CheckLog</div>
+                            <div class="visual-pill">Approval Guard</div>
                         </div>
                         <div class="visual-flow">
-                            <div class="visual-node">Query</div>
+                            <div class="visual-node">Sheets</div>
                             <div class="visual-arrow">-&gt;</div>
-                            <div class="visual-node">Analyze</div>
+                            <div class="visual-node">OpenAI</div>
                             <div class="visual-arrow">-&gt;</div>
-                            <div class="visual-node">Action</div>
+                            <div class="visual-node">Log / Alert</div>
+                        </div>
+                        <div class="visual-row">
+                            <div class="visual-card"><strong>Alert</strong><span>Bounded Gmail</span></div>
+                            <div class="visual-card"><strong>V3</strong><span>Supplier Approval</span></div>
                         </div>
                     </div>
                 </div>
@@ -1052,56 +1056,65 @@
                             <span class="project-category">Capstone</span>
                             <h3 class="project-title">Inventory AI Agent</h3>
                         </div>
-                        <span class="status-badge in-progress">
-                            <span class="status-dot pulse"></span>
-                            In Progress
+                        <span class="status-badge completed">
+                            <span class="status-dot"></span>
+                            V2 Verified
                         </span>
                     </div>
 
                     <p class="project-description">
-                        Capstone placeholder for an inventory-focused AI agent that helps review stock questions, exceptions, and next actions.
+                        Verified capstone workflow for reliable inventory audits, using OpenAI with normalized Google Sheets stock data,
+                        structured output, CheckLog audit logging, and bounded Gmail alerts.
                     </p>
 
                     <div class="project-details">
                         <div class="detail-section">
-                            <div class="detail-label">Overview</div>
-                            <p class="detail-text">An AI agent concept for helping teams query, review, and act on inventory-related information.</p>
+                            <div class="detail-label">Problem</div>
+                            <p class="detail-text">Inventory automation can false-alert when sheet data is blank, malformed, or routed directly through an AI prompt without deterministic checks.</p>
                         </div>
                         <div class="detail-section">
-                            <div class="detail-label">Focus</div>
-                            <p class="detail-text">Inventory status checks, exception handling, workflow prompts, and action recommendations.</p>
+                            <div class="detail-label">Solution</div>
+                            <p class="detail-text">V2 normalizes Weekly Data rows before the agent, logs every audit to CheckLog, and sends emails only when the fixed low-stock decision matrix requires it.</p>
                         </div>
                         <div class="detail-section">
-                            <div class="detail-label">Next Update</div>
-                            <p class="detail-text">Add process flow, sample interactions, and implementation details when the capstone documentation is ready.</p>
+                            <div class="detail-label">Roadmap</div>
+                            <p class="detail-text">V3 evolves the same pattern into an OpenAI planner with recent audit history, reorder plan validation, and supplier-facing actions routed through approval.</p>
                         </div>
                     </div>
 
                     <div class="key-insight">
-                        <div class="detail-label">Focus Area</div>
-                        <p class="detail-text">Current stage: defining inventory queries, exception patterns, and recommended response formats.</p>
+                        <div class="detail-label">Key AI Insight</div>
+                        <p class="detail-text">The system is agentic but guarded: OpenAI reasons over clean inventory context, while n8n enforces structured output, logging, validation, and approval boundaries.</p>
                     </div>
 
                     <div class="metrics">
                         <div class="metric">
-                            <span class="metric-label">Stage</span>
-                            <span class="metric-value">Capstone</span>
+                            <span class="metric-label">Version</span>
+                            <span class="metric-value">V2</span>
                         </div>
                         <div class="metric">
-                            <span class="metric-label">Milestone</span>
-                            <span class="metric-value">Scenarios</span>
+                            <span class="metric-label">Status</span>
+                            <span class="metric-value">Verified</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Next</span>
+                            <span class="metric-value">V3 Planner</span>
                         </div>
                     </div>
 
                     <div class="tech-stack">
-                        <span class="tech-badge">AI Agent</span>
+                        <span class="tech-badge">n8n</span>
+                        <span class="tech-badge">OpenAI</span>
+                        <span class="tech-badge">Google Sheets</span>
+                        <span class="tech-badge">Gmail</span>
+                        <span class="tech-badge">Structured Output</span>
                         <span class="tech-badge">Inventory</span>
-                        <span class="tech-badge">Workflow</span>
-                        <span class="tech-badge">Automation</span>
                     </div>
 
                     <div class="project-actions">
-                        <a href="#" class="btn btn-primary btn-disabled" title="Coming soon">Coming Soon</a>
+                        <a href="inventory-agent.html" class="btn btn-primary">View Details</a>
+                        <a href="content/inventory-agent/04-inventory-agent-v2.json" class="btn btn-secondary">V2 JSON</a>
+                        <a href="content/inventory-agent/04-inventory-agent-v3.json" class="btn btn-secondary">V3 JSON</a>
                     </div>
                 </div>
             </article>

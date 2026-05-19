@@ -1,0 +1,527 @@
+{
+  "name": "04_Inventory_Agent_OpenAI_Reliable_v2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "58681c98-4006-415d-a292-0154f9dbaeba",
+      "name": "Cron: Every 6h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "inventory/check",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "17ed628e-b8b0-43fd-9802-e1a5541b7984",
+      "name": "Webhook: Manual Audit",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        128
+      ],
+      "webhookId": "inventory-webhook-ds-v3"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "mode": "list",
+          "cachedResultName": "Inventory mgmt - Provision Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 755763503,
+          "mode": "list",
+          "cachedResultName": "Weekly Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit#gid=755763503"
+        },
+        "options": {}
+      },
+      "id": "850d017d-88f3-486c-b418-489868576c7e",
+      "name": "Read Stock Levels: Cron",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        240,
+        -112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "488RS47ylU5cV3YP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "mode": "list",
+          "cachedResultName": "Inventory mgmt - Provision Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 755763503,
+          "mode": "list",
+          "cachedResultName": "Weekly Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit#gid=755763503"
+        },
+        "options": {}
+      },
+      "id": "31ba9592-62e3-4649-b14a-b57b8d829533",
+      "name": "Read Stock Levels: Webhook",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        240,
+        128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "488RS47ylU5cV3YP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all();\nconst runSource = 'cron';\nconst sourceSheet = 'Weekly Data';\nconst ingredientColumns = ['Flour (kg)', 'Cheese (kg)', 'Tomato Sauce (kg)', 'Beef (kg)', 'Pasta (kg)'];\nconst stockKeys = ['stock_kg', 'Stock (kg)', 'Current Stock', 'current_stock', 'current_kg', 'stock', 'Stock'];\nconst itemKeys = ['item_name', 'Item', 'item', 'Ingredient', 'ingredient', 'Name', 'name'];\n\nfunction firstValue(row, keys) {\n  for (const key of keys) {\n    if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== '') return row[key];\n  }\n  return undefined;\n}\n\nfunction parseStock(value) {\n  if (value === undefined || value === null) return null;\n  if (typeof value === 'number') return Number.isFinite(value) ? value : null;\n  const cleaned = String(value).replace(/,/g, '').replace(/kg/gi, '').trim();\n  if (cleaned === '') return null;\n  const parsed = Number(cleaned);\n  return Number.isFinite(parsed) ? parsed : null;\n}\n\nfunction sourceRow(row, index) {\n  return row.row_number || row.Row || row.row || row.__rowNumber || index + 2;\n}\n\nfunction hasWideInventoryShape(row) {\n  return ingredientColumns.some((columnName) => Object.prototype.hasOwnProperty.call(row, columnName));\n}\n\nconst inventoryItems = [];\nconst invalidRows = [];\nconst indexedRows = rows.map((item, index) => ({ item, index }));\nconst hasDirectItemRows = indexedRows.some(({ item }) => firstValue(item.json, itemKeys) !== undefined);\nconst rowsToProcess = hasDirectItemRows\n  ? indexedRows\n  : indexedRows.filter(({ item }) => hasWideInventoryShape(item.json)).slice(-1);\n\nrowsToProcess.forEach(({ item, index }) => {\n  const row = item.json;\n  const rowNumber = sourceRow(row, index);\n  const lastUpdated = row.last_updated || row.LastUpdated || row.Date || row.date || new Date().toISOString();\n  const directItemName = firstValue(row, itemKeys);\n  const directStock = parseStock(firstValue(row, stockKeys));\n\n  if (directItemName !== undefined) {\n    if (directStock === null) {\n      invalidRows.push({ source_row: rowNumber, item_name: String(directItemName), reason: 'Missing or non-numeric stock_kg' });\n    } else {\n      inventoryItems.push({ item_name: String(directItemName), stock_kg: directStock, last_updated: lastUpdated, source_row: rowNumber });\n    }\n    return;\n  }\n\n  let foundWideStock = false;\n  for (const columnName of ingredientColumns) {\n    if (!Object.prototype.hasOwnProperty.call(row, columnName)) continue;\n    foundWideStock = true;\n    const stockKg = parseStock(row[columnName]);\n    const itemName = columnName.replace(/\\s*\\(kg\\)$/i, '');\n    if (stockKg === null) {\n      invalidRows.push({ source_row: rowNumber, item_name: itemName, field: columnName, reason: 'Missing or non-numeric stock_kg' });\n    } else {\n      inventoryItems.push({ item_name: itemName, stock_kg: stockKg, last_updated: lastUpdated, source_row: rowNumber });\n    }\n  }\n\n  if (!foundWideStock && Object.keys(row).length > 0) {\n    invalidRows.push({ source_row: rowNumber, reason: 'No supported inventory columns found' });\n  }\n});\n\nreturn [{\n  json: {\n    run_source: runSource,\n    checked_at: new Date().toISOString(),\n    source_sheet: sourceSheet,\n    item_count: inventoryItems.length,\n    invalid_count: invalidRows.length,\n    inventory_items: inventoryItems,\n    invalid_rows: invalidRows\n  }\n}];"
+      },
+      "id": "2cf20f8f-dc21-4854-ab85-abd74d6263f9",
+      "name": "Normalize Stock Rows: Cron",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all();\nconst runSource = 'webhook';\nconst sourceSheet = 'Weekly Data';\nconst ingredientColumns = ['Flour (kg)', 'Cheese (kg)', 'Tomato Sauce (kg)', 'Beef (kg)', 'Pasta (kg)'];\nconst stockKeys = ['stock_kg', 'Stock (kg)', 'Current Stock', 'current_stock', 'current_kg', 'stock', 'Stock'];\nconst itemKeys = ['item_name', 'Item', 'item', 'Ingredient', 'ingredient', 'Name', 'name'];\n\nfunction firstValue(row, keys) {\n  for (const key of keys) {\n    if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== '') return row[key];\n  }\n  return undefined;\n}\n\nfunction parseStock(value) {\n  if (value === undefined || value === null) return null;\n  if (typeof value === 'number') return Number.isFinite(value) ? value : null;\n  const cleaned = String(value).replace(/,/g, '').replace(/kg/gi, '').trim();\n  if (cleaned === '') return null;\n  const parsed = Number(cleaned);\n  return Number.isFinite(parsed) ? parsed : null;\n}\n\nfunction sourceRow(row, index) {\n  return row.row_number || row.Row || row.row || row.__rowNumber || index + 2;\n}\n\nfunction hasWideInventoryShape(row) {\n  return ingredientColumns.some((columnName) => Object.prototype.hasOwnProperty.call(row, columnName));\n}\n\nconst inventoryItems = [];\nconst invalidRows = [];\nconst indexedRows = rows.map((item, index) => ({ item, index }));\nconst hasDirectItemRows = indexedRows.some(({ item }) => firstValue(item.json, itemKeys) !== undefined);\nconst rowsToProcess = hasDirectItemRows\n  ? indexedRows\n  : indexedRows.filter(({ item }) => hasWideInventoryShape(item.json)).slice(-1);\n\nrowsToProcess.forEach(({ item, index }) => {\n  const row = item.json;\n  const rowNumber = sourceRow(row, index);\n  const lastUpdated = row.last_updated || row.LastUpdated || row.Date || row.date || new Date().toISOString();\n  const directItemName = firstValue(row, itemKeys);\n  const directStock = parseStock(firstValue(row, stockKeys));\n\n  if (directItemName !== undefined) {\n    if (directStock === null) {\n      invalidRows.push({ source_row: rowNumber, item_name: String(directItemName), reason: 'Missing or non-numeric stock_kg' });\n    } else {\n      inventoryItems.push({ item_name: String(directItemName), stock_kg: directStock, last_updated: lastUpdated, source_row: rowNumber });\n    }\n    return;\n  }\n\n  let foundWideStock = false;\n  for (const columnName of ingredientColumns) {\n    if (!Object.prototype.hasOwnProperty.call(row, columnName)) continue;\n    foundWideStock = true;\n    const stockKg = parseStock(row[columnName]);\n    const itemName = columnName.replace(/\\s*\\(kg\\)$/i, '');\n    if (stockKg === null) {\n      invalidRows.push({ source_row: rowNumber, item_name: itemName, field: columnName, reason: 'Missing or non-numeric stock_kg' });\n    } else {\n      inventoryItems.push({ item_name: itemName, stock_kg: stockKg, last_updated: lastUpdated, source_row: rowNumber });\n    }\n  }\n\n  if (!foundWideStock && Object.keys(row).length > 0) {\n    invalidRows.push({ source_row: rowNumber, reason: 'No supported inventory columns found' });\n  }\n});\n\nreturn [{\n  json: {\n    run_source: runSource,\n    checked_at: new Date().toISOString(),\n    source_sheet: sourceSheet,\n    item_count: inventoryItems.length,\n    invalid_count: invalidRows.length,\n    inventory_items: inventoryItems,\n    invalid_rows: invalidRows\n  }\n}];"
+      },
+      "id": "0406a9ee-3f8b-4828-8899-0353b52e4434",
+      "name": "Normalize Stock Rows: Webhook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Audit this normalized inventory payload and take the required actions.\n\nRun source: {{ $json.run_source }}\nChecked at: {{ $json.checked_at }}\nSource sheet: {{ $json.source_sheet }}\nValid inventory items: {{ JSON.stringify($json.inventory_items) }}\nInvalid rows: {{ JSON.stringify($json.invalid_rows) }}\n\nRules:\n- All valid stock values are in KG.\n- A valid item is LOW STOCK when stock_kg < 20.\n- Replenish each low item to 50 KG. reorder_kg = 50 - stock_kg.\n- Invalid rows must be included in invalid_rows but must not be treated as zero stock.\n\nDecision matrix:\n- 0 low items: call log_check only.\n- 1-2 low items: call log_check first, then notify_team with severity='alert' and recipient='warehouse'.\n- 3+ low items: call log_check first, then notify_team with severity='alert' and recipient='warehouse', then notify_team with severity='critical' and recipient='supplier'.\n\nReturn only the structured audit object.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an AI inventory audit agent powered by OpenAI. Your job is to inspect normalized inventory data, decide whether alerts are needed, and use the provided tools safely.\n\nOperating rules:\n- Use only the normalized inventory_items supplied in the prompt for low-stock decisions.\n- Never convert invalid or blank stock to 0. Keep invalid data in invalid_rows.\n- Compute low_stock_items from valid items where stock_kg < 20.\n- For each low item, include item_name, current_kg, reorder_kg, and source_row.\n- Always call log_check before any notify_team call.\n- If low_items_count is 0, do not call notify_team.\n- If low_items_count is 1 or 2, notify the warehouse only.\n- If low_items_count is 3 or more, notify the warehouse and then the supplier.\n- Keep recipients bounded to 'warehouse' or 'supplier'.\n- Include clear actions_taken values that name each tool call.\n\nTool contracts:\n- log_check(alert_required, low_items_count, low_items_json, invalid_rows_json, run_source): always call once.\n- notify_team(severity, recipient, low_items_count, summary): call only when the decision matrix requires an alert.\n\nOutput must match the connected structured output parser. No extra explanation."
+        }
+      },
+      "id": "10325448-570b-41b7-ae2a-683838aeba4d",
+      "name": "AI Agent: Inventory (OpenAI)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        768,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "16d72d9a-167d-48d0-90cb-2aa7fe996d7b",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        608,
+        352
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ShukBsu4qwMNwoi6",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"items\": [\n    {\n      \"item_name\": \"Flour\",\n      \"stock_kg\": 42,\n      \"last_updated\": \"2025-03-23\",\n      \"source_row\": 12\n    }\n  ],\n  \"low_stock_items\": [\n    {\n      \"item_name\": \"Cheese\",\n      \"current_kg\": 12,\n      \"reorder_kg\": 38,\n      \"source_row\": 12\n    }\n  ],\n  \"invalid_rows\": [\n    {\n      \"source_row\": 14,\n      \"item_name\": \"Pasta\",\n      \"reason\": \"Missing or non-numeric stock_kg\"\n    }\n  ],\n  \"alert_required\": true,\n  \"actions_taken\": [\n    \"log_check\",\n    \"notify_team:warehouse\"\n  ],\n  \"run_source\": \"webhook\"\n}"
+      },
+      "id": "b3c1015c-d677-494e-841a-f8d1d1bf56aa",
+      "name": "Structured Output: Inventory Audit",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1088,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "mode": "list",
+          "cachedResultName": "Inventory mgmt - Provision Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "CheckLog",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now.toISO() }}",
+            "run_source": "={{ $fromAI('run_source', 'cron or webhook', 'string') }}",
+            "alert_required": "={{ $fromAI('alert_required', 'true when one or more valid items are below 20 KG', 'boolean') }}",
+            "low_items_count": "={{ $fromAI('low_items_count', 'number of valid low stock items', 'number') }}",
+            "low_items": "={{ $fromAI('low_items_json', 'stringified JSON array of low stock items', 'string') }}",
+            "invalid_rows": "={{ $fromAI('invalid_rows_json', 'stringified JSON array of invalid input rows', 'string') }}",
+            "actions_taken": "={{ $fromAI('actions_taken_json', 'stringified JSON array of actions taken', 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "c3de3e57-4281-4f31-b076-412cfb4d7220",
+      "name": "Tool: log_check",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        784,
+        352
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "488RS47ylU5cV3YP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $fromAI('recipient', 'warehouse or supplier', 'string') === 'supplier' ? 'dmsgbox@gmail.com' : 'data.msgbox@gmail.com' }}",
+        "subject": "={{ $fromAI('severity', 'alert or critical', 'string') === 'critical' ? 'CRITICAL: ' : 'ALERT: ' }}LOW STOCK - {{ $fromAI('low_items_count', 'number of low stock items', 'number') }} item(s) below 20 KG",
+        "emailType": "text",
+        "message": "=STOCK AUDIT - {{ $fromAI('severity', 'alert or critical', 'string') === 'critical' ? 'MULTIPLE ITEMS CRITICAL' : 'LOW STOCK DETECTED' }}\n\n{{ $fromAI('summary', 'reorder list: one line per item with item name, current_kg, reorder_kg, and source_row', 'string') }}\n\nAction: {{ $fromAI('severity', 'alert or critical', 'string') === 'critical' ? 'Initiate purchase orders immediately and confirm ETA.' : 'Initiate purchase orders.' }}\n\nAudit time: {{ $now.toISO() }}\n\nDMsgBox Inventory Agent (OpenAI)",
+        "options": {}
+      },
+      "id": "d04b9ce7-975c-492d-929d-07e8ab8cde10",
+      "name": "Tool: notify_team",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        928,
+        368
+      ],
+      "webhookId": "da12e0d2-e50d-4f30-a8c6-df1a6d2f757e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6WaA5cRM9MH4BFXc",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $input.first().json;\nlet audit = source.output ?? source;\n\nif (typeof audit === 'string') {\n  const cleaned = audit.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/```$/i, '').trim();\n  try {\n    audit = JSON.parse(cleaned);\n  } catch (error) {\n    audit = {\n      items: [],\n      low_stock_items: [],\n      invalid_rows: [{ reason: 'Agent output was not valid JSON', raw_output: audit }],\n      alert_required: false,\n      actions_taken: ['log_check'],\n      run_source: 'unknown'\n    };\n  }\n}\n\nreturn [{\n  json: {\n    items: Array.isArray(audit.items) ? audit.items : [],\n    low_stock_items: Array.isArray(audit.low_stock_items) ? audit.low_stock_items : [],\n    invalid_rows: Array.isArray(audit.invalid_rows) ? audit.invalid_rows : [],\n    alert_required: Boolean(audit.alert_required),\n    actions_taken: Array.isArray(audit.actions_taken) ? audit.actions_taken : [],\n    run_source: audit.run_source || 'unknown'\n  }\n}];"
+      },
+      "id": "7188e1b5-1271-4308-9493-722167e139be",
+      "name": "Normalize Agent Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "webhook-source-check",
+              "leftValue": "={{ $json.run_source }}",
+              "rightValue": "webhook",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5e0fabf4-a1b3-4acd-8715-57320f0c735e",
+      "name": "Run Source is Webhook?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, audit: $json }) }}",
+        "options": {}
+      },
+      "id": "cdabf653-aaa4-4694-a826-2ad0933daad4",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1584,
+        -64
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "54575356-1bce-459e-9482-a160f358152f",
+      "name": "Cron Complete",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        128
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Cron: Every 6h": {
+      "main": [
+        [
+          {
+            "node": "Read Stock Levels: Cron",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Manual Audit": {
+      "main": [
+        [
+          {
+            "node": "Read Stock Levels: Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Stock Levels: Cron": {
+      "main": [
+        [
+          {
+            "node": "Normalize Stock Rows: Cron",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Stock Levels: Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Stock Rows: Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Stock Rows: Cron": {
+      "main": [
+        [
+          {
+            "node": "AI Agent: Inventory (OpenAI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Stock Rows: Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent: Inventory (OpenAI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Run Source is Webhook?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Source is Webhook?": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cron Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output: Inventory Audit": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent: Inventory (OpenAI)",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: log_check": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent: Inventory (OpenAI)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: notify_team": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent: Inventory (OpenAI)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: Inventory (OpenAI)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent: Inventory (OpenAI)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "067bfb86-edba-43a6-9a9a-3d59b0213378",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c504f8794af7523bd0694c5177e1e8d3cb761dc6897c1899efc5062c2878ff30"
+  },
+  "id": "X_xdHh5kzX1Zo_tKQN7pz",
+  "tags": [
+    {
+      "updatedAt": "2026-04-30T07:07:14.523Z",
+      "createdAt": "2026-04-30T07:07:14.523Z",
+      "id": "Nd2ffksPH9JSNHqd",
+      "name": "AI Agents"
+    },
+    {
+      "updatedAt": "2026-04-30T12:36:25.662Z",
+      "createdAt": "2026-04-30T12:36:25.662Z",
+      "id": "XfSMt4CZpAjOpXIG",
+      "name": "Inventory"
+    },
+    {
+      "updatedAt": "2026-05-17T08:49:49.271Z",
+      "createdAt": "2026-05-17T08:49:49.271Z",
+      "id": "jsx1gdRJKp2LQ9Jn",
+      "name": "Reliable Audit"
+    },
+    {
+      "updatedAt": "2026-05-17T13:46:56.626Z",
+      "createdAt": "2026-05-17T13:46:56.626Z",
+      "id": "vf6t0Gwc2MpFoHnM",
+      "name": "OpenAI"
+    }
+  ]
+}

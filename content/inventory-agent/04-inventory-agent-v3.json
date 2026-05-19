@@ -1,0 +1,1147 @@
+{
+  "name": "04_Inventory_Agent_OpenAI_Planner_v3",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "d9693d8f-bc04-4359-b039-2ee20e8aca6a",
+      "name": "Cron: Every 6h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3248,
+        -656
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "inventory/check",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "afd74b5e-9ca0-4bbd-bf94-8dd1bc668c7e",
+      "name": "Webhook: Manual Audit",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -3248,
+        -352
+      ],
+      "webhookId": "inventory-webhook-ds-v4"
+    },
+    {
+      "parameters": {
+        "operation": "readAllRows",
+        "documentId": {
+          "__rl": true,
+          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "mode": "list",
+          "cachedResultName": "Inventory mgmt - Provision Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+        }
+      },
+      "id": "58c00556-d9b7-4abd-8858-1b91fce4ebda",
+      "name": "Read Stock Levels: Cron",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -3024,
+        -656
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "488RS47ylU5cV3YP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "readAllRows",
+        "documentId": {
+          "__rl": true,
+          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "mode": "list",
+          "cachedResultName": "Inventory mgmt - Provision Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+        }
+      },
+      "id": "e1aeff54-bc38-478f-8102-86655a6e8895",
+      "name": "Read Stock Levels: Webhook",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -3024,
+        -352
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "488RS47ylU5cV3YP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all();\nconst runSource = 'cron';\nconst sourceSheet = 'Weekly Data';\nconst ingredientColumns = ['Flour (kg)', 'Cheese (kg)', 'Tomato Sauce (kg)', 'Beef (kg)', 'Pasta (kg)'];\nconst stockKeys = ['stock_kg', 'Stock (kg)', 'Current Stock', 'current_stock', 'current_kg', 'stock', 'Stock'];\nconst itemKeys = ['item_name', 'Item', 'item', 'Ingredient', 'ingredient', 'Name', 'name'];\n\nfunction firstValue(row, keys) {\n  for (const key of keys) {\n    if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== '') return row[key];\n  }\n  return undefined;\n}\n\nfunction parseStock(value) {\n  if (value === undefined || value === null) return null;\n  if (typeof value === 'number') return Number.isFinite(value) ? value : null;\n  const cleaned = String(value).replace(/,/g, '').replace(/kg/gi, '').trim();\n  if (cleaned === '') return null;\n  const parsed = Number(cleaned);\n  return Number.isFinite(parsed) ? parsed : null;\n}\n\nfunction sourceRow(row, index) {\n  return row.row_number || row.Row || row.row || row.__rowNumber || index + 2;\n}\n\nconst inventoryItems = [];\nconst invalidRows = [];\nconst indexedRows = rows.map((item, index) => ({ item, index }));\nconst hasDirectItemRows = indexedRows.some(({ item }) => firstValue(item.json, itemKeys) !== undefined);\nconst rowsToProcess = hasDirectItemRows\n  ? indexedRows\n  : indexedRows.filter(({ item }) => ingredientColumns.some((columnName) => item.json[columnName] !== undefined && item.json[columnName] !== null && String(item.json[columnName]).trim() !== '')).slice(-1);\n\nrowsToProcess.forEach(({ item, index }) => {\n  const row = item.json;\n  const rowNumber = sourceRow(row, index);\n  const lastUpdated = row.last_updated || row.LastUpdated || row.Date || row.date || new Date().toISOString();\n  const directItemName = firstValue(row, itemKeys);\n  const directStock = parseStock(firstValue(row, stockKeys));\n\n  if (directItemName !== undefined) {\n    if (directStock === null) {\n      invalidRows.push({ source_row: rowNumber, item_name: String(directItemName), reason: 'Missing or non-numeric stock_kg' });\n    } else {\n      inventoryItems.push({ item_name: String(directItemName), stock_kg: directStock, last_updated: lastUpdated, source_row: rowNumber });\n    }\n    return;\n  }\n\n  let foundWideStock = false;\n  for (const columnName of ingredientColumns) {\n    if (row[columnName] === undefined || row[columnName] === null || String(row[columnName]).trim() === '') continue;\n    foundWideStock = true;\n    const stockKg = parseStock(row[columnName]);\n    const itemName = columnName.replace(/\\s*\\(kg\\)$/i, '');\n    if (stockKg === null) {\n      invalidRows.push({ source_row: rowNumber, item_name: itemName, field: columnName, reason: 'Missing or non-numeric stock_kg' });\n    } else {\n      inventoryItems.push({ item_name: itemName, stock_kg: stockKg, last_updated: lastUpdated, source_row: rowNumber });\n    }\n  }\n\n  if (!foundWideStock && Object.keys(row).length > 0) {\n    invalidRows.push({ source_row: rowNumber, reason: 'No supported inventory columns found' });\n  }\n});\n\nreturn [{\n  json: {\n    run_source: runSource,\n    checked_at: new Date().toISOString(),\n    source_sheet: sourceSheet,\n    item_count: inventoryItems.length,\n    invalid_count: invalidRows.length,\n    inventory_items: inventoryItems,\n    invalid_rows: invalidRows\n  }\n}];"
+      },
+      "id": "11e0d235-b832-46b7-994b-e44029d3e063",
+      "name": "Normalize Stock Rows: Cron",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2816,
+        -656
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all();\nconst runSource = 'webhook';\nconst sourceSheet = 'Weekly Data';\nconst ingredientColumns = ['Flour (kg)', 'Cheese (kg)', 'Tomato Sauce (kg)', 'Beef (kg)', 'Pasta (kg)'];\nconst stockKeys = ['stock_kg', 'Stock (kg)', 'Current Stock', 'current_stock', 'current_kg', 'stock', 'Stock'];\nconst itemKeys = ['item_name', 'Item', 'item', 'Ingredient', 'ingredient', 'Name', 'name'];\n\nfunction firstValue(row, keys) {\n  for (const key of keys) {\n    if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== '') return row[key];\n  }\n  return undefined;\n}\n\nfunction parseStock(value) {\n  if (value === undefined || value === null) return null;\n  if (typeof value === 'number') return Number.isFinite(value) ? value : null;\n  const cleaned = String(value).replace(/,/g, '').replace(/kg/gi, '').trim();\n  if (cleaned === '') return null;\n  const parsed = Number(cleaned);\n  return Number.isFinite(parsed) ? parsed : null;\n}\n\nfunction sourceRow(row, index) {\n  return row.row_number || row.Row || row.row || row.__rowNumber || index + 2;\n}\n\nconst inventoryItems = [];\nconst invalidRows = [];\nconst indexedRows = rows.map((item, index) => ({ item, index }));\nconst hasDirectItemRows = indexedRows.some(({ item }) => firstValue(item.json, itemKeys) !== undefined);\nconst rowsToProcess = hasDirectItemRows\n  ? indexedRows\n  : indexedRows.filter(({ item }) => ingredientColumns.some((columnName) => item.json[columnName] !== undefined && item.json[columnName] !== null && String(item.json[columnName]).trim() !== '')).slice(-1);\n\nrowsToProcess.forEach(({ item, index }) => {\n  const row = item.json;\n  const rowNumber = sourceRow(row, index);\n  const lastUpdated = row.last_updated || row.LastUpdated || row.Date || row.date || new Date().toISOString();\n  const directItemName = firstValue(row, itemKeys);\n  const directStock = parseStock(firstValue(row, stockKeys));\n\n  if (directItemName !== undefined) {\n    if (directStock === null) {\n      invalidRows.push({ source_row: rowNumber, item_name: String(directItemName), reason: 'Missing or non-numeric stock_kg' });\n    } else {\n      inventoryItems.push({ item_name: String(directItemName), stock_kg: directStock, last_updated: lastUpdated, source_row: rowNumber });\n    }\n    return;\n  }\n\n  let foundWideStock = false;\n  for (const columnName of ingredientColumns) {\n    if (row[columnName] === undefined || row[columnName] === null || String(row[columnName]).trim() === '') continue;\n    foundWideStock = true;\n    const stockKg = parseStock(row[columnName]);\n    const itemName = columnName.replace(/\\s*\\(kg\\)$/i, '');\n    if (stockKg === null) {\n      invalidRows.push({ source_row: rowNumber, item_name: itemName, field: columnName, reason: 'Missing or non-numeric stock_kg' });\n    } else {\n      inventoryItems.push({ item_name: itemName, stock_kg: stockKg, last_updated: lastUpdated, source_row: rowNumber });\n    }\n  }\n\n  if (!foundWideStock && Object.keys(row).length > 0) {\n    invalidRows.push({ source_row: rowNumber, reason: 'No supported inventory columns found' });\n  }\n});\n\nreturn [{\n  json: {\n    run_source: runSource,\n    checked_at: new Date().toISOString(),\n    source_sheet: sourceSheet,\n    item_count: inventoryItems.length,\n    invalid_count: invalidRows.length,\n    inventory_items: inventoryItems,\n    invalid_rows: invalidRows\n  }\n}];"
+      },
+      "id": "77c37a1f-191b-4b29-abcc-0820292b3848",
+      "name": "Normalize Stock Rows: Webhook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2816,
+        -352
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "readAllRows",
+        "documentId": {
+          "__rl": true,
+          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "mode": "list",
+          "cachedResultName": "Inventory mgmt - Provision Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+        }
+      },
+      "id": "b670220e-3f4a-48c8-bc11-2ae62bdf1290",
+      "name": "Read Recent CheckLog: Cron",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -2592,
+        -656
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "488RS47ylU5cV3YP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "readAllRows",
+        "documentId": {
+          "__rl": true,
+          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "mode": "list",
+          "cachedResultName": "Inventory mgmt - Provision Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+        }
+      },
+      "id": "755317da-e74b-4fa3-8f9d-814e4a9b33fd",
+      "name": "Read Recent CheckLog: Webhook",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -2592,
+        -352
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "488RS47ylU5cV3YP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const stock = $('Normalize Stock Rows: Cron').first().json;\nconst recentAudits = $input.all()\n  .map((item) => item.json)\n  .filter((row) => row && Object.keys(row).length > 0)\n  .slice(-10)\n  .map((row) => ({\n    timestamp: row.timestamp || row.Timestamp || row.date || row.Date || '',\n    risk_level: row.risk_level || row.Risk || '',\n    alert_required: row.alert_required ?? row.AlertRequired ?? '',\n    low_items_count: Number(row.low_items_count || row.LowItemsCount || 0) || 0,\n    low_items: row.low_items || row.LowItems || '',\n    approval_required: row.approval_required ?? row.ApprovalRequired ?? '',\n    actions_taken: row.actions_taken || row.ActionsTaken || ''\n  }));\n\nconst repeatedLowItems = {};\nfor (const audit of recentAudits) {\n  if (typeof audit.low_items !== 'string') continue;\n  for (const item of stock.inventory_items || []) {\n    if (audit.low_items.toLowerCase().includes(String(item.item_name).toLowerCase())) {\n      repeatedLowItems[item.item_name] = (repeatedLowItems[item.item_name] || 0) + 1;\n    }\n  }\n}\n\nreturn [{\n  json: {\n    ...stock,\n    recent_audits: recentAudits,\n    repeated_low_items: repeatedLowItems\n  }\n}];"
+      },
+      "id": "057c62c6-0af7-4c32-a735-61a2bcda85da",
+      "name": "Build Agent Context: Cron",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2352,
+        -656
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const stock = $('Normalize Stock Rows: Webhook').first().json;\nconst recentAudits = $input.all()\n  .map((item) => item.json)\n  .filter((row) => row && Object.keys(row).length > 0)\n  .slice(-10)\n  .map((row) => ({\n    timestamp: row.timestamp || row.Timestamp || row.date || row.Date || '',\n    risk_level: row.risk_level || row.Risk || '',\n    alert_required: row.alert_required ?? row.AlertRequired ?? '',\n    low_items_count: Number(row.low_items_count || row.LowItemsCount || 0) || 0,\n    low_items: row.low_items || row.LowItems || '',\n    approval_required: row.approval_required ?? row.ApprovalRequired ?? '',\n    actions_taken: row.actions_taken || row.ActionsTaken || ''\n  }));\n\nconst repeatedLowItems = {};\nfor (const audit of recentAudits) {\n  if (typeof audit.low_items !== 'string') continue;\n  for (const item of stock.inventory_items || []) {\n    if (audit.low_items.toLowerCase().includes(String(item.item_name).toLowerCase())) {\n      repeatedLowItems[item.item_name] = (repeatedLowItems[item.item_name] || 0) + 1;\n    }\n  }\n}\n\nreturn [{\n  json: {\n    ...stock,\n    recent_audits: recentAudits,\n    repeated_low_items: repeatedLowItems\n  }\n}];"
+      },
+      "id": "9f202ee6-8471-4e2a-ae3b-cec81b8b6b52",
+      "name": "Build Agent Context: Webhook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2352,
+        -352
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a guarded inventory audit and reorder plan from this context.\n\nRun source: {{ $json.run_source }}\nChecked at: {{ $json.checked_at }}\nSource sheet: {{ $json.source_sheet }}\nValid inventory items: {{ JSON.stringify($json.inventory_items) }}\nInvalid rows: {{ JSON.stringify($json.invalid_rows) }}\nRecent audit history: {{ JSON.stringify($json.recent_audits) }}\nRepeated low item hints: {{ JSON.stringify($json.repeated_low_items) }}\n\nRules:\n- All valid stock values are in KG.\n- A valid item is LOW STOCK when stock_kg < 20.\n- Replenish each low item to 50 KG. reorder_kg = 50 - current_kg.\n- Invalid rows must be included in invalid_rows but must not be treated as zero stock.\n- 0 low items: no alert, no approval.\n- 1-2 low items: warehouse alert only.\n- 3+ low items: warehouse alert plus supplier approval request.\n- Repeated shortages in recent audit history should raise risk_level by one level.\n\nYou must call log_check exactly once before returning the structured plan. Do not send email yourself. Downstream workflow nodes will validate the plan, send warehouse email, and request supplier approval.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a guarded AI inventory planning agent. You observe stock data, reason about low-stock risk, draft action plans, and log your decision. You are not allowed to contact warehouse or supplier directly.\n\nOutput rules:\n- Match the connected structured output parser.\n- Use risk_level: 'none', 'low', 'medium', 'high', or 'critical'.\n- Use warehouse_recipient='warehouse' and supplier_recipient='supplier'.\n- reorder_plan must contain one entry per low_stock_item with item_name, current_kg, target_kg=50, reorder_kg, source_row, and reason.\n- approval_required must be true only when supplier approval is needed.\n- supplier_message_draft must be non-empty when approval_required is true.\n- reasoning_summary must briefly explain the decision and any repeated shortages.\n\nTool contract:\n- log_check(alert_required, low_items_count, low_items_json, invalid_rows_json, run_source, risk_level, reorder_plan_json, approval_required, reasoning_summary) — always call once before returning.\n\nIf the log_check tool call is denied or fails, include that failure in actions_taken and still return the structured plan. No extra explanation outside the structured output."
+        }
+      },
+      "id": "5270e747-24f1-45ca-964e-1a2b26cfa90b",
+      "name": "AI Agent: Inventory Planner (OpenAI)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -2128,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "8879a56a-f2f1-475c-aff4-af34aa3a3ca8",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -2192,
+        -208
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ShukBsu4qwMNwoi6",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"items\": [\n    {\n      \"item_name\": \"Flour\",\n      \"stock_kg\": 42,\n      \"last_updated\": \"2025-03-23\",\n      \"source_row\": 12\n    }\n  ],\n  \"low_stock_items\": [\n    {\n      \"item_name\": \"Cheese\",\n      \"current_kg\": 12,\n      \"reorder_kg\": 38,\n      \"source_row\": 12\n    }\n  ],\n  \"invalid_rows\": [\n    {\n      \"source_row\": 14,\n      \"item_name\": \"Pasta\",\n      \"reason\": \"Missing or non-numeric stock_kg\"\n    }\n  ],\n  \"risk_level\": \"high\",\n  \"reorder_plan\": [\n    {\n      \"item_name\": \"Cheese\",\n      \"current_kg\": 12,\n      \"target_kg\": 50,\n      \"reorder_kg\": 38,\n      \"source_row\": 12,\n      \"reason\": \"Below 20 KG threshold\"\n    }\n  ],\n  \"warehouse_recipient\": \"warehouse\",\n  \"supplier_recipient\": \"supplier\",\n  \"warehouse_message_draft\": \"Low stock detected: Cheese is at 12 KG. Reorder 38 KG to reach 50 KG.\",\n  \"supplier_message_draft\": \"Please prepare replenishment for Cheese: current 12 KG, reorder 38 KG, target 50 KG.\",\n  \"approval_required\": true,\n  \"alert_required\": true,\n  \"reasoning_summary\": \"Cheese is below the threshold and needs replenishment. Supplier approval is required because several items are low.\",\n  \"actions_taken\": [\n    \"log_check\"\n  ],\n  \"run_source\": \"webhook\"\n}"
+      },
+      "id": "48865b86-f7df-4ceb-b510-87ccd7d872ed",
+      "name": "Structured Output: Inventory Plan",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -1968,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "mode": "list",
+          "cachedResultName": "Inventory mgmt - Provision Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 677497272,
+          "mode": "list",
+          "cachedResultName": "Stocks to Purchase",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit#gid=677497272"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "991a6e32-3ca4-4fe1-a8be-1e4911b698e6",
+      "name": "Tool: log_check",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        -2048,
+        -224
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "488RS47ylU5cV3YP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $input.first().json;\nlet audit = source.output ?? source;\n\nif (typeof audit === 'string') {\n  const cleaned = audit.replace(/^```jsons*/i, '').replace(/^```s*/i, '').replace(/```$/i, '').trim();\n  try {\n    audit = JSON.parse(cleaned);\n  } catch (error) {\n    audit = {\n      items: [],\n      low_stock_items: [],\n      invalid_rows: [{ reason: 'Agent output was not valid JSON', raw_output: audit }],\n      risk_level: 'critical',\n      reorder_plan: [],\n      warehouse_recipient: 'warehouse',\n      supplier_recipient: 'supplier',\n      warehouse_message_draft: '',\n      supplier_message_draft: '',\n      approval_required: false,\n      alert_required: false,\n      reasoning_summary: 'Agent output could not be parsed.',\n      actions_taken: ['log_check_failed'],\n      run_source: 'unknown'\n    };\n  }\n}\n\nreturn [{\n  json: {\n    items: Array.isArray(audit.items) ? audit.items : [],\n    low_stock_items: Array.isArray(audit.low_stock_items) ? audit.low_stock_items : [],\n    invalid_rows: Array.isArray(audit.invalid_rows) ? audit.invalid_rows : [],\n    risk_level: String(audit.risk_level || 'none').toLowerCase(),\n    reorder_plan: Array.isArray(audit.reorder_plan) ? audit.reorder_plan : [],\n    warehouse_recipient: audit.warehouse_recipient || 'warehouse',\n    supplier_recipient: audit.supplier_recipient || 'supplier',\n    warehouse_message_draft: audit.warehouse_message_draft || '',\n    supplier_message_draft: audit.supplier_message_draft || '',\n    approval_required: Boolean(audit.approval_required),\n    alert_required: Boolean(audit.alert_required),\n    reasoning_summary: audit.reasoning_summary || '',\n    actions_taken: Array.isArray(audit.actions_taken) ? audit.actions_taken : [],\n    run_source: audit.run_source || 'unknown'\n  }\n}];"
+      },
+      "id": "a2cd2806-d27d-4d6c-881d-a435c3ec165d",
+      "name": "Normalize Agent Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1808,
+        -640
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const audit = $input.first().json;\nconst errors = [];\nconst allowedRisk = new Set(['none', 'low', 'medium', 'high', 'critical']);\nconst lowCount = Array.isArray(audit.low_stock_items) ? audit.low_stock_items.length : 0;\nconst plan = Array.isArray(audit.reorder_plan) ? audit.reorder_plan : [];\n\nif (!allowedRisk.has(audit.risk_level)) errors.push('risk_level must be one of none, low, medium, high, critical');\nif (audit.warehouse_recipient !== 'warehouse') errors.push('warehouse_recipient must be warehouse');\nif (audit.supplier_recipient !== 'supplier') errors.push('supplier_recipient must be supplier');\nif (Boolean(audit.alert_required) !== (lowCount > 0)) errors.push('alert_required must match low_stock_items count');\nif (plan.length !== lowCount) errors.push('reorder_plan must contain one entry per low_stock_item');\n\nfor (const entry of plan) {\n  if (!entry.item_name) errors.push('each reorder_plan entry needs item_name');\n  const current = Number(entry.current_kg);\n  const target = Number(entry.target_kg);\n  const reorder = Number(entry.reorder_kg);\n  if (!Number.isFinite(current) || current < 0) errors.push('current_kg must be a non-negative number');\n  if (target !== 50) errors.push('target_kg must be 50');\n  if (!Number.isFinite(reorder) || reorder <= 0) errors.push('reorder_kg must be a positive number');\n  if (Number.isFinite(current) && Number.isFinite(reorder) && Math.abs((50 - current) - reorder) > 0.01) {\n    errors.push('reorder_kg must equal 50 - current_kg');\n  }\n}\n\nif (lowCount >= 3 && audit.approval_required !== true) errors.push('approval_required must be true for 3+ low items');\nif (lowCount < 3 && audit.approval_required === true) errors.push('approval_required must be false for fewer than 3 low items');\nif (audit.approval_required && String(audit.supplier_message_draft || '').trim() === '') errors.push('supplier_message_draft is required when approval is required');\nif (lowCount > 0 && String(audit.warehouse_message_draft || '').trim() === '') errors.push('warehouse_message_draft is required when alert is required');\n\nconst isValidPlan = errors.length === 0;\nreturn [{\n  json: {\n    ...audit,\n    low_items_count: lowCount,\n    is_valid_plan: isValidPlan,\n    validation_errors: errors,\n    should_notify_warehouse: isValidPlan && lowCount > 0,\n    should_request_supplier_approval: isValidPlan && audit.approval_required === true && lowCount >= 3,\n    execution_status: {\n      warehouse_status: 'not_sent',\n      supplier_approval_status: audit.approval_required ? 'not_requested' : 'not_required',\n      supplier_email_status: 'not_sent'\n    }\n  }\n}];"
+      },
+      "id": "5fab4438-1307-4ade-b907-124612165975",
+      "name": "Validate Agent Plan",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1792,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "={{ $json.is_valid_plan }}-check",
+              "leftValue": "={{ $json.is_valid_plan }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1673f701-143a-41dc-b3d5-add2b2a3ad18",
+      "name": "Valid Plan?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1584,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "={{ $json.should_notify_warehouse }}-check",
+              "leftValue": "={{ $json.should_notify_warehouse }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "88ec289a-8f39-467b-89f4-a308fe09f446",
+      "name": "Warehouse Alert Needed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1392,
+        -640
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "alsocando@gmail.com",
+        "subject": "=ALERT: LOW STOCK - {{ $json.low_items_count }} item(s) need replenishment",
+        "emailType": "text",
+        "message": "={{ $json.warehouse_message_draft }}\n\nRisk level: {{ $json.risk_level }}\n\nReasoning: {{ $json.reasoning_summary }}\n\nAudit time: {{ $now.toISO() }}\n\nZeroDist Inventory Agent v3",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "9761c08e-3886-4675-9c43-c1772feace87",
+      "name": "Send Warehouse Alert",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -976,
+        -656
+      ],
+      "webhookId": "68a1237a-7295-49cd-8535-cf8264187e4a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6WaA5cRM9MH4BFXc",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Validate Agent Plan').first().json;\nreturn [{ json: { ...data, actions_taken: [...(data.actions_taken || []), 'notify_team:warehouse'], execution_status: { ...data.execution_status, warehouse_status: 'sent' } } }];"
+      },
+      "id": "b7a090b1-c189-45d7-a7f5-b9e5dc072e7f",
+      "name": "Mark Warehouse Sent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -816,
+        -656
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "={{ $json.should_request_supplier_approval }}-check",
+              "leftValue": "={{ $json.should_request_supplier_approval }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3ea7a512-b8a4-420c-9cbe-270299bbe68c",
+      "name": "Supplier Approval Needed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -960,
+        -432
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "alsocando@gmail.com",
+        "subject": "=Approval required: Supplier reorder plan ({{ $json.low_items_count }} low item(s), risk {{ $json.risk_level }})",
+        "message": "=Please review this supplier reorder draft.\n\n{{ $json.supplier_message_draft }}\n\nReorder plan:\n{{ JSON.stringify($json.reorder_plan, null, 2) }}\n\nReasoning:\n{{ $json.reasoning_summary }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "Approve Supplier Email",
+            "disapproveLabel": "Decline Supplier Email"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "25dc6262-d3e1-4834-a788-d944ecad7106",
+      "name": "Request Supplier Approval",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -592,
+        -448
+      ],
+      "webhookId": "inventory-supplier-approval-v3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6WaA5cRM9MH4BFXc",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "={{ $json.data.approved }}-check",
+              "leftValue": "={{ $json.data.approved }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "238b579f-5bcc-45b2-8b1d-0ae8e33f8c40",
+      "name": "Supplier Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -432,
+        -448
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "alsocando@gmail.com",
+        "subject": "=CRITICAL: Approved inventory replenishment request - {{ $(\"Validate Agent Plan\").item.json.low_items_count }} item(s)",
+        "emailType": "text",
+        "message": "={{ $(\"Validate Agent Plan\").item.json.supplier_message_draft }}\n\nApproved by manager via n8n approval flow.\n\nAudit time: {{ $now.toISO() }}\n\nZeroDist Inventory Agent v3",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "27704e74-84c7-4be5-a611-408cd101455a",
+      "name": "Send Supplier Notification",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -112,
+        -464
+      ],
+      "webhookId": "787fa105-8a9c-4924-a850-16668b123f63",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6WaA5cRM9MH4BFXc",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Validate Agent Plan').first().json;\nreturn [{ json: { ...data, actions_taken: [...(data.actions_taken || []), 'notify_team:warehouse', 'supplier_approval:approved', 'notify_team:supplier'], execution_status: { ...data.execution_status, warehouse_status: data.should_notify_warehouse ? 'sent' : 'not_required', supplier_approval_status: 'approved', supplier_email_status: 'sent', completed_at: new Date().toISOString() } } }];"
+      },
+      "id": "1467d8a5-456f-4fd1-8ee8-88e629b43c9c",
+      "name": "Mark Supplier Sent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        -464
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Validate Agent Plan').first().json;\nreturn [{ json: { ...data, approval_response: $json.data || $json, actions_taken: [...(data.actions_taken || []), 'supplier_approval:denied'], execution_status: { ...data.execution_status, warehouse_status: data.should_notify_warehouse ? 'sent' : 'not_required', supplier_approval_status: 'denied', supplier_email_status: 'blocked_by_denial', completed_at: new Date().toISOString() } } }];"
+      },
+      "id": "81a7bea9-c29b-4930-bcf0-60464571efd1",
+      "name": "Mark Approval Denied",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "INVENTORY_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "CheckLog",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now.toISO() }}",
+            "run_source": "={{ $json.run_source }}",
+            "alert_required": "={{ $json.alert_required }}",
+            "low_items_count": "={{ $json.low_items_count }}",
+            "low_items": "={{ JSON.stringify($json.low_stock_items) }}",
+            "invalid_rows": "={{ JSON.stringify($json.invalid_rows) }}",
+            "risk_level": "={{ $json.risk_level }}",
+            "reorder_plan": "={{ JSON.stringify($json.reorder_plan) }}",
+            "approval_required": "={{ $json.approval_required }}",
+            "reasoning_summary": "=Supplier approval denied. {{ $json.reasoning_summary }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "1c0258f3-4d73-4de8-831b-0b5044662283",
+      "name": "Log Approval Denial",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -112,
+        -144
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "488RS47ylU5cV3YP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Mark Approval Denied').first().json;\nreturn [{ json: data }];"
+      },
+      "id": "6c9de387-edf4-46c7-a915-708e5e8c5cc0",
+      "name": "Finalize Approval Denied",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nreturn [{ json: { ...data, execution_status: { ...data.execution_status, supplier_approval_status: data.approval_required ? 'not_requested' : 'not_required', supplier_email_status: 'not_required', completed_at: new Date().toISOString() } } }];"
+      },
+      "id": "93c8e8b7-8892-4ecf-873f-54c6751d44fc",
+      "name": "Finalize No Supplier Action",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nreturn [{ json: { ...data, execution_status: { ...data.execution_status, warehouse_status: 'blocked_invalid_plan', supplier_approval_status: 'blocked_invalid_plan', supplier_email_status: 'blocked_invalid_plan', completed_at: new Date().toISOString() } } }];"
+      },
+      "id": "ec863b97-7d19-4cf2-9a73-d80ad7be7d6e",
+      "name": "Finalize Invalid Plan",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1568,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "webhook-source-check",
+              "leftValue": "={{ $json.run_source }}",
+              "rightValue": "webhook",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3eb46b48-f5ad-4807-b5d7-daf10c2677ea",
+      "name": "Run Source is Webhook?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -608,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, audit: $json }) }}",
+        "options": {}
+      },
+      "id": "dc358ba0-e52e-4f7b-ada1-78f1f5fbbbc3",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -400,
+        32
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "14af323a-1ea0-460c-b7e4-518f2c085a78",
+      "name": "Cron Complete",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        192
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Cron: Every 6h": {
+      "main": [
+        [
+          {
+            "node": "Read Stock Levels: Cron",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Manual Audit": {
+      "main": [
+        [
+          {
+            "node": "Read Stock Levels: Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Stock Levels: Cron": {
+      "main": [
+        [
+          {
+            "node": "Normalize Stock Rows: Cron",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Stock Levels: Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Stock Rows: Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Stock Rows: Cron": {
+      "main": [
+        [
+          {
+            "node": "Read Recent CheckLog: Cron",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Stock Rows: Webhook": {
+      "main": [
+        [
+          {
+            "node": "Read Recent CheckLog: Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Recent CheckLog: Cron": {
+      "main": [
+        [
+          {
+            "node": "Build Agent Context: Cron",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Recent CheckLog: Webhook": {
+      "main": [
+        [
+          {
+            "node": "Build Agent Context: Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Agent Context: Cron": {
+      "main": [
+        [
+          {
+            "node": "AI Agent: Inventory Planner (OpenAI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Agent Context: Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent: Inventory Planner (OpenAI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: Inventory Planner (OpenAI)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Validate Agent Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Agent Plan": {
+      "main": [
+        [
+          {
+            "node": "Valid Plan?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid Plan?": {
+      "main": [
+        [
+          {
+            "node": "Warehouse Alert Needed?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Finalize Invalid Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Warehouse Alert Needed?": {
+      "main": [
+        [
+          {
+            "node": "Send Warehouse Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Supplier Approval Needed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Warehouse Alert": {
+      "main": [
+        [
+          {
+            "node": "Mark Warehouse Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supplier Approval Needed?": {
+      "main": [
+        [
+          {
+            "node": "Request Supplier Approval",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Finalize No Supplier Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request Supplier Approval": {
+      "main": [
+        [
+          {
+            "node": "Supplier Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supplier Approved?": {
+      "main": [
+        [
+          {
+            "node": "Send Supplier Notification",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Approval Denied",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Supplier Notification": {
+      "main": [
+        [
+          {
+            "node": "Mark Supplier Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Supplier Sent": {
+      "main": [
+        [
+          {
+            "node": "Run Source is Webhook?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Approval Denied": {
+      "main": [
+        [
+          {
+            "node": "Log Approval Denial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Approval Denial": {
+      "main": [
+        [
+          {
+            "node": "Finalize Approval Denied",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize Approval Denied": {
+      "main": [
+        [
+          {
+            "node": "Run Source is Webhook?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize No Supplier Action": {
+      "main": [
+        [
+          {
+            "node": "Run Source is Webhook?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize Invalid Plan": {
+      "main": [
+        [
+          {
+            "node": "Run Source is Webhook?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Source is Webhook?": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cron Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent: Inventory Planner (OpenAI)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output: Inventory Plan": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent: Inventory Planner (OpenAI)",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: log_check": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent: Inventory Planner (OpenAI)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Warehouse Sent": {
+      "main": [
+        [
+          {
+            "node": "Supplier Approval Needed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "14be7149-e6aa-4003-9184-4660e4a412cf",
+  "meta": {
+    "instanceId": "c504f8794af7523bd0694c5177e1e8d3cb761dc6897c1899efc5062c2878ff30"
+  },
+  "id": "TQJBKdad4KkPm2vWlhs9M",
+  "tags": [
+    {
+      "updatedAt": "2026-05-17T09:05:55.295Z",
+      "createdAt": "2026-05-17T09:05:55.295Z",
+      "id": "MyfO8OiSoQ9MhV1e",
+      "name": "Planner v3"
+    },
+    {
+      "updatedAt": "2026-04-30T07:07:14.523Z",
+      "createdAt": "2026-04-30T07:07:14.523Z",
+      "id": "Nd2ffksPH9JSNHqd",
+      "name": "AI Agents"
+    },
+    {
+      "updatedAt": "2026-05-17T09:05:55.297Z",
+      "createdAt": "2026-05-17T09:05:55.297Z",
+      "id": "TG35w1WW4vJ87pB4",
+      "name": "Human Approval"
+    },
+    {
+      "updatedAt": "2026-04-30T12:36:25.662Z",
+      "createdAt": "2026-04-30T12:36:25.662Z",
+      "id": "XfSMt4CZpAjOpXIG",
+      "name": "Inventory"
+    },
+    {
+      "updatedAt": "2026-05-17T13:46:56.626Z",
+      "createdAt": "2026-05-17T13:46:56.626Z",
+      "id": "vf6t0Gwc2MpFoHnM",
+      "name": "OpenAI"
+    }
+  ]
+}
