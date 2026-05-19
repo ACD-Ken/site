@@ -5,6 +5,10 @@ const helmet = require('helmet');
 const OpenAI = require('openai');
 const { formatBotReply } = require('./reply-format');
 const {
+  createOpenAiBudgetGuard,
+  getBudgetReachedReply,
+} = require('./openai-budget');
+const {
   buildKnowledgeContext,
   getRemovedProjectReply,
   shouldBlockRemovedProjectQuery,
@@ -137,26 +141,36 @@ app.use('/api/chat', (req, res, next) => {
   next();
 });
 
-app.post('/api/chat', chatLimiter, async (req, res) => {
-  try {
-    const { messages } = req.body || {};
+function createChatResponder(options = {}) {
+  const budgetGuard = options.budgetGuard || createOpenAiBudgetGuard(options.budgetOptions);
+  const createOpenAIClient = options.createOpenAIClient || (() => new OpenAI({ apiKey: process.env.OPENAI_API_KEY }));
+  const model = options.model || process.env.OPENAI_MODEL || 'gpt-4.1';
+
+  return async function respondToChat(body) {
+    const { messages } = body || {};
 
     // Validate structure
     if (!Array.isArray(messages) || messages.length === 0) {
-      return res.status(400).json({ error: 'messages array is required' });
+      return { status: 400, body: { error: 'messages array is required' } };
     }
 
     // Validate each message
-    const MAX_USER_MSG_LEN = 500; // cap user input only — assistant replies can be longer
+    const MAX_USER_MSG_LEN = 500;
+    const MAX_ASSISTANT_MSG_LEN = 2000;
     for (const msg of messages) {
       if (!['user', 'assistant'].includes(msg.role)) {
-        return res.status(400).json({ error: 'Invalid message role' });
+        return { status: 400, body: { error: 'Invalid message role' } };
       }
       if (typeof msg.content !== 'string' || msg.content.trim() === '') {
-        return res.status(400).json({ error: 'Message content must be a non-empty string' });
+        return { status: 400, body: { error: 'Message content must be a non-empty string' } };
       }
       if (msg.role === 'user' && msg.content.length > MAX_USER_MSG_LEN) {
-        return res.status(400).json({ error: `Message exceeds ${MAX_USER_MSG_LEN} character limit` });
+        return { status: 400, body: { error: `Message exceeds ${MAX_USER_MSG_LEN} character limit` } };
+      }
+      // Cap forged assistant turns — client controls history, so a long
+      // "assistant" payload is the most likely jailbreak/poisoning vector.
+      if (msg.role === 'assistant' && msg.content.length > MAX_ASSISTANT_MSG_LEN) {
+        return { status: 400, body: { error: 'Invalid message' } };
       }
     }
 
@@ -167,15 +181,19 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
     }));
     const latestUserMessage = [...sanitised].reverse().find((m) => m.role === 'user')?.content || '';
     if (shouldBlockRemovedProjectQuery(latestUserMessage)) {
-      return res.json({ reply: getRemovedProjectReply() });
+      return { status: 200, body: { reply: getRemovedProjectReply() } };
+    }
+
+    const budgetCheck = budgetGuard.checkBudget();
+    if (!budgetCheck.allowed) {
+      return { status: 200, body: { reply: getBudgetReachedReply() } };
     }
 
     const knowledgeContext = buildKnowledgeContext(latestUserMessage);
-
-    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const client = createOpenAIClient();
 
     const response = await client.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4.1',
+      model,
       max_tokens: 450,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
@@ -184,8 +202,30 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       ],
     });
 
-    const reply = formatBotReply(response.choices[0]?.message?.content || "Sorry, I couldn't generate a response.");
-    res.json({ reply });
+    try {
+      budgetGuard.recordUsage({
+        model: response.model || model,
+        usage: response.usage || {},
+      });
+    } catch (err) {
+      console.error('[ACD-Bot budget error]', err.message || err);
+    }
+
+    return {
+      status: 200,
+      body: {
+        reply: formatBotReply(response.choices[0]?.message?.content || "Sorry, I couldn't generate a response."),
+      },
+    };
+  };
+}
+
+const respondToChat = createChatResponder();
+
+app.post('/api/chat', chatLimiter, async (req, res) => {
+  try {
+    const result = await respondToChat(req.body);
+    res.status(result.status).json(result.body);
   } catch (err) {
     console.error('[ACD-Bot error]', err.message || err);
     res.status(500).json({ error: 'Internal server error' });
@@ -199,4 +239,11 @@ app.use((err, req, res, _next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`ACD-Bot server running on port ${PORT}`));
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`ACD-Bot server running on port ${PORT}`));
+}
+
+module.exports = {
+  app,
+  createChatResponder,
+};
