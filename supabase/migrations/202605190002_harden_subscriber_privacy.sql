@@ -5,7 +5,7 @@ create schema if not exists private;
 create or replace function private.get_waitlist_status()
 returns table (
   is_subscribed boolean,
-  position integer,
+  "position" integer,
   joined_at timestamptz,
   referral_count bigint
 )
@@ -55,7 +55,7 @@ $$;
 create or replace function public.get_waitlist_status()
 returns table (
   is_subscribed boolean,
-  position integer,
+  "position" integer,
   joined_at timestamptz,
   referral_count bigint
 )

@@ -83,7 +83,7 @@ test('waitlist status does not expose all subscriber emails to authenticated bro
   assert.match(migration, /create or replace function private\.get_waitlist_status/i);
   assert.match(migration, /create or replace function public\.get_waitlist_status/i);
   assert.match(migration, /security invoker/i);
-  assert.match(migration, /returns table\s*\(\s*is_subscribed boolean/i);
+  assert.match(migration, /returns table\s*\(\s*is_subscribed boolean,\s*"position" integer/i);
   assert.match(migration, /\(row_number\(\) over\s*\(order by created_at asc, id asc\)\)::integer/i);
   assert.match(migration, /drop policy if exists "Subscribers can read own row" on public\.subscribers/i);
   assert.match(migration, /using \(lower\(email\) = nullif\(lower\(auth\.jwt\(\) ->> 'email'\), ''\)\)/i);
