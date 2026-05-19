@@ -50,3 +50,17 @@ test('HR Agentic Agent card links to completed V2 page with planned roadmap', as
   await expect(page.locator('.version-tag', { hasText: 'V3 Planned' })).toBeVisible();
   await expect(page.locator('.version-tag', { hasText: 'V4 Planned' })).toBeVisible();
 });
+
+test('ACD-Bot project card opens the site chat widget', async ({ page }) => {
+  await page.goto('/projects.html#chatbot-on-website');
+
+  const acdBotCard = page.locator('#chatbot-on-website');
+  const liveButton = acdBotCard.getByRole('button', { name: 'Live on Site' });
+
+  await expect(liveButton).toBeEnabled();
+  await liveButton.click();
+
+  await expect(page.locator('#acd-chat-window')).toBeVisible();
+  await expect(page.locator('.acd-msg.acd-bot')).toContainText("Hi! I'm ACD-Bot");
+  await expect(page.locator('#acd-input')).toBeFocused();
+});

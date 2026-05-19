@@ -68,6 +68,7 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
 
     win.querySelector('.acd-close-btn').addEventListener('click', closeChat);
     document.getElementById('acd-send-btn').addEventListener('click', sendMessage);
+    document.addEventListener('click', handleExternalChatTrigger);
     const input = document.getElementById('acd-input');
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -99,6 +100,24 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
 
   function toggleChat() {
     isOpen ? closeChat() : openChat();
+  }
+
+  function handleExternalChatTrigger(event) {
+    const trigger = event.target.closest('[data-acd-chat-trigger]');
+    if (!trigger) return;
+
+    event.preventDefault();
+    ensureGreetingVisible();
+    openChat();
+  }
+
+  function ensureGreetingVisible() {
+    const existingGreeting = Array.from(document.querySelectorAll('.acd-msg.acd-bot'))
+      .some(message => message.textContent.includes("Hi! I'm ACD-Bot"));
+
+    if (!existingGreeting) {
+      appendBotMessage(GREETING);
+    }
   }
 
   function openChat() {
