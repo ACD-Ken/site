@@ -1,51 +1,37 @@
 {
-  "name": "05 HR Agent v2 - Auditable Agentic Screening",
+  "name": "05 HR Agent v2.1 - Live Website CV Screening",
   "nodes": [
     {
       "parameters": {
-        "formTitle": "Job Application",
-        "formDescription": "Submit your application. AI screening powered by OpenAI + Mistral OCR. Auditable v2 response within 5 business days.",
-        "formFields": {
-          "values": [
-            {
-              "fieldLabel": "Full Name",
-              "requiredField": true
-            },
-            {
-              "fieldLabel": "Email",
-              "fieldType": "email",
-              "requiredField": true
-            },
-            {
-              "fieldLabel": "Phone"
-            },
-            {
-              "fieldLabel": "Job Role Applied",
-              "requiredField": true
-            },
-            {
-              "fieldLabel": "CV (PDF)",
-              "fieldType": "file",
-              "acceptFileTypes": ".pdf",
-              "requiredField": true
-            }
-          ]
-        },
-        "options": {}
+        "httpMethod": "POST",
+        "path": "hr-agent-v2-1",
+        "responseMode": "onReceived",
+        "responseData": "firstEntryJson",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=utf-8"
+              }
+            ]
+          }
+        }
       },
       "id": "90d55937-2032-4afe-a335-39a5cb4ab16c",
-      "name": "Form: Job Application",
-      "type": "n8n-nodes-base.formTrigger",
-      "typeVersion": 2.2,
+      "name": "Webhook: Public CV Submission",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
       "position": [
         -2016,
         112
       ],
-      "webhookId": "c0e1598e-0814-4bcc-b721-8fece67b75c8"
+      "webhookId": "hr-agent-v2-1-public-cv-submission"
     },
     {
       "parameters": {
-        "jsCode": "// Extract form fields + pass binary PDF through for Mistral OCR node\nconst item = $input.first();\nconst candidateName = item.json['Full Name'] || '';\nconst candidateEmail = item.json['Email'] || '';\nconst candidatePhone = item.json['Phone'] || '';\nconst jobRole = item.json['Job Role Applied'] || 'AI Automation Engineer';\n\n// Pass binary key name so the OCR node can find the file\nconst binaryKeys = Object.keys(item.binary || {});\nconst binaryKey = binaryKeys[0] || 'CV (PDF)';\n\nreturn [{\n  json: {\n    candidateName,\n    candidateEmail,\n    candidatePhone,\n    jobRole\n  },\n  binary: item.binary\n}];"
+        "jsCode": "// Extract website webhook fields + pass binary PDF through for Mistral OCR node\nconst item = $input.first();\nconst body = item.json.body || item.json || {};\n\nconst candidateName = body['Full Name'] || body.fullName || '';\nconst candidateEmail = body['Email'] || body.email || '';\nconst candidatePhone = body['Phone'] || body.phone || '';\nconst jobRole = body['Job Role Applied'] || body.jobRole || 'AI Automation Engineer';\n\nconst binaryKeys = Object.keys(item.binary || {});\nconst preferredBinaryKey = binaryKeys.find((key) => key === 'CV (PDF)' || key.toLowerCase().includes('cv'));\nconst binaryKey = preferredBinaryKey || binaryKeys[0] || 'CV (PDF)';\n\nreturn [{\n  json: {\n    candidateName,\n    candidateEmail,\n    candidatePhone,\n    jobRole,\n    source: 'website-v2.1',\n    receivedAt: new Date().toISOString(),\n    binaryKey\n  },\n  binary: item.binary\n}];"
       },
       "id": "7e565415-9f31-48dc-b8f0-2a46d20f1532",
       "name": "Extract Form Data",
@@ -458,17 +444,6 @@
   ],
   "pinData": {},
   "connections": {
-    "Form: Job Application": {
-      "main": [
-        [
-          {
-            "node": "Extract Form Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Extract Form Data": {
       "main": [
         [
@@ -578,6 +553,17 @@
           }
         ]
       ]
+    },
+    "Webhook: Public CV Submission": {
+      "main": [
+        [
+          {
+            "node": "Extract Form Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -586,11 +572,14 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "51bef30d-b811-4959-84a9-790f0cd01933",
+  "versionId": "v2-1-live-webhook",
   "meta": {
-    "instanceId": "c504f8794af7523bd0694c5177e1e8d3cb761dc6897c1899efc5062c2878ff30"
+    "instanceId": "c504f8794af7523bd0694c5177e1e8d3cb761dc6897c1899efc5062c2878ff30",
+    "version": "2.1",
+    "publicWebhookBase": "https://natalee-rightable-unblissfully.ngrok-free.dev",
+    "publicWebhookPath": "hr-agent-v2-1"
   },
-  "id": "0gs9tChvxZugLEmleF0z8",
+  "id": "hr-agent-v2-1-live-webhook",
   "tags": [
     {
       "updatedAt": "2026-04-30T07:07:14.523Z",

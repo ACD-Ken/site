@@ -59,7 +59,7 @@ test('public pages use standardized shell metadata and page hero treatment', asy
     {
       path: '/n8n-demo/',
       canonical: 'https://acd-ken.github.io/site/n8n-demo/',
-      title: 'HR Agent V2.1 - n8n Demo'
+      title: 'HR Agent V2.1 - Live CV Screening'
     }
   ];
 
