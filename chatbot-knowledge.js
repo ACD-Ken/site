@@ -67,8 +67,8 @@ const KNOWLEDGE_BASE = [
     id: 'project-hr-agent',
     intent: 'projects',
     title: 'HR Agentic Agent',
-    keywords: ['hr', 'agentic', 'agent', 'resume', 'screening', 'n8n', 'mistral', 'ocr', 'v2', 'v3', 'v4'],
-    content: 'HR Agentic Agent is Ken\'s completed V2 capstone workflow for auditable HR screening. It uses an AI Agent to score resumes, deterministic n8n nodes to validate totals and OCR quality, Google Sheets logging for every candidate, and recruiter email only on the shortlist branch. V3 is planned as a multi-agent evidence audit, and V4 is planned as autonomous triage with a route-planning agent.',
+    keywords: ['hr', 'agentic', 'agent', 'resume', 'screening', 'n8n', 'mistral', 'ocr', 'v2', 'v2.1', 'v3', 'v4'],
+    content: 'HR Agentic Agent is Ken\'s completed V2.1 capstone demo for auditable HR screening, hosted at /site/n8n-demo/. It uses an AI Agent to score resumes, deterministic n8n nodes to validate totals and OCR quality, Google Sheets logging for every candidate, and recruiter email only on the shortlist branch. V3 is planned as a multi-agent evidence audit, and V4 is planned as autonomous triage with a route-planning agent.',
   },
   {
     id: 'certifications',

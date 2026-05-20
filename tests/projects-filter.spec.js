@@ -28,7 +28,7 @@ test('project filters show the expected project groups', async ({ page }) => {
   await expect(visibleProjectCards(page)).toHaveCount(6);
 });
 
-test('HR Agentic Agent card links to completed V2 page with planned roadmap', async ({ page }) => {
+test('HR Agentic Agent card links to completed V2.1 demo with planned roadmap', async ({ page }) => {
   await page.goto('/projects.html#hr-agentic-agent/');
 
   await expect(page).toHaveURL(/#hr-agentic-agent$/);
@@ -36,17 +36,22 @@ test('HR Agentic Agent card links to completed V2 page with planned roadmap', as
   const hrCard = page.locator('#hr-agentic-agent');
   await expect(hrCard).toBeVisible();
   await expect(hrCard.locator('.status-badge.completed')).toContainText('Completed');
-  await expect(hrCard.getByText('Completed V2 capstone workflow')).toBeVisible();
-  await expect(hrCard.getByRole('link', { name: 'View V2' })).toHaveAttribute('href', 'hr-agent-v2.html');
-  await expect(hrCard.getByRole('link', { name: '60s n8n Demo' })).toHaveAttribute('href', 'content/hr-agent/n8n-demo-60s.mp4');
+  await expect(hrCard.getByText('Completed V2.1 capstone demo')).toBeVisible();
+  await expect(hrCard.locator('.metric', { hasText: 'Version' })).toContainText('V2.1');
+  await expect(hrCard.getByRole('link', { name: 'View V2.1' })).toHaveAttribute('href', 'n8n-demo/');
+  await expect(hrCard.getByRole('link', { name: '60s n8n Demo' })).toHaveAttribute('href', 'n8n-demo/n8n-demo-60s.mp4');
   await expect(hrCard.getByRole('link', { name: 'V3/V4 Planned' })).toHaveAttribute('href', 'hr-agent-v2.html#roadmap');
 
-  await hrCard.getByRole('link', { name: 'View V2' }).click();
-  await expect(page).toHaveURL(/hr-agent-v2\.html$/);
+  await hrCard.getByRole('link', { name: 'View V2.1' }).click();
+  await expect(page).toHaveURL(/n8n-demo\/$/);
   await expect(page.getByRole('heading', { name: /HR Agent/ })).toBeVisible();
-  await expect(page.locator('.hero-actions').getByRole('link', { name: '60s n8n Demo' })).toHaveAttribute('href', 'content/hr-agent/n8n-demo-60s.mp4');
-  await expect(page.locator('#artifacts').getByRole('link', { name: '60s n8n Demo' })).toHaveAttribute('href', 'content/hr-agent/n8n-demo-60s.mp4');
-  await expect(page.locator('.version-tag', { hasText: 'V2 Done' })).toBeVisible();
+  await expect(page.locator('.hero-badge')).toContainText('Version 2.1');
+  await expect(page.locator('.hero-actions').getByRole('link', { name: '60s n8n Demo' })).toHaveAttribute('href', 'n8n-demo-60s.mp4');
+  await expect(page.locator('.hero-actions').getByRole('link', { name: 'Workflow JSON' })).toHaveAttribute('href', '05_HR_Agent_v2.json');
+  await expect(page.locator('#demo video')).toHaveAttribute('aria-label', '60 second HR Agent n8n demo video');
+  await expect(page.locator('#artifacts').getByRole('link', { name: '60s n8n Demo' })).toHaveAttribute('href', 'n8n-demo-60s.mp4');
+  await expect(page.locator('#artifacts').getByRole('link', { name: 'Workflow JSON' })).toHaveAttribute('href', '05_HR_Agent_v2.json');
+  await expect(page.locator('.version-tag', { hasText: 'V2.1 Live' })).toBeVisible();
   await expect(page.locator('.version-tag', { hasText: 'V3 Planned' })).toBeVisible();
   await expect(page.locator('.version-tag', { hasText: 'V4 Planned' })).toBeVisible();
 });
