@@ -313,13 +313,44 @@
         }
 
         .visual-card span {
+            display: block;
             color: var(--text-muted);
             font-size: 0.72rem;
+            line-height: 1.25;
         }
 
         .visual-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .project-image.visual-panel.inventory-panel {
+            height: 285px;
+        }
+
+        .inventory-visual {
+            justify-content: flex-start;
+            gap: 0.55rem;
+            padding: 0.75rem;
+        }
+
+        .inventory-visual .visual-pill {
+            padding: 0.34rem 0.45rem;
+            font-size: 0.7rem;
+        }
+
+        .inventory-visual .visual-node {
+            min-height: 38px;
+            padding: 0.42rem;
+            font-size: 0.76rem;
+        }
+
+        .inventory-visual .visual-card {
+            min-height: 58px;
+            padding: 0.48rem 0.55rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .visual-pill {
@@ -1034,8 +1065,8 @@
 
             <!-- Project 6: Inventory AI Agent -->
             <article class="project-card" id="inventory-ai-agent" data-category="capstone">
-                <div class="project-image visual-panel">
-                    <div class="project-visual" aria-label="Inventory AI agent capstone visual">
+                <div class="project-image visual-panel inventory-panel">
+                    <div class="project-visual inventory-visual" aria-label="Inventory AI agent capstone visual">
                         <div class="visual-kicker">V2 Reliable Audit + V3 Planner</div>
                         <div class="visual-grid">
                             <div class="visual-pill">Normalize</div>
@@ -1120,8 +1151,8 @@
                     <div class="project-actions">
                         <a href="inventory-agent.html" class="btn btn-primary">View Details</a>
                         <a href="content/inventory-agent/inventory-v2-demo.mp4" class="btn btn-secondary">Workflow Video</a>
-                        <a href="content/inventory-agent/04-inventory-agent-v2.json" class="btn btn-secondary">Sanitized V2 JSON</a>
-                        <a href="content/inventory-agent/04-inventory-agent-v3.json" class="btn btn-secondary">Sanitized V3 JSON</a>
+                        <a href="content/inventory-agent/04-inventory-agent-v2.json" class="btn btn-secondary">V2 JSON</a>
+                        <a href="content/inventory-agent/04-inventory-agent-v3.json" class="btn btn-secondary">V3 JSON</a>
                     </div>
                 </div>
             </article>
