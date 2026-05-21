@@ -29,22 +29,22 @@ test('project filters show the expected project groups', async ({ page }) => {
   await expect(visibleProjectCards(page)).toHaveCount(7);
 });
 
-test('M7 Client Lead Agent card links to the sanitized capstone artifacts page', async ({ page }) => {
+test('M7 Client Lead Agent card links to the live Telegram capstone page', async ({ page }) => {
   await page.goto('/projects.html#m7-client-lead-agent/');
 
   await expect(page).toHaveURL(/#m7-client-lead-agent$/);
 
   const capstoneCard = page.locator('#m7-client-lead-agent');
   await expect(capstoneCard).toBeVisible();
-  await expect(capstoneCard.locator('.status-badge.completed')).toContainText('Artifacts');
+  await expect(capstoneCard.locator('.status-badge.completed')).toContainText('Live Demo');
   await expect(capstoneCard.getByText('Full SCTP Agentic AI capstone system')).toBeVisible();
-  await expect(capstoneCard.getByText('production bot handles, credentials, and endpoints stay private')).toBeVisible();
-  await expect(capstoneCard.getByRole('link', { name: 'View Artifacts' })).toHaveAttribute('href', 'm7-client-lead-agent.html');
+  await expect(capstoneCard.getByRole('link', { name: 'View Live Demo' })).toHaveAttribute('href', 'm7-client-lead-agent.html');
+  await expect(capstoneCard.getByRole('link', { name: 'Try Telegram Bot' })).toHaveAttribute('href', 'https://t.me/AlsoCan_Bot');
 
-  await capstoneCard.getByRole('link', { name: 'View Artifacts' }).click();
+  await capstoneCard.getByRole('link', { name: 'View Live Demo' }).click();
   await expect(page).toHaveURL(/m7-client-lead-agent\.html$/);
   await expect(page.getByRole('heading', { name: /AI Client Communication/ })).toBeVisible();
-  await expect(page.getByText('without publishing the production bot handle or workflow endpoint')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Try Telegram Bot' }).first()).toHaveAttribute('href', 'https://t.me/AlsoCan_Bot');
   await expect(page.locator('#artifacts').getByRole('link', { name: 'Customer Rapport JSON' })).toHaveAttribute('href', 'content/m7-client-lead-agent/customer-rapport-assistant.json');
   await expect(page.locator('#artifacts').getByRole('link', { name: 'Telegram Bot JSON' })).toHaveAttribute('href', 'content/m7-client-lead-agent/telegram-lead-qualification-bot.json');
 });

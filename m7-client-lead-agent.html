@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M7 Client Lead Agent - Capstone Artifacts</title>
+    <title>M7 Client Lead Agent - Live Capstone Demo</title>
     <meta name="description" content="Ken Wong's M7 capstone demo: an n8n AI client communication workflow plus a Telegram lead qualification bot with Supabase RAG, Gmail alerts, and Sheets audit logs.">
     <meta name="author" content="Ken Wong">
     <meta name="keywords" content="M7 capstone, n8n, Telegram bot, Agentic AI, Supabase RAG, lead qualification, client communication">
     <link rel="canonical" href="https://acd-ken.github.io/site/m7-client-lead-agent.html">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="Ken Wong AI Portfolio">
-    <meta property="og:title" content="M7 Client Lead Agent - Capstone Artifacts">
-    <meta property="og:description" content="An Agentic AI capstone system combining compliant client communication and Telegram lead qualification with sanitized public artifacts.">
+    <meta property="og:title" content="M7 Client Lead Agent - Live Capstone Demo">
+    <meta property="og:description" content="A live Agentic AI capstone system combining compliant client communication and Telegram lead qualification.">
     <meta property="og:url" content="https://acd-ken.github.io/site/m7-client-lead-agent.html">
     <meta property="og:image" content="https://acd-ken.github.io/site/og-image.svg">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="M7 Client Lead Agent - Capstone Artifacts">
+    <meta name="twitter:title" content="M7 Client Lead Agent - Live Capstone Demo">
     <meta name="twitter:description" content="n8n, Telegram, Supabase RAG, Gmail, and Google Sheets in one capstone workflow system.">
     <meta name="twitter:image" content="https://acd-ken.github.io/site/og-image.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -442,14 +442,14 @@
 
     <section class="hero">
         <div class="hero-inner">
-            <div class="hero-badge">Capstone Artifacts</div>
+            <div class="hero-badge">Live Capstone Demo</div>
             <h1>AI Client Communication &amp; <em>Lead Qualification</em></h1>
             <p class="hero-sub">
                 A two-part Agentic AI capstone built in n8n: one workflow drafts compliant investment-client responses for human approval, while a Telegram bot captures and qualifies new leads with Supabase RAG.
             </p>
             <div class="hero-actions">
-                <a class="btn" href="#artifacts">View Workflows</a>
-                <a class="btn secondary" href="#try-it">Sample Prompts</a>
+                <a class="btn" href="https://t.me/AlsoCan_Bot" target="_blank" rel="noopener">Try Telegram Bot</a>
+                <a class="btn secondary" href="#artifacts">View Workflows</a>
                 <a class="btn secondary" href="projects.html#m7-client-lead-agent">Back To Project Card</a>
             </div>
         </div>
@@ -478,7 +478,7 @@
                 <article class="panel">
                     <h3>Telegram Lead Qualification Bot</h3>
                     <ul>
-                        <li>Uses a Telegram bot as the public lead-capture entry point.</li>
+                        <li>Uses `@AlsoCan_Bot` as the public Telegram entry point.</li>
                         <li>Collects name and email before normal conversation.</li>
                         <li>Answers service questions using a Supabase RAG knowledge base.</li>
                         <li>Scores lead intent from 0 to 100 and alerts sales when score is 70 or higher.</li>
@@ -510,10 +510,13 @@
 
         <section class="section" id="try-it">
             <div class="try-box">
-                <h2>Sample Telegram Prompts</h2>
+                <h2>Try It In Telegram</h2>
                 <p class="section-lede">
-                    These safe sample prompts demonstrate the lead-capture and qualification path without publishing the production bot handle or workflow endpoint.
+                    Open the bot and send one of these prompts. The first message should include a name and email so the workflow can register the lead before scoring the conversation.
                 </p>
+                <div class="hero-actions">
+                    <a class="btn" href="https://t.me/AlsoCan_Bot" target="_blank" rel="noopener">Open @AlsoCan_Bot</a>
+                </div>
                 <div class="prompt-list">
                     <code class="prompt">Ken Wong, ken@example.com - I want to automate client follow ups and qualify leads from Telegram.</code>
                     <code class="prompt">What AI automation services can you build for a small business?</code>
@@ -552,7 +555,7 @@
                 </div>
                 <div class="evidence-item">
                     <span class="evidence-dot"></span>
-                    <div><strong>Telegram lead entry point</strong><p>The public page documents the Telegram path while keeping the production bot handle outside the hosted artifacts.</p></div>
+                    <div><strong>Telegram live entry point</strong><p>The public CTA opens `@AlsoCan_Bot` directly through Telegram.</p></div>
                 </div>
                 <div class="evidence-item">
                     <span class="evidence-dot"></span>

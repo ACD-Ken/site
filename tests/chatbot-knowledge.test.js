@@ -44,13 +44,13 @@ test('retrieveKnowledge includes HR Agent V2 roadmap context', () => {
   assert.match(hrAgent.content, /V4 is planned/);
 });
 
-test('retrieveKnowledge includes M7 Client Lead Agent artifact context', () => {
+test('retrieveKnowledge includes M7 Client Lead Agent live demo context', () => {
   const results = retrieveKnowledge('Tell me about the Telegram Supabase M7 Client Lead Agent');
   const m7Agent = results.find((entry) => entry.id === 'project-m7-client-lead-agent');
 
   assert.ok(m7Agent);
   assert.match(m7Agent.content, /\/site\/m7-client-lead-agent\.html/);
-  assert.match(m7Agent.content, /production bot handles, credentials, and endpoints stay outside/);
+  assert.match(m7Agent.content, /t\.me\/AlsoCan_Bot/);
   assert.match(m7Agent.content, /Supabase RAG/);
 });
 

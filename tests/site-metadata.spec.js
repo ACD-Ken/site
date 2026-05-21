@@ -59,7 +59,7 @@ test('public pages use standardized shell metadata and page hero treatment', asy
     {
       path: '/m7-client-lead-agent.html',
       canonical: 'https://acd-ken.github.io/site/m7-client-lead-agent.html',
-      title: 'M7 Client Lead Agent - Capstone Artifacts'
+      title: 'M7 Client Lead Agent - Live Capstone Demo'
     }
   ];
 
