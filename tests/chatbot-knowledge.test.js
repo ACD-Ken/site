@@ -37,7 +37,7 @@ test('retrieveKnowledge includes HR Agent V2.1 live runner context', () => {
   assert.ok(hrAgent);
   assert.match(hrAgent.content, /live V2\.1 capstone workflow/);
   assert.match(hrAgent.content, /\/site\/n8n-demo\//);
-  assert.match(hrAgent.content, /ngrok-hosted n8n webhook/);
+  assert.match(hrAgent.content, /ngrok-hosted n8n Form Trigger/);
   assert.match(hrAgent.content, /V3 is planned/);
   assert.match(hrAgent.content, /V4 is planned/);
 });

@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HR Agent V2.1 - Live CV Screening</title>
-    <meta name="description" content="Run Ken Wong's HR Agent V2.1 live n8n workflow by submitting a PDF CV for AI-assisted screening, validation, logging, and recruiter notification.">
+    <meta name="description" content="Open Ken Wong's HR Agent V2.1 n8n Form Trigger to submit a PDF CV for AI-assisted screening, validation, logging, and recruiter notification.">
     <meta name="author" content="Ken Wong">
-    <meta name="keywords" content="HR agent, n8n webhook, CV screening, resume screening, agentic AI, OpenAI, Mistral OCR">
+    <meta name="keywords" content="HR agent, n8n form trigger, CV screening, resume screening, agentic AI, OpenAI, Mistral OCR">
     <link rel="canonical" href="https://acd-ken.github.io/site/n8n-demo/">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="Ken Wong AI Portfolio">
     <meta property="og:title" content="HR Agent V2.1 - Live CV Screening">
-    <meta property="og:description" content="A public website runner for an activated n8n V2.1 HR Agent workflow that accepts PDF CV submissions.">
+    <meta property="og:description" content="A public website entry point for an activated n8n V2.1 HR Agent form that accepts PDF CV submissions.">
     <meta property="og:url" content="https://acd-ken.github.io/site/n8n-demo/">
     <meta property="og:image" content="https://acd-ken.github.io/site/og-image.svg">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="HR Agent V2.1 - Live CV Screening">
-    <meta name="twitter:description" content="Submit a PDF CV into a live ngrok-hosted n8n HR Agent V2.1 workflow.">
+    <meta name="twitter:description" content="Submit a PDF CV through the live ngrok-hosted n8n Form Trigger for HR Agent V2.1.">
     <meta name="twitter:image" content="https://acd-ken.github.io/site/og-image.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -154,7 +154,7 @@
             font-size: 1.08rem;
         }
 
-        .form-panel,
+        .action-panel,
         .panel {
             background: var(--panel-soft);
             border: 1px solid var(--border);
@@ -162,83 +162,23 @@
             box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
         }
 
-        .form-panel {
-            padding: 1.25rem;
-        }
-
-        form {
+        .action-panel {
+            padding: 1.35rem;
             display: grid;
             gap: 1rem;
         }
 
-        label {
-            display: grid;
-            gap: 0.45rem;
-            color: var(--text);
-            font-weight: 700;
-            font-size: 0.92rem;
+        .action-panel h2 {
+            font-size: 1.2rem;
         }
 
-        input,
-        select {
-            width: 100%;
-            min-height: 46px;
-            border: 1px solid #475569;
+        .submission-check {
+            border: 1px solid rgba(34, 197, 94, 0.55);
             border-radius: 8px;
-            background: #020617;
-            color: var(--text);
-            padding: 0.78rem 0.85rem;
-            font: inherit;
-        }
-
-        input[type="file"] {
-            padding: 0.68rem;
-        }
-
-        .helper {
-            font-size: 0.82rem;
-            font-weight: 500;
-        }
-
-        .status-message {
-            display: none;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.8rem;
-            color: var(--muted);
-            background: #020617;
-            font-size: 0.9rem;
-        }
-
-        .status-message.visible {
-            display: block;
-        }
-
-        .status-message.success {
+            padding: 0.85rem;
             color: #bbf7d0;
-            border-color: rgba(34, 197, 94, 0.55);
-        }
-
-        .status-message.error {
-            color: #fecaca;
-            border-color: rgba(248, 113, 113, 0.55);
-        }
-
-        .status-message.popup {
-            position: fixed;
-            right: 1rem;
-            bottom: 1rem;
-            z-index: 30;
-            max-width: min(360px, calc(100vw - 2rem));
-            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38);
-        }
-
-        .submit-row {
-            display: flex;
-            align-items: center;
-            gap: 0.85rem;
-            flex-wrap: wrap;
-            margin-top: 0.35rem;
+            background: rgba(34, 197, 94, 0.09);
+            font-weight: 700;
         }
 
         .btn {
@@ -357,48 +297,25 @@
     <header class="hero">
         <div class="hero-inner hero-grid">
             <div>
-                <span class="badge">Live n8n Webhook - Version 2.1</span>
+                <span class="badge">n8n Form Trigger - Version 2.1</span>
                 <h1>HR Agent V2.1 <em>Live CV Screening</em></h1>
                 <p>
-                    Submit a PDF CV from this website into the activated n8n workflow. The workflow extracts the CV text, scores the candidate with an AI agent, validates the result, logs the evaluation, and emails the recruiter only for shortlist outcomes.
+                    Submit a PDF CV through the n8n-hosted Form Trigger. The workflow extracts the CV text, scores the candidate with an AI agent, validates the result, logs the evaluation, and emails the recruiter only for shortlist outcomes.
                 </p>
                 <div class="artifact-links">
+                    <a href="https://natalee-rightable-unblissfully.ngrok-free.dev/form/c0e1598e-0814-4bcc-b721-8fece67b75c8" class="btn" target="_blank" rel="noopener">Submit CV</a>
                     <a href="../projects.html#hr-agentic-agent" class="btn secondary">Back To Project Card</a>
-                    <a href="../content/hr-agent/05_HR_Agent_v2_1.json" class="btn secondary">V2.1 Workflow JSON</a>
+                    <a href="../content/hr-agent/05_HR_Agent_v2_1.json" class="btn secondary">Sanitized V2.1 JSON</a>
                 </div>
             </div>
 
-            <div class="form-panel">
-                <form id="hr-agent-live-form" action="https://acd-bot-production.up.railway.app/api/hr-agent-v2-1" method="post" enctype="multipart/form-data" data-n8n-webhook="https://natalee-rightable-unblissfully.ngrok-free.dev/webhook/hr-agent-v2-1">
-                    <label>
-                        Full Name
-                        <input name="Full Name" type="text" autocomplete="name" required>
-                    </label>
-                    <label>
-                        Email
-                        <input name="Email" type="email" autocomplete="email" required>
-                    </label>
-                    <label>
-                        Phone
-                        <input name="Phone" type="tel" autocomplete="tel">
-                    </label>
-                    <label>
-                        Job Role Applied
-                        <select name="Job Role Applied" required>
-                            <option value="AI Automation Engineer">AI Automation Engineer</option>
-                            <option value="AI Workflow Specialist">AI Workflow Specialist</option>
-                            <option value="Automation Consultant">Automation Consultant</option>
-                        </select>
-                    </label>
-                    <label>
-                        CV (PDF)
-                        <input name="CV (PDF)" type="file" accept=".pdf,application/pdf" required>
-                    </label>
-                    <div class="submit-row">
-                        <button type="submit" class="btn">Submit CV</button>
-                    </div>
-                    <p class="status-message" id="hr-agent-status" role="status" aria-live="polite"></p>
-                </form>
+            <div class="action-panel">
+                <h2>Public n8n Form</h2>
+                <p class="section-lede">
+                    The CV upload fields live inside the n8n-hosted Form Trigger, so no Railway proxy is needed for this rollout.
+                </p>
+                <a href="https://natalee-rightable-unblissfully.ngrok-free.dev/form/c0e1598e-0814-4bcc-b721-8fece67b75c8" class="btn" target="_blank" rel="noopener">Submit CV</a>
+                <p class="submission-check">After submission, n8n shows: CV submission received.</p>
             </div>
         </div>
     </header>
@@ -408,12 +325,12 @@
             <div class="section-inner">
                 <h2>What Runs Behind The Form</h2>
                 <p class="section-lede">
-                    The webpage posts to the site backend, which forwards the CV to the production webhook path on the ngrok-hosted n8n instance. No CV is stored by GitHub Pages.
+                    The webpage links to the n8n-hosted Form Trigger on the ngrok-hosted n8n instance. No CV is stored by GitHub Pages.
                 </p>
                 <div class="grid">
                     <div class="panel">
-                        <h3>Website Input</h3>
-                        <p>The form sends candidate details and the PDF file as multipart form data to the live n8n webhook.</p>
+                        <h3>n8n-hosted Form Trigger</h3>
+                        <p>The public form collects candidate details and the PDF file directly inside n8n.</p>
                     </div>
                     <div class="panel">
                         <h3>Agentic Screening</h3>
@@ -431,8 +348,8 @@
             <div class="section-inner">
                 <h2>Artifacts</h2>
                 <div class="artifact-links">
-                    <a href="../content/hr-agent/05_HR_Agent_v2_1.json" class="btn secondary">V2.1 Workflow JSON</a>
-                    <a href="../content/hr-agent/05_HR_Agent_v2.json" class="btn secondary">V2 Archive JSON</a>
+                    <a href="../content/hr-agent/05_HR_Agent_v2_1.json" class="btn secondary">Sanitized V2.1 JSON</a>
+                    <a href="../content/hr-agent/05_HR_Agent_v2.json" class="btn secondary">Sanitized V2 Archive JSON</a>
                     <a href="../content/hr-agent/n8n-demo-60s.mp4" class="btn secondary">60s n8n Demo</a>
                     <a href="../hr-agent-v2.html" class="btn secondary">V2 Detail Page</a>
                 </div>
@@ -455,42 +372,5 @@
 
     <link rel="stylesheet" href="../chatbot.css">
     <script src="../chatbot.js" defer></script>
-    <script>
-        const form = document.getElementById('hr-agent-live-form');
-        const statusMessage = document.getElementById('hr-agent-status');
-
-        function setStatus(type, message) {
-            statusMessage.className = `status-message popup visible ${type}`;
-            statusMessage.textContent = message;
-        }
-
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const submitButton = form.querySelector('button[type="submit"]');
-            submitButton.disabled = true;
-            submitButton.textContent = 'Submitting...';
-            setStatus('', 'Uploading CV to the HR Agent workflow...');
-
-            try {
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: new FormData(form),
-                });
-                const result = await response.json().catch(() => ({}));
-
-                if (!response.ok || result.error) {
-                    throw new Error(result.error || 'The HR Agent workflow did not accept the submission.');
-                }
-
-                form.reset();
-                setStatus('success', result.message || 'CV submission received.');
-            } catch (error) {
-                setStatus('error', error.message || 'Unable to submit the CV right now.');
-            } finally {
-                submitButton.disabled = false;
-                submitButton.textContent = 'Submit CV';
-            }
-        });
-    </script>
 </body>
 </html>

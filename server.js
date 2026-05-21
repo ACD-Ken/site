@@ -25,10 +25,6 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:8000',
 ];
 
-const HR_AGENT_V2_1_WEBHOOK_URL = process.env.HR_AGENT_V2_1_WEBHOOK_URL
-  || 'https://natalee-rightable-unblissfully.ngrok-free.dev/webhook/hr-agent-v2-1';
-const HR_AGENT_MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
-
 const SYSTEM_PROMPT = `You are ACD-Bot, a sharp and friendly assistant on Ken Wong's personal portfolio site. You help visitors quickly understand who Ken is, what he has done, and what he can do.
 
 ## Who is Ken Wong
@@ -122,15 +118,6 @@ const chatLimiter = rateLimit({
   message: { error: 'Too many requests. Please try again in a few minutes.' },
 });
 
-const hrAgentLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  keyGenerator: getRateLimitKey,
-  message: { error: 'Too many CV submissions. Please try again in a few minutes.' },
-});
-
 // Request logger — logs method, IP, origin and final HTTP status
 app.use('/api/chat', (req, res, next) => {
   const ip = getRateLimitKey(req);
@@ -138,16 +125,6 @@ app.use('/api/chat', (req, res, next) => {
   res.on('finish', () => {
     const ms = Date.now() - start;
     console.log(`[${new Date().toISOString()}] ${req.method} ${res.statusCode} /api/chat ip=${ip} origin=${req.headers.origin || '-'} ${ms}ms`);
-  });
-  next();
-});
-
-app.use('/api/hr-agent-v2-1', (req, res, next) => {
-  const ip = getRateLimitKey(req);
-  const start = Date.now();
-  res.on('finish', () => {
-    const ms = Date.now() - start;
-    console.log(`[${new Date().toISOString()}] ${req.method} ${res.statusCode} /api/hr-agent-v2-1 ip=${ip} origin=${req.headers.origin || '-'} ${ms}ms`);
   });
   next();
 });
@@ -162,60 +139,6 @@ app.use('/api/chat', (req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
   next();
-});
-
-app.use('/api/hr-agent-v2-1', (req, res, next) => {
-  const origin = req.headers.origin || '';
-  if (ALLOWED_ORIGINS.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  next();
-});
-
-app.post('/api/hr-agent-v2-1', hrAgentLimiter, async (req, res) => {
-  try {
-    const contentType = req.headers['content-type'] || '';
-    if (!contentType.includes('multipart/form-data')) {
-      return res.status(415).json({ error: 'multipart/form-data with a PDF CV is required' });
-    }
-
-    const contentLength = Number(req.headers['content-length'] || 0);
-    if (contentLength > HR_AGENT_MAX_UPLOAD_BYTES) {
-      return res.status(413).json({ error: 'CV submission is too large. Please upload a PDF under 8 MB.' });
-    }
-
-    const upstream = await fetch(HR_AGENT_V2_1_WEBHOOK_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': contentType,
-        'ngrok-skip-browser-warning': '1',
-        'User-Agent': 'ACD-Ken-HR-Agent-Proxy/1.0',
-      },
-      body: req,
-      duplex: 'half',
-    });
-
-    const upstreamText = await upstream.text();
-    if (!upstream.ok) {
-      console.error('[HR Agent V2.1 upstream error]', upstream.status, upstreamText.slice(0, 500));
-      return res.status(502).json({
-        error: 'The HR Agent workflow did not accept the submission.',
-        upstreamStatus: upstream.status,
-      });
-    }
-
-    return res.json({
-      ok: true,
-      message: 'CV submission received.',
-      upstreamStatus: upstream.status,
-    });
-  } catch (err) {
-    console.error('[HR Agent V2.1 proxy error]', err.message || err);
-    return res.status(502).json({ error: 'Unable to reach the HR Agent workflow right now.' });
-  }
 });
 
 app.post('/api/chat', chatLimiter, async (req, res) => {

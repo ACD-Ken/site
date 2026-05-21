@@ -35,24 +35,21 @@
       "position": [
         0,
         128
-      ],
-      "webhookId": "inventory-webhook-ds-v3"
+      ]
     },
     {
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "value": "SANITIZED_INVENTORY_SHEET_ID",
           "mode": "list",
-          "cachedResultName": "Inventory mgmt - Provision Sample",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+          "cachedResultName": "Sanitized portfolio sheet"
         },
         "sheetName": {
           "__rl": true,
           "value": 755763503,
           "mode": "list",
-          "cachedResultName": "Weekly Data",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit#gid=755763503"
+          "cachedResultName": "Weekly Data"
         },
         "options": {}
       },
@@ -63,29 +60,21 @@
       "position": [
         240,
         -112
-      ],
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "488RS47ylU5cV3YP",
-          "name": "Google Sheets account 2"
-        }
-      }
+      ]
     },
     {
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "value": "SANITIZED_INVENTORY_SHEET_ID",
           "mode": "list",
-          "cachedResultName": "Inventory mgmt - Provision Sample",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+          "cachedResultName": "Sanitized portfolio sheet"
         },
         "sheetName": {
           "__rl": true,
           "value": 755763503,
           "mode": "list",
-          "cachedResultName": "Weekly Data",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit#gid=755763503"
+          "cachedResultName": "Weekly Data"
         },
         "options": {}
       },
@@ -96,13 +85,7 @@
       "position": [
         240,
         128
-      ],
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "488RS47ylU5cV3YP",
-          "name": "Google Sheets account 2"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -167,13 +150,7 @@
       "position": [
         608,
         352
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "ShukBsu4qwMNwoi6",
-          "name": "OpenAi account"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -193,10 +170,9 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "value": "SANITIZED_INVENTORY_SHEET_ID",
           "mode": "list",
-          "cachedResultName": "Inventory mgmt - Provision Sample",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+          "cachedResultName": "Inventory mgmt - Provision Sample"
         },
         "sheetName": {
           "__rl": true,
@@ -228,17 +204,11 @@
       "position": [
         784,
         352
-      ],
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "488RS47ylU5cV3YP",
-          "name": "Google Sheets account 2"
-        }
-      }
+      ]
     },
     {
       "parameters": {
-        "sendTo": "={{ $fromAI('recipient', 'warehouse or supplier', 'string') === 'supplier' ? 'dmsgbox@gmail.com' : 'data.msgbox@gmail.com' }}",
+        "sendTo": "={{ $fromAI('recipient', 'warehouse or supplier', 'string') === 'supplier' ? 'supplier@example.com' : 'warehouse@example.com' }}",
         "subject": "={{ $fromAI('severity', 'alert or critical', 'string') === 'critical' ? 'CRITICAL: ' : 'ALERT: ' }}LOW STOCK - {{ $fromAI('low_items_count', 'number of low stock items', 'number') }} item(s) below 20 KG",
         "emailType": "text",
         "message": "=STOCK AUDIT - {{ $fromAI('severity', 'alert or critical', 'string') === 'critical' ? 'MULTIPLE ITEMS CRITICAL' : 'LOW STOCK DETECTED' }}\n\n{{ $fromAI('summary', 'reorder list: one line per item with item name, current_kg, reorder_kg, and source_row', 'string') }}\n\nAction: {{ $fromAI('severity', 'alert or critical', 'string') === 'critical' ? 'Initiate purchase orders immediately and confirm ETA.' : 'Initiate purchase orders.' }}\n\nAudit time: {{ $now.toISO() }}\n\nDMsgBox Inventory Agent (OpenAI)",
@@ -251,14 +221,7 @@
       "position": [
         928,
         368
-      ],
-      "webhookId": "da12e0d2-e50d-4f30-a8c6-df1a6d2f757e",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "6WaA5cRM9MH4BFXc",
-          "name": "Gmail account"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -494,8 +457,7 @@
   },
   "versionId": "067bfb86-edba-43a6-9a9a-3d59b0213378",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "c504f8794af7523bd0694c5177e1e8d3cb761dc6897c1899efc5062c2878ff30"
+    "templateCredsSetupCompleted": true
   },
   "id": "X_xdHh5kzX1Zo_tKQN7pz",
   "tags": [

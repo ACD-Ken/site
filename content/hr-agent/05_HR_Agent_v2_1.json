@@ -1,37 +1,53 @@
 {
-  "name": "05 HR Agent v2.1 - Live Website CV Screening",
+  "name": "05 HR Agent v2.1 - n8n Form CV Screening",
   "nodes": [
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "hr-agent-v2-1",
-        "responseMode": "onReceived",
-        "responseData": "firstEntryJson",
+        "formTitle": "HR Agent V2.1 - Submit CV",
+        "formDescription": "Submit your PDF CV through this n8n-hosted Form Trigger. The HR Agent V2.1 workflow extracts, scores, validates, logs, and only notifies the recruiter for shortlist outcomes.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Phone"
+            },
+            {
+              "fieldLabel": "Job Role Applied",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "CV (PDF)",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "formSubmittedText": "CV submission received.",
         "options": {
-          "responseCode": 200,
-          "responseHeaders": {
-            "entries": [
-              {
-                "name": "Content-Type",
-                "value": "text/plain; charset=utf-8"
-              }
-            ]
-          }
+          "buttonLabel": "Submit CV"
         }
       },
       "id": "90d55937-2032-4afe-a335-39a5cb4ab16c",
-      "name": "Webhook: Public CV Submission",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
+      "name": "Form: V2.1 CV Submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
       "position": [
         -2016,
         112
-      ],
-      "webhookId": "hr-agent-v2-1-public-cv-submission"
+      ]
     },
     {
       "parameters": {
-        "jsCode": "// Extract website webhook fields + pass binary PDF through for Mistral OCR node\nconst item = $input.first();\nconst body = item.json.body || item.json || {};\n\nconst candidateName = body['Full Name'] || body.fullName || '';\nconst candidateEmail = body['Email'] || body.email || '';\nconst candidatePhone = body['Phone'] || body.phone || '';\nconst jobRole = body['Job Role Applied'] || body.jobRole || 'AI Automation Engineer';\n\nconst binaryKeys = Object.keys(item.binary || {});\nconst preferredBinaryKey = binaryKeys.find((key) => key === 'CV (PDF)' || key.toLowerCase().includes('cv'));\nconst binaryKey = preferredBinaryKey || binaryKeys[0] || 'CV (PDF)';\n\nreturn [{\n  json: {\n    candidateName,\n    candidateEmail,\n    candidatePhone,\n    jobRole,\n    source: 'website-v2.1',\n    receivedAt: new Date().toISOString(),\n    binaryKey\n  },\n  binary: item.binary\n}];"
+        "jsCode": "// Extract n8n Form Trigger fields + pass binary PDF through for Mistral OCR node\nconst item = $input.first();\nconst body = item.json || {};\n\nconst candidateName = body['Full Name'] || body.fullName || '';\nconst candidateEmail = body['Email'] || body.email || '';\nconst candidatePhone = body['Phone'] || body.phone || '';\nconst jobRole = body['Job Role Applied'] || body.jobRole || 'AI Automation Engineer';\n\nconst binaryKeys = Object.keys(item.binary || {});\nconst preferredBinaryKey = binaryKeys.find((key) => key === 'CV (PDF)' || key.toLowerCase().includes('cv'));\nconst binaryKey = preferredBinaryKey || binaryKeys[0] || 'CV (PDF)';\n\nreturn [{\n  json: {\n    candidateName,\n    candidateEmail,\n    candidatePhone,\n    jobRole,\n    source: 'n8n-form-v2.1',\n    receivedAt: new Date().toISOString(),\n    binaryKey\n  },\n  binary: item.binary\n}];"
       },
       "id": "7e565415-9f31-48dc-b8f0-2a46d20f1532",
       "name": "Extract Form Data",
@@ -73,13 +89,7 @@
       "position": [
         -1296,
         112
-      ],
-      "credentials": {
-        "mistralCloudApi": {
-          "id": "SsdebPssesxk6DaW",
-          "name": "Mistral Cloud account"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -99,13 +109,7 @@
         384
       ],
       "id": "ac790b4b-c5c1-4b49-a265-f83ef56d6372",
-      "name": "OpenAI Chat Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "ShukBsu4qwMNwoi6",
-          "name": "OpenAi account"
-        }
-      }
+      "name": "OpenAI Chat Model"
     },
     {
       "parameters": {
@@ -172,17 +176,15 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c",
+          "value": "SANITIZED_HR_SHEET_ID",
           "mode": "list",
-          "cachedResultName": "Candidates",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c/edit?usp=drivesdk"
+          "cachedResultName": "Sanitized portfolio sheet"
         },
         "sheetName": {
           "__rl": true,
           "value": 128548096,
           "mode": "list",
-          "cachedResultName": "Candidates",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c/edit#gid=128548096"
+          "cachedResultName": "Candidates"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -376,13 +378,7 @@
       "position": [
         -496,
         112
-      ],
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "488RS47ylU5cV3YP",
-          "name": "Google Sheets account 2"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -419,7 +415,7 @@
     },
     {
       "parameters": {
-        "sendTo": "alsocando@gmail.com",
+        "sendTo": "recruiter@example.com",
         "subject": "=Shortlisted: {{ $('Validate AI Evaluation').item.json.candidate_name }} - Score {{ $('Validate AI Evaluation').item.json.total_score }}/100",
         "emailType": "text",
         "message": "=SHORTLISTED CANDIDATE\n\nName: {{ $('Validate AI Evaluation').item.json.candidate_name }}\nEmail: {{ $('Validate AI Evaluation').item.json.candidate_email }}\nPhone: {{ $('Validate AI Evaluation').item.json.phone }}\nRole: {{ $('Validate AI Evaluation').item.json.job_role }}\nScore: {{ $('Validate AI Evaluation').item.json.total_score }}/100\nQualification Rate: {{ $('Validate AI Evaluation').item.json.qualification_rate }}\n\nStrengths:\n{{ $('Validate AI Evaluation').item.json.strengths }}\n\nGaps:\n{{ $('Validate AI Evaluation').item.json.gaps }}\n\nAI Evaluation:\n{{ $('Validate AI Evaluation').item.json.explanation }}\n\nWorkflow validation:\n{{ $('Validate AI Evaluation').item.json.validation_notes }}\n\nReview full evaluation in Google Sheets -> HR Candidates tab.\n\nDMsgBox HR Agent v2",
@@ -432,18 +428,22 @@
       "position": [
         -16,
         0
-      ],
-      "webhookId": "c396ec20-b669-45aa-926e-62842474f2ff",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "6WaA5cRM9MH4BFXc",
-          "name": "Gmail account"
-        }
-      }
+      ]
     }
   ],
   "pinData": {},
   "connections": {
+    "Form: V2.1 CV Submission": {
+      "main": [
+        [
+          {
+            "node": "Extract Form Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Extract Form Data": {
       "main": [
         [
@@ -574,10 +574,7 @@
   },
   "versionId": "v2-1-live-webhook",
   "meta": {
-    "instanceId": "c504f8794af7523bd0694c5177e1e8d3cb761dc6897c1899efc5062c2878ff30",
-    "version": "2.1",
-    "publicWebhookBase": "https://natalee-rightable-unblissfully.ngrok-free.dev",
-    "publicWebhookPath": "hr-agent-v2-1"
+    "version": "2.1"
   },
   "id": "hr-agent-v2-1-live-webhook",
   "tags": [

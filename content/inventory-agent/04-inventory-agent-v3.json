@@ -35,18 +35,16 @@
       "position": [
         -3248,
         -352
-      ],
-      "webhookId": "inventory-webhook-ds-v4"
+      ]
     },
     {
       "parameters": {
         "operation": "readAllRows",
         "documentId": {
           "__rl": true,
-          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "value": "SANITIZED_INVENTORY_SHEET_ID",
           "mode": "list",
-          "cachedResultName": "Inventory mgmt - Provision Sample",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+          "cachedResultName": "Sanitized portfolio sheet"
         }
       },
       "id": "58c00556-d9b7-4abd-8858-1b91fce4ebda",
@@ -56,23 +54,16 @@
       "position": [
         -3024,
         -656
-      ],
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "488RS47ylU5cV3YP",
-          "name": "Google Sheets account 2"
-        }
-      }
+      ]
     },
     {
       "parameters": {
         "operation": "readAllRows",
         "documentId": {
           "__rl": true,
-          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "value": "SANITIZED_INVENTORY_SHEET_ID",
           "mode": "list",
-          "cachedResultName": "Inventory mgmt - Provision Sample",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+          "cachedResultName": "Sanitized portfolio sheet"
         }
       },
       "id": "e1aeff54-bc38-478f-8102-86655a6e8895",
@@ -82,13 +73,7 @@
       "position": [
         -3024,
         -352
-      ],
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "488RS47ylU5cV3YP",
-          "name": "Google Sheets account 2"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -121,10 +106,9 @@
         "operation": "readAllRows",
         "documentId": {
           "__rl": true,
-          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "value": "SANITIZED_INVENTORY_SHEET_ID",
           "mode": "list",
-          "cachedResultName": "Inventory mgmt - Provision Sample",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+          "cachedResultName": "Sanitized portfolio sheet"
         }
       },
       "id": "b670220e-3f4a-48c8-bc11-2ae62bdf1290",
@@ -135,23 +119,16 @@
         -2592,
         -656
       ],
-      "alwaysOutputData": true,
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "488RS47ylU5cV3YP",
-          "name": "Google Sheets account 2"
-        }
-      }
+      "alwaysOutputData": true
     },
     {
       "parameters": {
         "operation": "readAllRows",
         "documentId": {
           "__rl": true,
-          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "value": "SANITIZED_INVENTORY_SHEET_ID",
           "mode": "list",
-          "cachedResultName": "Inventory mgmt - Provision Sample",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+          "cachedResultName": "Sanitized portfolio sheet"
         }
       },
       "id": "755317da-e74b-4fa3-8f9d-814e4a9b33fd",
@@ -162,13 +139,7 @@
         -2592,
         -352
       ],
-      "alwaysOutputData": true,
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "488RS47ylU5cV3YP",
-          "name": "Google Sheets account 2"
-        }
-      }
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -233,13 +204,7 @@
       "position": [
         -2192,
         -208
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "ShukBsu4qwMNwoi6",
-          "name": "OpenAi account"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -259,17 +224,15 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI",
+          "value": "SANITIZED_INVENTORY_SHEET_ID",
           "mode": "list",
-          "cachedResultName": "Inventory mgmt - Provision Sample",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit?usp=drivesdk"
+          "cachedResultName": "Inventory mgmt - Provision Sample"
         },
         "sheetName": {
           "__rl": true,
           "value": 677497272,
           "mode": "list",
-          "cachedResultName": "Stocks to Purchase",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/edit#gid=677497272"
+          "cachedResultName": "Stocks to Purchase"
         },
         "columns": {
           "mappingMode": "autoMapInputData",
@@ -288,13 +251,7 @@
       "position": [
         -2048,
         -224
-      ],
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "488RS47ylU5cV3YP",
-          "name": "Google Sheets account 2"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -390,7 +347,7 @@
     },
     {
       "parameters": {
-        "sendTo": "alsocando@gmail.com",
+        "sendTo": "recruiter@example.com",
         "subject": "=ALERT: LOW STOCK - {{ $json.low_items_count }} item(s) need replenishment",
         "emailType": "text",
         "message": "={{ $json.warehouse_message_draft }}\n\nRisk level: {{ $json.risk_level }}\n\nReasoning: {{ $json.reasoning_summary }}\n\nAudit time: {{ $now.toISO() }}\n\nZeroDist Inventory Agent v3",
@@ -405,14 +362,7 @@
       "position": [
         -976,
         -656
-      ],
-      "webhookId": "68a1237a-7295-49cd-8535-cf8264187e4a",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "6WaA5cRM9MH4BFXc",
-          "name": "Gmail account"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -463,7 +413,7 @@
     {
       "parameters": {
         "operation": "sendAndWait",
-        "sendTo": "alsocando@gmail.com",
+        "sendTo": "recruiter@example.com",
         "subject": "=Approval required: Supplier reorder plan ({{ $json.low_items_count }} low item(s), risk {{ $json.risk_level }})",
         "message": "=Please review this supplier reorder draft.\n\n{{ $json.supplier_message_draft }}\n\nReorder plan:\n{{ JSON.stringify($json.reorder_plan, null, 2) }}\n\nReasoning:\n{{ $json.reasoning_summary }}",
         "approvalOptions": {
@@ -484,14 +434,7 @@
       "position": [
         -592,
         -448
-      ],
-      "webhookId": "inventory-supplier-approval-v3",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "6WaA5cRM9MH4BFXc",
-          "name": "Gmail account"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -528,7 +471,7 @@
     },
     {
       "parameters": {
-        "sendTo": "alsocando@gmail.com",
+        "sendTo": "recruiter@example.com",
         "subject": "=CRITICAL: Approved inventory replenishment request - {{ $(\"Validate Agent Plan\").item.json.low_items_count }} item(s)",
         "emailType": "text",
         "message": "={{ $(\"Validate Agent Plan\").item.json.supplier_message_draft }}\n\nApproved by manager via n8n approval flow.\n\nAudit time: {{ $now.toISO() }}\n\nZeroDist Inventory Agent v3",
@@ -543,14 +486,7 @@
       "position": [
         -112,
         -464
-      ],
-      "webhookId": "787fa105-8a9c-4924-a850-16668b123f63",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "6WaA5cRM9MH4BFXc",
-          "name": "Gmail account"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -584,7 +520,8 @@
         "documentId": {
           "__rl": true,
           "value": "INVENTORY_SHEET_ID",
-          "mode": "id"
+          "mode": "id",
+          "cachedResultName": "Sanitized portfolio sheet"
         },
         "sheetName": {
           "__rl": true,
@@ -615,13 +552,7 @@
       "position": [
         -112,
         -144
-      ],
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "488RS47ylU5cV3YP",
-          "name": "Google Sheets account 2"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -1108,9 +1039,7 @@
     "availableInMCP": false
   },
   "versionId": "14be7149-e6aa-4003-9184-4660e4a412cf",
-  "meta": {
-    "instanceId": "c504f8794af7523bd0694c5177e1e8d3cb761dc6897c1899efc5062c2878ff30"
-  },
+  "meta": {},
   "id": "TQJBKdad4KkPm2vWlhs9M",
   "tags": [
     {

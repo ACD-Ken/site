@@ -40,8 +40,7 @@
       "position": [
         -2016,
         112
-      ],
-      "webhookId": "c0e1598e-0814-4bcc-b721-8fece67b75c8"
+      ]
     },
     {
       "parameters": {
@@ -58,7 +57,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first();\nconst binaryKeys = Object.keys(item.binary || {});\nconst binaryKey = binaryKeys[0] || 'CV (PDF)';\nconst binaryData = item.binary[binaryKey];\n\nif (!binaryData) {\n  throw new Error('No binary PDF found in input. Check the form upload field name.');\n}\n\n// binaryMode:'separate' stores files on disk \u2014 binaryData.data is a filesystem\n// reference, not base64. getBinaryDataBuffer() fetches the actual bytes.\nconst buffer = await this.helpers.getBinaryDataBuffer(0, binaryKey);\nconst pdfBase64 = buffer.toString('base64');\n\nreturn [{\n  json: {\n    ...item.json,\n    pdfBase64,\n    pdfMimeType: binaryData.mimeType || 'application/pdf'\n  }\n}];"
+        "jsCode": "const item = $input.first();\nconst binaryKeys = Object.keys(item.binary || {});\nconst binaryKey = binaryKeys[0] || 'CV (PDF)';\nconst binaryData = item.binary[binaryKey];\n\nif (!binaryData) {\n  throw new Error('No binary PDF found in input. Check the form upload field name.');\n}\n\n// binaryMode:'separate' stores files on disk — binaryData.data is a filesystem\n// reference, not base64. getBinaryDataBuffer() fetches the actual bytes.\nconst buffer = await this.helpers.getBinaryDataBuffer(0, binaryKey);\nconst pdfBase64 = buffer.toString('base64');\n\nreturn [{\n  json: {\n    ...item.json,\n    pdfBase64,\n    pdfMimeType: binaryData.mimeType || 'application/pdf'\n  }\n}];"
       },
       "id": "e5c1b2c8-64ed-4dde-af00-0dcfb03e6f1f",
       "name": "Prepare PDF for OCR",
@@ -87,13 +86,7 @@
       "position": [
         -1296,
         112
-      ],
-      "credentials": {
-        "mistralCloudApi": {
-          "id": "SsdebPssesxk6DaW",
-          "name": "Mistral Cloud account"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -113,13 +106,7 @@
         416
       ],
       "id": "ac790b4b-c5c1-4b49-a265-f83ef56d6372",
-      "name": "OpenAI Chat Model: Evaluator",
-      "credentials": {
-        "openAiApi": {
-          "id": "ShukBsu4qwMNwoi6",
-          "name": "OpenAi account"
-        }
-      }
+      "name": "OpenAI Chat Model: Evaluator"
     },
     {
       "parameters": {
@@ -186,17 +173,15 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c",
+          "value": "SANITIZED_HR_SHEET_ID",
           "mode": "list",
-          "cachedResultName": "Candidates",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c/edit?usp=drivesdk"
+          "cachedResultName": "Sanitized portfolio sheet"
         },
         "sheetName": {
           "__rl": true,
           "value": 128548096,
           "mode": "list",
-          "cachedResultName": "Candidates",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c/edit#gid=128548096"
+          "cachedResultName": "Candidates"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -566,13 +551,7 @@
       "position": [
         256,
         112
-      ],
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "488RS47ylU5cV3YP",
-          "name": "Google Sheets account 2"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -592,13 +571,7 @@
         416
       ],
       "id": "dcadcc7a-e908-41aa-89b3-aa2d3c5867cb",
-      "name": "OpenAI Chat Model: Auditor",
-      "credentials": {
-        "openAiApi": {
-          "id": "ShukBsu4qwMNwoi6",
-          "name": "OpenAi account"
-        }
-      }
+      "name": "OpenAI Chat Model: Auditor"
     },
     {
       "parameters": {
@@ -669,13 +642,7 @@
         416
       ],
       "id": "041ac0b1-2a69-4037-9fc9-4cb2e84a32d7",
-      "name": "OpenAI Chat Model: Triage Planner",
-      "credentials": {
-        "openAiApi": {
-          "id": "ShukBsu4qwMNwoi6",
-          "name": "OpenAi account"
-        }
-      }
+      "name": "OpenAI Chat Model: Triage Planner"
     },
     {
       "parameters": {
@@ -771,7 +738,7 @@
     },
     {
       "parameters": {
-        "sendTo": "alsocando@gmail.com",
+        "sendTo": "recruiter@example.com",
         "subject": "={{ $('Validate Triage Route').item.json.recruiter_subject }}",
         "emailType": "text",
         "message": "=AUTONOMOUS TRIAGE: SHORTLIST ALERT - AUDIT PASSED\n\nName: {{ $('Validate Triage Route').item.json.candidate_name }}\nEmail: {{ $('Validate Triage Route').item.json.candidate_email }}\nPhone: {{ $('Validate Triage Route').item.json.phone }}\nRole: {{ $('Validate Triage Route').item.json.job_role }}\nScore: {{ $('Validate Triage Route').item.json.total_score }}/100\nPriority: {{ $('Validate Triage Route').item.json.recruiter_priority }}\nAutomation Confidence: {{ $('Validate Triage Route').item.json.automation_confidence }}\n\nTriage Route: {{ $('Validate Triage Route').item.json.final_route }}\nReason: {{ $('Validate Triage Route').item.json.route_reason }}\n\nEvidence Audit:\nStatus: {{ $('Validate Triage Route').item.json.audit_status }}\nConfidence: {{ $('Validate Triage Route').item.json.audit_confidence }}\nRisks: {{ $('Validate Triage Route').item.json.score_risks || 'none' }}\nUnsupported Claims: {{ $('Validate Triage Route').item.json.unsupported_claims || 'none' }}\n\nRecommended Next Step:\n{{ $('Validate Triage Route').item.json.recommended_next_step }}\n\nInterview Focus Areas:\n{{ $('Validate Triage Route').item.json.interview_focus_areas || 'none' }}\n\nRecruiter Message:\n{{ $('Validate Triage Route').item.json.recruiter_message }}\n\nReview full evaluation in Google Sheets -> HR Candidates tab.\n\nDMsgBox HR Agent v4",
@@ -784,18 +751,11 @@
       "position": [
         768,
         0
-      ],
-      "webhookId": "2a1b07b0-d7d0-4304-b2de-69bf9a1e8ab4",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "6WaA5cRM9MH4BFXc",
-          "name": "Gmail account"
-        }
-      }
+      ]
     },
     {
       "parameters": {
-        "sendTo": "alsocando@gmail.com",
+        "sendTo": "recruiter@example.com",
         "subject": "={{ $('Validate Triage Route').item.json.recruiter_subject }}",
         "emailType": "text",
         "message": "=AUTONOMOUS TRIAGE: HUMAN REVIEW REQUIRED\n\nThis candidate is NOT a clean automated shortlist. Please review before taking action.\n\nName: {{ $('Validate Triage Route').item.json.candidate_name }}\nEmail: {{ $('Validate Triage Route').item.json.candidate_email }}\nPhone: {{ $('Validate Triage Route').item.json.phone }}\nRole: {{ $('Validate Triage Route').item.json.job_role }}\nScore: {{ $('Validate Triage Route').item.json.total_score }}/100\nDecision: {{ $('Validate Triage Route').item.json.decision }}\nPriority: {{ $('Validate Triage Route').item.json.recruiter_priority }}\n\nTriage Route: {{ $('Validate Triage Route').item.json.final_route }}\nReason: {{ $('Validate Triage Route').item.json.route_reason }}\nRoute Validation: {{ $('Validate Triage Route').item.json.route_validation_notes }}\n\nEvidence Audit:\nStatus: {{ $('Validate Triage Route').item.json.audit_status }}\nConfidence: {{ $('Validate Triage Route').item.json.audit_confidence }}\nRisks: {{ $('Validate Triage Route').item.json.score_risks || 'none' }}\nUnsupported Claims: {{ $('Validate Triage Route').item.json.unsupported_claims || 'none' }}\n\nRisk Flags:\n{{ $('Validate Triage Route').item.json.risk_flags || 'none' }}\n\nMissing Information:\n{{ $('Validate Triage Route').item.json.missing_information || 'none' }}\n\nRecommended Next Step:\n{{ $('Validate Triage Route').item.json.recommended_next_step }}\n\nReview full evaluation in Google Sheets -> HR Candidates tab.\n\nDMsgBox HR Agent v4",
@@ -808,14 +768,7 @@
       "position": [
         1024,
         160
-      ],
-      "webhookId": "114603ec-8e4d-4203-9d13-d94e923d98cc",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "6WaA5cRM9MH4BFXc",
-          "name": "Gmail account"
-        }
-      }
+      ]
     }
   ],
   "pinData": {},
@@ -1047,9 +1000,7 @@
     "availableInMCP": false
   },
   "versionId": "6e8ba02f-f056-4417-9bd2-8a0fa5b05bdb",
-  "meta": {
-    "instanceId": "c504f8794af7523bd0694c5177e1e8d3cb761dc6897c1899efc5062c2878ff30"
-  },
+  "meta": {},
   "id": "700dd81c-e877-4bab-9fee-8ebfb6fad19c",
   "tags": [
     {

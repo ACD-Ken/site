@@ -40,8 +40,7 @@
       "position": [
         -2016,
         112
-      ],
-      "webhookId": "c0e1598e-0814-4bcc-b721-8fece67b75c8"
+      ]
     },
     {
       "parameters": {
@@ -87,13 +86,7 @@
       "position": [
         -1296,
         112
-      ],
-      "credentials": {
-        "mistralCloudApi": {
-          "id": "SsdebPssesxk6DaW",
-          "name": "Mistral Cloud account"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -113,13 +106,7 @@
         384
       ],
       "id": "ac790b4b-c5c1-4b49-a265-f83ef56d6372",
-      "name": "OpenAI Chat Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "ShukBsu4qwMNwoi6",
-          "name": "OpenAi account"
-        }
-      }
+      "name": "OpenAI Chat Model"
     },
     {
       "parameters": {
@@ -186,17 +173,15 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c",
+          "value": "SANITIZED_HR_SHEET_ID",
           "mode": "list",
-          "cachedResultName": "Candidates",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c/edit?usp=drivesdk"
+          "cachedResultName": "Sanitized portfolio sheet"
         },
         "sheetName": {
           "__rl": true,
           "value": 128548096,
           "mode": "list",
-          "cachedResultName": "Candidates",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c/edit#gid=128548096"
+          "cachedResultName": "Candidates"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -390,13 +375,7 @@
       "position": [
         -496,
         112
-      ],
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "488RS47ylU5cV3YP",
-          "name": "Google Sheets account 2"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -433,7 +412,7 @@
     },
     {
       "parameters": {
-        "sendTo": "alsocando@gmail.com",
+        "sendTo": "recruiter@example.com",
         "subject": "=Shortlisted: {{ $('Validate AI Evaluation').item.json.candidate_name }} - Score {{ $('Validate AI Evaluation').item.json.total_score }}/100",
         "emailType": "text",
         "message": "=SHORTLISTED CANDIDATE\n\nName: {{ $('Validate AI Evaluation').item.json.candidate_name }}\nEmail: {{ $('Validate AI Evaluation').item.json.candidate_email }}\nPhone: {{ $('Validate AI Evaluation').item.json.phone }}\nRole: {{ $('Validate AI Evaluation').item.json.job_role }}\nScore: {{ $('Validate AI Evaluation').item.json.total_score }}/100\nQualification Rate: {{ $('Validate AI Evaluation').item.json.qualification_rate }}\n\nStrengths:\n{{ $('Validate AI Evaluation').item.json.strengths }}\n\nGaps:\n{{ $('Validate AI Evaluation').item.json.gaps }}\n\nAI Evaluation:\n{{ $('Validate AI Evaluation').item.json.explanation }}\n\nWorkflow validation:\n{{ $('Validate AI Evaluation').item.json.validation_notes }}\n\nReview full evaluation in Google Sheets -> HR Candidates tab.\n\nDMsgBox HR Agent v2",
@@ -446,14 +425,7 @@
       "position": [
         -16,
         0
-      ],
-      "webhookId": "c396ec20-b669-45aa-926e-62842474f2ff",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "6WaA5cRM9MH4BFXc",
-          "name": "Gmail account"
-        }
-      }
+      ]
     }
   ],
   "pinData": {},
@@ -587,9 +559,7 @@
     "availableInMCP": false
   },
   "versionId": "51bef30d-b811-4959-84a9-790f0cd01933",
-  "meta": {
-    "instanceId": "c504f8794af7523bd0694c5177e1e8d3cb761dc6897c1899efc5062c2878ff30"
-  },
+  "meta": {},
   "id": "0gs9tChvxZugLEmleF0z8",
   "tags": [
     {

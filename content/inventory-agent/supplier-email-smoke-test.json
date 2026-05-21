@@ -27,9 +27,9 @@
     },
     {
       "parameters": {
-        "sendTo": "dmsgbox@gmail.com",
+        "sendTo": "supplier@example.com",
         "subject": "=Supplier email smoke test - {{ $now.toISO() }}",
-        "message": "=Hello supplier team,\n\nThis is a controlled smoke-test email from the DMsgBox Inventory Agent workflow setup.\n\nPurpose: confirm the n8n Gmail credential can send supplier-facing inventory notifications.\nRecipient: dmsgbox@gmail.com\nRun time: {{ $now.toISO() }}\n\nNo purchase action is required for this test.\n\nDMsgBox Inventory Agent",
+        "message": "=Hello supplier team,\n\nThis is a controlled smoke-test email from the DMsgBox Inventory Agent workflow setup.\n\nPurpose: confirm the n8n Gmail credential can send supplier-facing inventory notifications.\nRecipient: supplier@example.com\nRun time: {{ $now.toISO() }}\n\nNo purchase action is required for this test.\n\nDMsgBox Inventory Agent",
         "options": {}
       },
       "id": "f993db59-5700-4c3a-b906-6098dfeb6096",
@@ -39,14 +39,7 @@
       "position": [
         -160,
         0
-      ],
-      "webhookId": "d16aca6f-6c93-4429-a20f-7cf923af6ea8",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "6WaA5cRM9MH4BFXc",
-          "name": "Gmail account"
-        }
-      }
+      ]
     }
   ],
   "connections": {

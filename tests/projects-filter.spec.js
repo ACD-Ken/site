@@ -46,17 +46,15 @@ test('HR Agentic Agent card links to live V2.1 runner with planned roadmap', asy
   await expect(page).toHaveURL(/n8n-demo\/$/);
   await expect(page.getByRole('heading', { name: 'HR Agent V2.1 Live CV Screening' })).toBeVisible();
 
-  const runnerForm = page.locator('#hr-agent-live-form');
-  await expect(runnerForm).toHaveAttribute('method', 'post');
-  await expect(runnerForm).toHaveAttribute('enctype', 'multipart/form-data');
-  await expect(runnerForm).toHaveAttribute('action', 'https://acd-bot-production.up.railway.app/api/hr-agent-v2-1');
-  await expect(runnerForm).toHaveAttribute('data-n8n-webhook', 'https://natalee-rightable-unblissfully.ngrok-free.dev/webhook/hr-agent-v2-1');
-  await expect(runnerForm.locator('input[name="Full Name"]')).toBeVisible();
-  await expect(runnerForm.locator('input[name="Email"]')).toHaveAttribute('type', 'email');
-  await expect(runnerForm.locator('input[name="CV (PDF)"]')).toHaveAttribute('accept', '.pdf,application/pdf');
-  await expect(runnerForm.getByRole('button', { name: 'Submit CV' })).toBeVisible();
+  const n8nFormUrl = 'https://natalee-rightable-unblissfully.ngrok-free.dev/form/c0e1598e-0814-4bcc-b721-8fece67b75c8';
+  await expect(page.locator('#hr-agent-live-form')).toHaveCount(0);
+  const submitLinks = page.getByRole('link', { name: 'Submit CV' });
+  await expect(submitLinks).toHaveCount(2);
+  await expect(submitLinks.first()).toHaveAttribute('href', n8nFormUrl);
+  await expect(submitLinks.first()).toHaveAttribute('target', '_blank');
+  await expect(page.getByText('CV submission received.')).toBeVisible();
   await expect(page.getByText('Sends the PDF through the site backend to n8n.')).toHaveCount(0);
-  await expect(page.locator('#artifacts').getByRole('link', { name: 'V2.1 Workflow JSON' })).toHaveAttribute('href', '../content/hr-agent/05_HR_Agent_v2_1.json');
+  await expect(page.locator('#artifacts').getByRole('link', { name: 'Sanitized V2.1 JSON' })).toHaveAttribute('href', '../content/hr-agent/05_HR_Agent_v2_1.json');
 });
 
 test('ACD-Bot project card opens the site chat widget', async ({ page }) => {
