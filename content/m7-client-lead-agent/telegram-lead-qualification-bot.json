@@ -1,0 +1,253 @@
+{
+  "name": "M7 Telegram Lead Qualification Bot - Public Sanitized",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ]
+      },
+      "id": "telegram-trigger-alsocan",
+      "name": "Telegram Trigger: AlsoCan Bot",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -900,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const message = $input.first().json.message || {};\nreturn [{ json: {\n  chat_id: message.chat?.id || '',\n  message_id: message.message_id || '',\n  user_message: message.text || '',\n  telegram_username: message.from?.username || '',\n  received_at: new Date().toISOString()\n}}];"
+      },
+      "id": "normalize-telegram-message",
+      "name": "Normalize Telegram Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -650,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User message: {{$json.user_message}}\nTelegram username: {{$json.telegram_username}}\nInstructions:\n- If name and email are not captured, extract them from the user message.\n- If both are present and valid, confirm registration and proceed.\n- If missing or invalid, ask for both name and valid email.\n- If already registered, answer using the Supabase RAG tool and assess lead qualification.",
+        "options": {
+          "systemMessage": "You are an AI assistant interacting with users on Telegram for an AI automation services capstone demo. Stage 1 is registration: extract a name and valid email from free text without hallucinating missing values. Stage 2 is conversation and lead qualification: answer using the available knowledge base, collect use case, budget, timeline, and intent, then score the lead from 0 to 100. Mark qualified true when lead_score is 70 or higher. Always return valid JSON only with reply_to_user, user_registered, lead_data, lead_score, qualified, reason, and conversation_summary."
+        }
+      },
+      "id": "ai-agent-lead-qualification",
+      "name": "AI Agent: Lead Qualification",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "sessionKey": "={{$json.chat_id}}",
+        "contextWindowLength": 12
+      },
+      "id": "telegram-simple-memory",
+      "name": "Simple Memory: Telegram Chat",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "capstone_sales_knowledge",
+        "toolDescription": "Retrieve AI automation service knowledge, pricing guidance, implementation notes, and FAQ answers from the capstone sales knowledge base.",
+        "tableName": "documents"
+      },
+      "id": "supabase-rag-tool",
+      "name": "Supabase Vector Store: Sales KB",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        -120,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const codeFence = '```';\nconst source = $input.first().json;\nlet raw = source.output || source.text || source.response || '';\nif (typeof raw !== 'string') raw = JSON.stringify(raw);\nraw = raw.trim();\nif (raw.startsWith(codeFence)) raw = raw.replace(/^```(?:json)?\\s*/i, '').replace(/```$/i, '').trim();\nconst first = raw.indexOf('{');\nconst last = raw.lastIndexOf('}');\nif (first >= 0 && last > first) raw = raw.slice(first, last + 1);\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);\n} catch (error) {\n  parsed = {\n    reply_to_user: 'I had trouble reading that. Please send your name, email, and what you want to automate.',\n    user_registered: false,\n    lead_data: { name: '', email: '', use_case: '', budget: '', timeline: '', intent_level: '' },\n    lead_score: 0,\n    qualified: false,\n    reason: error.message,\n    conversation_summary: ''\n  };\n}\nconst sourceMessage = $('Normalize Telegram Message').first().json;\nconst lead = parsed.lead_data || {};\nreturn [{ json: {\n  ...sourceMessage,\n  reply_to_user: parsed.reply_to_user || 'Please enter both your Name and a valid Email ID to continue.',\n  user_registered: Boolean(parsed.user_registered),\n  Name: lead.name || '',\n  Email: lead.email || '',\n  use_case: lead.use_case || '',\n  budget: lead.budget || '',\n  timeline: lead.timeline || '',\n  intent_level: lead.intent_level || '',\n  lead_score: Number(parsed.lead_score || 0),\n  qualified: Boolean(parsed.qualified),\n  reason: parsed.reason || '',\n  conversation_summary: parsed.conversation_summary || ''\n}}];"
+      },
+      "id": "parse-lead-json",
+      "name": "Parse Lead JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.lead_score}}",
+              "operation": "largerEqual",
+              "value2": 70
+            }
+          ],
+          "boolean": [
+            {
+              "value1": "={{$json.qualified}}",
+              "value2": true
+            }
+          ]
+        },
+        "combineOperation": "all"
+      },
+      "id": "qualified-lead-route",
+      "name": "Qualified Lead?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "sendTo": "test-sales@example.com",
+        "subject": "=New Lead - {{$json.Name}} (Score: {{$json.lead_score}})",
+        "message": "=A new qualified lead has been captured from the Telegram chatbot.\n\nName: {{$json.Name}}\nEmail: {{$json.Email}}\nLead Score: {{$json.lead_score}}\nUse Case: {{$json.use_case}}\nBudget: {{$json.budget}}\nTimeline: {{$json.timeline}}\nReason: {{$json.reason}}\n\nPlease follow up with the lead at the earliest."
+      },
+      "id": "gmail-qualified-lead-alert",
+      "name": "Gmail: Qualified Lead Alert",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        500,
+        -130
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{$json.chat_id}}",
+        "text": "={{$json.reply_to_user}}",
+        "additionalFields": {
+          "reply_to_message_id": "={{$json.message_id}}"
+        }
+      },
+      "id": "telegram-reply-user",
+      "name": "Telegram: Reply To User",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        500,
+        130
+      ]
+    }
+  ],
+  "connections": {
+    "Telegram Trigger: AlsoCan Bot": {
+      "main": [
+        [
+          {
+            "node": "Normalize Telegram Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Telegram Message": {
+      "main": [
+        [
+          {
+            "node": "AI Agent: Lead Qualification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: Lead Qualification": {
+      "main": [
+        [
+          {
+            "node": "Parse Lead JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory: Telegram Chat": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent: Lead Qualification",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store: Sales KB": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent: Lead Qualification",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Lead JSON": {
+      "main": [
+        [
+          {
+            "node": "Qualified Lead?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qualified Lead?": {
+      "main": [
+        [
+          {
+            "node": "Gmail: Qualified Lead Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram: Reply To User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "capstone"
+    },
+    {
+      "name": "public-sanitized"
+    }
+  ]
+}

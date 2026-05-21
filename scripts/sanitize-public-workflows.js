@@ -8,6 +8,9 @@ const workflowFiles = [
   'content/inventory-agent/04-inventory-agent-v2.json',
   'content/inventory-agent/04-inventory-agent-v3.json',
   'content/inventory-agent/supplier-email-smoke-test.json',
+  'content/m7-client-lead-agent/customer-rapport-assistant.json',
+  'content/m7-client-lead-agent/rag-knowledge-ingestion.json',
+  'content/m7-client-lead-agent/telegram-lead-qualification-bot.json',
 ];
 
 const replacements = [
@@ -18,6 +21,8 @@ const replacements = [
   [/1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c/g, 'SANITIZED_HR_SHEET_ID'],
   [/1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/g, 'SANITIZED_INVENTORY_SHEET_ID'],
   [/https:\/\/natalee-rightable-unblissfully\.ngrok-free\.dev/gi, 'SANITIZED_N8N_PUBLIC_BASE_URL'],
+  [/@AlsoCan_Bot/g, '@ExampleLeadBot'],
+  [/\b\d{8,12}:AA[A-Za-z0-9_-]{30,}\b/g, 'SANITIZED_TELEGRAM_BOT_TOKEN'],
 ];
 
 function sanitizeString(value) {

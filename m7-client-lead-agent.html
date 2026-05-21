@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M7 Client Lead Agent - Capstone Artifacts</title>
+    <meta name="description" content="Ken Wong's M7 capstone demo: an n8n AI client communication workflow plus a Telegram lead qualification bot with Supabase RAG, Gmail alerts, and Sheets audit logs.">
+    <meta name="author" content="Ken Wong">
+    <meta name="keywords" content="M7 capstone, n8n, Telegram bot, Agentic AI, Supabase RAG, lead qualification, client communication">
+    <link rel="canonical" href="https://acd-ken.github.io/site/m7-client-lead-agent.html">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Ken Wong AI Portfolio">
+    <meta property="og:title" content="M7 Client Lead Agent - Capstone Artifacts">
+    <meta property="og:description" content="An Agentic AI capstone system combining compliant client communication and Telegram lead qualification with sanitized public artifacts.">
+    <meta property="og:url" content="https://acd-ken.github.io/site/m7-client-lead-agent.html">
+    <meta property="og:image" content="https://acd-ken.github.io/site/og-image.svg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="M7 Client Lead Agent - Capstone Artifacts">
+    <meta name="twitter:description" content="n8n, Telegram, Supabase RAG, Gmail, and Google Sheets in one capstone workflow system.">
+    <meta name="twitter:image" content="https://acd-ken.github.io/site/og-image.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --panel: #1e293b;
+            --panel-soft: rgba(30, 41, 59, 0.76);
+            --border: #334155;
+            --accent: #38bdf8;
+            --accent-strong: #0ea5e9;
+            --teal: #2dd4bf;
+            --emerald: #0d9488;
+            --text: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(56, 189, 248, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.035) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        nav {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-logo {
+            color: var(--text);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--accent);
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            min-height: 66vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 88px 24px 66px;
+            background: #080e1a;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: -10%;
+            background-image:
+                linear-gradient(rgba(13, 148, 136, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(13, 148, 136, 0.07) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            max-width: 940px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(13, 148, 136, 0.12);
+            border: 1px solid rgba(45, 212, 191, 0.28);
+            color: var(--teal);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--teal);
+            box-shadow: 0 0 10px var(--teal);
+        }
+
+        h1 {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: clamp(2.6rem, 6vw, 4.8rem);
+            font-weight: 400;
+            line-height: 1.08;
+            margin-bottom: 24px;
+        }
+
+        h1 em {
+            font-style: italic;
+            background: linear-gradient(135deg, var(--teal), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            max-width: 720px;
+            margin: 0 auto 32px;
+            color: var(--muted);
+            font-size: clamp(1rem, 2vw, 1.18rem);
+            line-height: 1.75;
+        }
+
+        .hero-actions,
+        .artifact-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0.75rem 1.2rem;
+            border-radius: 0.5rem;
+            color: var(--bg-dark);
+            background: var(--accent);
+            font-weight: 800;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: var(--accent-strong);
+            transform: translateY(-1px);
+        }
+
+        .btn.secondary {
+            color: var(--accent);
+            background: transparent;
+            border-color: var(--accent);
+        }
+
+        .btn.secondary:hover {
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section h2 {
+            font-size: clamp(1.55rem, 3vw, 2.25rem);
+            margin-bottom: 1rem;
+        }
+
+        .section-lede {
+            max-width: 820px;
+            color: var(--text-secondary);
+            margin-bottom: 1.4rem;
+        }
+
+        .demo-visual {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 0.8rem;
+            background: var(--panel);
+            display: block;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.24);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .grid.two {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .panel {
+            background: var(--panel-soft);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+        }
+
+        .panel h3 {
+            color: var(--text);
+            font-size: 1rem;
+            margin-bottom: 0.65rem;
+        }
+
+        .panel p,
+        .panel li {
+            color: var(--text-secondary);
+            font-size: 0.94rem;
+        }
+
+        .panel ul,
+        .panel ol {
+            padding-left: 1.2rem;
+        }
+
+        .panel li + li {
+            margin-top: 0.45rem;
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .metric {
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 0.7rem;
+            background: rgba(56, 189, 248, 0.08);
+            padding: 1rem;
+        }
+
+        .metric-label {
+            display: block;
+            color: var(--muted);
+            font-size: 0.74rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            display: block;
+            margin-top: 0.35rem;
+            color: var(--teal);
+            font-family: 'Fira Code', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .try-box {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.16), rgba(56, 189, 248, 0.08));
+            border: 1px solid rgba(45, 212, 191, 0.25);
+            border-radius: 0.9rem;
+            padding: 1.5rem;
+        }
+
+        .prompt-list {
+            display: grid;
+            gap: 0.7rem;
+            margin-top: 1rem;
+        }
+
+        .prompt {
+            display: block;
+            padding: 0.8rem 0.9rem;
+            border-radius: 0.55rem;
+            background: rgba(15, 23, 42, 0.68);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            color: var(--text-secondary);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.86rem;
+        }
+
+        .evidence-list {
+            display: grid;
+            gap: 0.85rem;
+        }
+
+        .evidence-item {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            padding: 0.9rem;
+            border-radius: 0.65rem;
+            background: rgba(15, 23, 42, 0.56);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+        }
+
+        .evidence-dot {
+            width: 10px;
+            height: 10px;
+            margin-top: 0.42rem;
+            border-radius: 50%;
+            background: var(--teal);
+            box-shadow: 0 0 12px rgba(45, 212, 191, 0.55);
+            flex: 0 0 auto;
+        }
+
+        .evidence-item strong {
+            display: block;
+            color: var(--text);
+            margin-bottom: 0.1rem;
+        }
+
+        .artifact-links {
+            justify-content: flex-start;
+            margin-top: 1rem;
+        }
+
+        footer {
+            max-width: 1200px;
+            margin: 4rem auto 2rem;
+            padding: 2rem;
+            color: var(--muted);
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 860px) {
+            .nav-container,
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            main {
+                padding: 2rem 1rem;
+            }
+
+            .grid,
+            .grid.two,
+            .metric-row {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-logo">Ken Wong</div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="kw-portfolio.html" class="nav-link">Portfolio</a>
+                <a href="vibe-code.html" class="nav-link">Vibe Code</a>
+                <a href="setup-guide.html" class="nav-link">Setup</a>
+                <a href="projects.html" class="nav-link active">Projects</a>
+                <a href="travel.html" class="nav-link">Travel</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-inner">
+            <div class="hero-badge">Capstone Artifacts</div>
+            <h1>AI Client Communication &amp; <em>Lead Qualification</em></h1>
+            <p class="hero-sub">
+                A two-part Agentic AI capstone built in n8n: one workflow drafts compliant investment-client responses for human approval, while a Telegram bot captures and qualifies new leads with Supabase RAG.
+            </p>
+            <div class="hero-actions">
+                <a class="btn" href="#artifacts">View Workflows</a>
+                <a class="btn secondary" href="#try-it">Sample Prompts</a>
+                <a class="btn secondary" href="projects.html#m7-client-lead-agent">Back To Project Card</a>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <section class="section">
+            <img class="demo-visual" src="content/m7-client-lead-agent/demo-flow.svg" alt="Architecture visual for the M7 client communication and lead qualification capstone">
+        </section>
+
+        <section class="section">
+            <h2>Solution Overview</h2>
+            <p class="section-lede">
+                The capstone connects front-office communication with lead acquisition. AI is used for reasoning, summarization, and drafting, while n8n keeps the operational controls explicit: approval, logging, scoring thresholds, and notifications.
+            </p>
+            <div class="grid two">
+                <article class="panel">
+                    <h3>Customer Rapport Assistant</h3>
+                    <ul>
+                        <li>Captures client name, portfolio type, horizon, and investment concern from an n8n form.</li>
+                        <li>Identifies concern category and emotional tone.</li>
+                        <li>Drafts a compliant, non-advisory response for Gmail approval.</li>
+                        <li>Logs approved drafts and manual review cases into separate Google Sheets records.</li>
+                    </ul>
+                </article>
+                <article class="panel">
+                    <h3>Telegram Lead Qualification Bot</h3>
+                    <ul>
+                        <li>Uses a Telegram bot as the public lead-capture entry point.</li>
+                        <li>Collects name and email before normal conversation.</li>
+                        <li>Answers service questions using a Supabase RAG knowledge base.</li>
+                        <li>Scores lead intent from 0 to 100 and alerts sales when score is 70 or higher.</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="metric-row">
+                <div class="metric">
+                    <span class="metric-label">Workflows</span>
+                    <span class="metric-value">3</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Lead Threshold</span>
+                    <span class="metric-value">70</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Channels</span>
+                    <span class="metric-value">2</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Secrets</span>
+                    <span class="metric-value">0</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="try-it">
+            <div class="try-box">
+                <h2>Sample Telegram Prompts</h2>
+                <p class="section-lede">
+                    These safe sample prompts demonstrate the lead-capture and qualification path without publishing the production bot handle or workflow endpoint.
+                </p>
+                <div class="prompt-list">
+                    <code class="prompt">Ken Wong, ken@example.com - I want to automate client follow ups and qualify leads from Telegram.</code>
+                    <code class="prompt">What AI automation services can you build for a small business?</code>
+                    <code class="prompt">We need a working demo this month and have budget for a pilot. Can you help?</code>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Governance Controls</h2>
+            <div class="grid">
+                <article class="panel">
+                    <h3>Human Approval</h3>
+                    <p>Client-facing investment responses are routed through Gmail approval before they are treated as approved records.</p>
+                </article>
+                <article class="panel">
+                    <h3>Structured Output</h3>
+                    <p>Both agents return JSON so n8n can parse, validate, route, log, and recover from malformed output.</p>
+                </article>
+                <article class="panel">
+                    <h3>Public Sanitization</h3>
+                    <p>The published workflows remove tokens, private IDs, webhook metadata, and account-specific credentials.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Demo Evidence</h2>
+            <p class="section-lede">
+                The public page shows architecture and sanitized artifacts only. Private execution screenshots, Gmail inbox details, Sheets URLs, Supabase keys, and webhook URLs stay outside the public repository.
+            </p>
+            <div class="evidence-list">
+                <div class="evidence-item">
+                    <span class="evidence-dot"></span>
+                    <div><strong>n8n workflow canvases</strong><p>Customer rapport, Telegram bot, and RAG ingestion workflows are represented by sanitized JSON files.</p></div>
+                </div>
+                <div class="evidence-item">
+                    <span class="evidence-dot"></span>
+                    <div><strong>Telegram lead entry point</strong><p>The public page documents the Telegram path while keeping the production bot handle outside the hosted artifacts.</p></div>
+                </div>
+                <div class="evidence-item">
+                    <span class="evidence-dot"></span>
+                    <div><strong>Audit-friendly records</strong><p>The system design separates approved communication logs, manual review logs, and qualified lead alerts.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="artifacts">
+            <h2>Public Workflow Artifacts</h2>
+            <p class="section-lede">
+                These are sanitized for website hosting. Real OpenAI, Telegram, Gmail, Google Sheets, and Supabase access remains configured inside native n8n credentials.
+            </p>
+            <div class="artifact-links">
+                <a class="btn secondary" href="content/m7-client-lead-agent/customer-rapport-assistant.json">Customer Rapport JSON</a>
+                <a class="btn secondary" href="content/m7-client-lead-agent/telegram-lead-qualification-bot.json">Telegram Bot JSON</a>
+                <a class="btn secondary" href="content/m7-client-lead-agent/rag-knowledge-ingestion.json">RAG Ingestion JSON</a>
+                <a class="btn secondary" href="content/m7-client-lead-agent/supabase-vector-store.sql">Supabase SQL</a>
+                <a class="btn secondary" href="content/m7-client-lead-agent/sample-sales-kb.csv">Sample KB</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 AlsoCanDo. Built with practical AI automation controls.</p>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="kw-portfolio.html">Portfolio</a>
+            <a href="vibe-code.html">Vibe Code</a>
+            <a href="setup-guide.html">Setup</a>
+            <a href="projects.html">Projects</a>
+            <a href="privacy.html">Privacy</a>
+        </div>
+    </footer>
+</body>
+</html>

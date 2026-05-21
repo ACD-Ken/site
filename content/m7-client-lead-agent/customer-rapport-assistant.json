@@ -1,0 +1,270 @@
+{
+  "name": "M7 Customer Rapport Assistant - Public Sanitized",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Customer Rapport Assistant",
+        "formDescription": "Capture an investment client concern for compliant response drafting.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Client Name",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Portfolio Type",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Equity"
+                  },
+                  {
+                    "option": "Debt"
+                  },
+                  {
+                    "option": "Balanced"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Investment Horizon",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Short Term"
+                  },
+                  {
+                    "option": "Long Term"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Client Query",
+              "fieldType": "textarea",
+              "requiredField": true
+            }
+          ]
+        }
+      },
+      "id": "form-trigger-client-rapport",
+      "name": "Client Query Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nreturn [{ json: {\n  client_name: item['Client Name'] || '',\n  portfolio_type: item['Portfolio Type'] || '',\n  investment_horizon: item['Investment Horizon'] || '',\n  client_query: item['Client Query'] || '',\n  received_at: new Date().toISOString()\n}}];"
+      },
+      "id": "normalize-client-query",
+      "name": "Normalize Client Query",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -650,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Client name: {{$json.client_name}}\nPortfolio type: {{$json.portfolio_type}}\nInvestment horizon: {{$json.investment_horizon}}\nClient query: {{$json.client_query}}",
+        "options": {
+          "systemMessage": "You are a compliance-aware client communication assistant for an asset management relationship manager. Identify the main concern and emotional tone, then draft a reassuring, professional, non-advisory response. Do not promise returns, provide individualized investment advice, or imply guaranteed outcomes. Return valid JSON only with concern_category, emotional_tone, draft_response, compliance_notes, and requires_manual_attention."
+        }
+      },
+      "id": "ai-draft-compliant-response",
+      "name": "AI Agent: Draft Compliant Response",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const codeFence = '```';\nconst source = $input.first().json;\nlet raw = source.output || source.text || source.response || '';\nif (typeof raw !== 'string') raw = JSON.stringify(raw);\nraw = raw.trim();\nif (raw.startsWith(codeFence)) raw = raw.replace(/^```(?:json)?\\s*/i, '').replace(/```$/i, '').trim();\nconst first = raw.indexOf('{');\nconst last = raw.lastIndexOf('}');\nif (first >= 0 && last > first) raw = raw.slice(first, last + 1);\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);\n} catch (error) {\n  parsed = {\n    concern_category: 'Manual Review',\n    emotional_tone: 'unknown',\n    draft_response: 'Manual review required because the AI output could not be parsed safely.',\n    compliance_notes: error.message,\n    requires_manual_attention: true\n  };\n}\nconst form = $('Normalize Client Query').first().json;\nreturn [{ json: { ...form, ...parsed, parse_success: parsed.concern_category !== 'Manual Review' } }];"
+      },
+      "id": "parse-rapport-json",
+      "name": "Parse AI JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -90,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "test-reviewer@example.com",
+        "subject": "=Review Required - Client Communication Draft for {{$json.client_name}}",
+        "message": "=Client: {{$json.client_name}}\nPortfolio: {{$json.portfolio_type}}\nHorizon: {{$json.investment_horizon}}\nConcern: {{$json.concern_category}}\nTone: {{$json.emotional_tone}}\n\nDraft response:\n{{$json.draft_response}}\n\nCompliance notes:\n{{$json.compliance_notes}}",
+        "responseType": "approval"
+      },
+      "id": "gmail-human-approval",
+      "name": "Gmail: Human Approval",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        180,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.approved || $json.data?.approved || false}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "approval-route",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        430,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": "SANITIZED_APPROVED_COMMUNICATION_LOG",
+        "sheetName": "Approved Client Communication Log",
+        "columns": {
+          "mappingMode": "autoMapInputData"
+        }
+      },
+      "id": "append-approved-log",
+      "name": "Sheets: Approved Log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        700,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": "SANITIZED_MANUAL_REVIEW_LOG",
+        "sheetName": "Manual Review Required Log",
+        "columns": {
+          "mappingMode": "autoMapInputData"
+        }
+      },
+      "id": "append-manual-review-log",
+      "name": "Sheets: Manual Review Log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        700,
+        120
+      ]
+    }
+  ],
+  "connections": {
+    "Client Query Form": {
+      "main": [
+        [
+          {
+            "node": "Normalize Client Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Client Query": {
+      "main": [
+        [
+          {
+            "node": "AI Agent: Draft Compliant Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: Draft Compliant Response": {
+      "main": [
+        [
+          {
+            "node": "Parse AI JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI JSON": {
+      "main": [
+        [
+          {
+            "node": "Gmail: Human Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail: Human Approval": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Sheets: Approved Log",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sheets: Manual Review Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "capstone"
+    },
+    {
+      "name": "public-sanitized"
+    }
+  ]
+}

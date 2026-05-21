@@ -55,6 +55,11 @@ test('public pages use standardized shell metadata and page hero treatment', asy
       path: '/hr-agent-v2.html',
       canonical: 'https://acd-ken.github.io/site/hr-agent-v2.html',
       title: 'HR Agent V2 - Auditable Agentic Workflow'
+    },
+    {
+      path: '/m7-client-lead-agent.html',
+      canonical: 'https://acd-ken.github.io/site/m7-client-lead-agent.html',
+      title: 'M7 Client Lead Agent - Capstone Artifacts'
     }
   ];
 

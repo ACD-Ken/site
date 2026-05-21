@@ -1,0 +1,7 @@
+Category,Topic,Answer
+AI Automation,Workflow discovery,"We help identify repetitive business processes, map current manual steps, and design n8n workflows with human approval where needed."
+AI Automation,Agentic AI services,"The service focuses on controlled AI agents that reason over business context while deterministic workflow nodes handle validation, routing, logging, and notifications."
+Lead Qualification,Implementation timeline,"A simple proof of concept can usually be demonstrated in days, while production rollout depends on integrations, credential setup, approval rules, and user testing."
+Lead Qualification,Budget discussion,"Budget depends on workflow complexity, number of systems integrated, and whether the solution needs hosted infrastructure, private data handling, or custom user interfaces."
+Governance,Human oversight,"For regulated or high-impact communication, the workflow should generate drafts for review instead of sending external messages without approval."
+RAG,Knowledge base,"RAG lets the chatbot answer from approved documents, service notes, FAQs, and process guides instead of relying only on general model knowledge."

@@ -939,7 +939,92 @@
                 </div>
             </article>
 
-            <!-- Project 4: HR Agentic Agent -->
+            <!-- Project 4: M7 Client Lead Agent -->
+            <article class="project-card" id="m7-client-lead-agent" data-category="capstone">
+                <div class="project-image visual-panel">
+                    <div class="project-visual" aria-label="M7 client lead agent capstone visual">
+                        <div class="visual-kicker">Telegram + n8n Capstone</div>
+                        <div class="visual-flow">
+                            <div class="visual-node">Form</div>
+                            <div class="visual-arrow">-&gt;</div>
+                            <div class="visual-node">AI Guard</div>
+                            <div class="visual-arrow">-&gt;</div>
+                            <div class="visual-node">Approve</div>
+                        </div>
+                        <div class="visual-row">
+                            <div class="visual-card"><strong>Telegram</strong><span>Lead Bot</span></div>
+                            <div class="visual-card"><strong>RAG</strong><span>Supabase</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <div>
+                            <span class="project-category">Capstone</span>
+                            <h3 class="project-title">M7 Client Lead Agent</h3>
+                        </div>
+                        <span class="status-badge completed">
+                            <span class="status-dot"></span>
+                            Artifacts
+                        </span>
+                    </div>
+
+                    <p class="project-description">
+                        Full SCTP Agentic AI capstone system combining compliant investment-client response drafting with a Telegram lead qualification bot powered by n8n, Supabase RAG, Gmail, and Google Sheets.
+                    </p>
+
+                    <div class="project-details">
+                        <div class="detail-section">
+                            <div class="detail-label">Problem</div>
+                            <p class="detail-text">Client-facing AI workflows need empathy, compliance, human approval, traceable logs, and a safe handoff from prospect chat to sales follow-up.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">Solution</div>
+                            <p class="detail-text">n8n orchestrates two controlled agents: one drafts compliant client responses for approval, while a Telegram lead bot captures, answers, scores, and routes qualified leads.</p>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">Public Artifacts</div>
+                            <p class="detail-text">Visitors can inspect sanitized workflow files and sample assets while production bot handles, credentials, and endpoints stay private.</p>
+                        </div>
+                    </div>
+
+                    <div class="key-insight">
+                        <div class="detail-label">Key AI Insight</div>
+                        <p class="detail-text">The agent handles language and qualification, but deterministic workflow nodes keep approval, score thresholds, logs, and notifications under operational control.</p>
+                    </div>
+
+                    <div class="metrics">
+                        <div class="metric">
+                            <span class="metric-label">Workflows</span>
+                            <span class="metric-value">3</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Secrets</span>
+                            <span class="metric-value">0</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Threshold</span>
+                            <span class="metric-value">70</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-stack">
+                        <span class="tech-badge">n8n</span>
+                        <span class="tech-badge">Telegram</span>
+                        <span class="tech-badge">Agentic AI</span>
+                        <span class="tech-badge">Supabase</span>
+                        <span class="tech-badge">RAG</span>
+                        <span class="tech-badge">Gmail</span>
+                        <span class="tech-badge">Sheets</span>
+                    </div>
+
+                    <div class="project-actions">
+                        <a href="m7-client-lead-agent.html" class="btn btn-primary">View Artifacts</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Project 5: HR Agentic Agent -->
             <article class="project-card" id="hr-agentic-agent" data-category="capstone">
                 <div class="project-image visual-panel">
                     <div class="project-visual" aria-label="HR agentic agent capstone visual">
@@ -1026,7 +1111,7 @@
                 </div>
             </article>
 
-            <!-- Project 5: Inventory AI Agent -->
+            <!-- Project 6: Inventory AI Agent -->
             <article class="project-card" id="inventory-ai-agent" data-category="capstone">
                 <div class="project-image visual-panel">
                     <div class="project-visual" aria-label="Inventory AI agent capstone visual">
@@ -1254,6 +1339,10 @@
         if (window.location.hash === '#hr-agentic-agent/') {
             window.history.replaceState(null, '', '#hr-agentic-agent');
             document.getElementById('hr-agentic-agent')?.scrollIntoView();
+        }
+        if (window.location.hash === '#m7-client-lead-agent/') {
+            window.history.replaceState(null, '', '#m7-client-lead-agent');
+            document.getElementById('m7-client-lead-agent')?.scrollIntoView();
         }
     </script>
   <link rel="stylesheet" href="chatbot.css">

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">AI Client Communication and Lead Qualification System</title>
+  <desc id="desc">Two connected n8n workflow tracks for compliant client communication and Telegram lead qualification.</desc>
+  <rect width="1280" height="720" fill="#0f172a"/>
+  <path d="M0 72h1280M0 144h1280M0 216h1280M0 288h1280M0 360h1280M0 432h1280M0 504h1280M0 576h1280M0 648h1280M128 0v720M256 0v720M384 0v720M512 0v720M640 0v720M768 0v720M896 0v720M1024 0v720M1152 0v720" stroke="#38bdf8" stroke-opacity=".05"/>
+  <text x="80" y="86" fill="#f1f5f9" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="38" font-weight="700">M7 Capstone Agentic AI System</text>
+  <text x="80" y="128" fill="#94a3b8" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="20">Compliant client response drafting plus Telegram lead qualification with RAG</text>
+  <g transform="translate(80 190)">
+    <rect width="520" height="390" rx="18" fill="#1e293b" stroke="#334155"/>
+    <text x="32" y="54" fill="#2dd4bf" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="18" font-weight="700">Customer Rapport Assistant</text>
+    <g font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">
+      <rect x="38" y="96" width="130" height="66" rx="12" fill="#0d9488" fill-opacity=".16" stroke="#2dd4bf" stroke-opacity=".45"/>
+      <text x="103" y="135" fill="#f1f5f9">Form</text>
+      <rect x="196" y="96" width="130" height="66" rx="12" fill="#0d9488" fill-opacity=".16" stroke="#2dd4bf" stroke-opacity=".45"/>
+      <text x="261" y="125" fill="#f1f5f9">AI Draft</text>
+      <text x="261" y="146" fill="#cbd5e1" font-size="12">JSON</text>
+      <rect x="354" y="96" width="130" height="66" rx="12" fill="#0d9488" fill-opacity=".16" stroke="#2dd4bf" stroke-opacity=".45"/>
+      <text x="419" y="125" fill="#f1f5f9">Gmail</text>
+      <text x="419" y="146" fill="#cbd5e1" font-size="12">Approval</text>
+      <path d="M168 129h28M326 129h28" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+      <rect x="96" y="228" width="140" height="70" rx="12" fill="#38bdf8" fill-opacity=".12" stroke="#38bdf8" stroke-opacity=".42"/>
+      <text x="166" y="257" fill="#f1f5f9">Approved</text>
+      <text x="166" y="278" fill="#cbd5e1" font-size="12">Sheets Log</text>
+      <rect x="284" y="228" width="140" height="70" rx="12" fill="#38bdf8" fill-opacity=".12" stroke="#38bdf8" stroke-opacity=".42"/>
+      <text x="354" y="257" fill="#f1f5f9">Rejected</text>
+      <text x="354" y="278" fill="#cbd5e1" font-size="12">Manual Review</text>
+      <path d="M419 162v36c0 24-253 6-253 30M419 162v36c0 24-65 6-65 30" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" fill="none"/>
+    </g>
+  </g>
+  <g transform="translate(680 190)">
+    <rect width="520" height="390" rx="18" fill="#1e293b" stroke="#334155"/>
+    <text x="32" y="54" fill="#2dd4bf" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="18" font-weight="700">Telegram Lead Qualification Bot</text>
+    <g font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">
+      <rect x="38" y="96" width="130" height="66" rx="12" fill="#0d9488" fill-opacity=".16" stroke="#2dd4bf" stroke-opacity=".45"/>
+      <text x="103" y="125" fill="#f1f5f9">Telegram</text>
+      <text x="103" y="146" fill="#cbd5e1" font-size="12">@ExampleLeadBot</text>
+      <rect x="196" y="96" width="130" height="66" rx="12" fill="#0d9488" fill-opacity=".16" stroke="#2dd4bf" stroke-opacity=".45"/>
+      <text x="261" y="125" fill="#f1f5f9">AI Agent</text>
+      <text x="261" y="146" fill="#cbd5e1" font-size="12">Score 0-100</text>
+      <rect x="354" y="96" width="130" height="66" rx="12" fill="#0d9488" fill-opacity=".16" stroke="#2dd4bf" stroke-opacity=".45"/>
+      <text x="419" y="125" fill="#f1f5f9">Supabase</text>
+      <text x="419" y="146" fill="#cbd5e1" font-size="12">RAG</text>
+      <path d="M168 129h28M326 129h28" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+      <rect x="96" y="228" width="140" height="70" rx="12" fill="#38bdf8" fill-opacity=".12" stroke="#38bdf8" stroke-opacity=".42"/>
+      <text x="166" y="257" fill="#f1f5f9">Score &gt;= 70</text>
+      <text x="166" y="278" fill="#cbd5e1" font-size="12">Gmail Alert</text>
+      <rect x="284" y="228" width="140" height="70" rx="12" fill="#38bdf8" fill-opacity=".12" stroke="#38bdf8" stroke-opacity=".42"/>
+      <text x="354" y="257" fill="#f1f5f9">Continue</text>
+      <text x="354" y="278" fill="#cbd5e1" font-size="12">Telegram Reply</text>
+      <path d="M261 162v34c0 25-95 7-95 32M261 162v34c0 25 93 7 93 32" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" fill="none"/>
+    </g>
+  </g>
+  <text x="80" y="656" fill="#64748b" font-family="Fira Code, monospace" font-size="16">Public-safe architecture visual. Secrets stay inside native n8n credentials.</text>
+</svg>

@@ -5,7 +5,7 @@ const visibleProjectCards = page => page.locator('.project-card:visible');
 test('project filters show the expected project groups', async ({ page }) => {
   await page.goto('/projects.html');
 
-  await expect(visibleProjectCards(page)).toHaveCount(6);
+  await expect(visibleProjectCards(page)).toHaveCount(7);
 
   await page.getByRole('button', { name: 'Automation' }).click();
   await expect(visibleProjectCards(page)).toHaveCount(2);
@@ -13,10 +13,11 @@ test('project filters show the expected project groups', async ({ page }) => {
   await expect(page.locator('#docker-monitor')).toBeVisible();
 
   await page.getByRole('button', { name: 'Capstone' }).click();
-  await expect(visibleProjectCards(page)).toHaveCount(3);
+  await expect(visibleProjectCards(page)).toHaveCount(4);
   await expect(page.locator('#chatbot-on-website')).toBeVisible();
   await expect(page.locator('#chatbot-on-website').getByRole('heading', { name: 'ACD-Bot' })).toBeVisible();
   await expect(page.locator('#chatbot-on-website')).toContainText('Phase 1 RAG-assisted portfolio assistant');
+  await expect(page.locator('#m7-client-lead-agent')).toBeVisible();
   await expect(page.locator('#hr-agentic-agent')).toBeVisible();
   await expect(page.locator('#inventory-ai-agent')).toBeVisible();
 
@@ -25,7 +26,27 @@ test('project filters show the expected project groups', async ({ page }) => {
   await expect(page.locator('#lucky7-toto')).toBeVisible();
 
   await page.getByRole('button', { name: 'All Projects' }).click();
-  await expect(visibleProjectCards(page)).toHaveCount(6);
+  await expect(visibleProjectCards(page)).toHaveCount(7);
+});
+
+test('M7 Client Lead Agent card links to the sanitized capstone artifacts page', async ({ page }) => {
+  await page.goto('/projects.html#m7-client-lead-agent/');
+
+  await expect(page).toHaveURL(/#m7-client-lead-agent$/);
+
+  const capstoneCard = page.locator('#m7-client-lead-agent');
+  await expect(capstoneCard).toBeVisible();
+  await expect(capstoneCard.locator('.status-badge.completed')).toContainText('Artifacts');
+  await expect(capstoneCard.getByText('Full SCTP Agentic AI capstone system')).toBeVisible();
+  await expect(capstoneCard.getByText('production bot handles, credentials, and endpoints stay private')).toBeVisible();
+  await expect(capstoneCard.getByRole('link', { name: 'View Artifacts' })).toHaveAttribute('href', 'm7-client-lead-agent.html');
+
+  await capstoneCard.getByRole('link', { name: 'View Artifacts' }).click();
+  await expect(page).toHaveURL(/m7-client-lead-agent\.html$/);
+  await expect(page.getByRole('heading', { name: /AI Client Communication/ })).toBeVisible();
+  await expect(page.getByText('without publishing the production bot handle or workflow endpoint')).toBeVisible();
+  await expect(page.locator('#artifacts').getByRole('link', { name: 'Customer Rapport JSON' })).toHaveAttribute('href', 'content/m7-client-lead-agent/customer-rapport-assistant.json');
+  await expect(page.locator('#artifacts').getByRole('link', { name: 'Telegram Bot JSON' })).toHaveAttribute('href', 'content/m7-client-lead-agent/telegram-lead-qualification-bot.json');
 });
 
 test('HR Agentic Agent card links to the canonical V2 workflow page with planned roadmap', async ({ page }) => {

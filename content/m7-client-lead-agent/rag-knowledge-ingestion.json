@@ -1,0 +1,156 @@
+{
+  "name": "M7 Sales Knowledge RAG Ingestion - Public Sanitized",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-ingest-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "SANITIZED_GOOGLE_DRIVE_FILE_ID"
+      },
+      "id": "download-sales-kb",
+      "name": "Google Drive: Download Sales KB",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -540,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "headerRow": true
+        }
+      },
+      "id": "extract-xlsx-rows",
+      "name": "Extract XLSX Rows",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map((item, index) => {\n  const row = item.json || {};\n  const title = row.Topic || row.title || row.Question || `Knowledge row ${index + 1}`;\n  const answer = row.Answer || row.Content || row.Description || row.Response || '';\n  const category = row.Category || row.Service || 'AI automation';\n  return {\n    json: {\n      pageContent: `${title}\\nCategory: ${category}\\n${answer}`.trim(),\n      metadata: {\n        source: 'AI Sales Agent sample knowledge base',\n        row: index + 1,\n        category\n      }\n    }\n  };\n});"
+      },
+      "id": "prepare-documents",
+      "name": "Prepare Documents",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -60,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "documents"
+      },
+      "id": "insert-supabase-vector-store",
+      "name": "Supabase Vector Store: Insert",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small"
+      },
+      "id": "openai-embeddings",
+      "name": "OpenAI Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        220
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Drive: Download Sales KB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive: Download Sales KB": {
+      "main": [
+        [
+          {
+            "node": "Extract XLSX Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract XLSX Rows": {
+      "main": [
+        [
+          {
+            "node": "Prepare Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Documents": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store: Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store: Insert",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "capstone"
+    },
+    {
+      "name": "public-sanitized"
+    }
+  ]
+}

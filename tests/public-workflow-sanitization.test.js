@@ -10,6 +10,9 @@ const PUBLIC_WORKFLOW_FILES = [
   'content/inventory-agent/04-inventory-agent-v2.json',
   'content/inventory-agent/04-inventory-agent-v3.json',
   'content/inventory-agent/supplier-email-smoke-test.json',
+  'content/m7-client-lead-agent/customer-rapport-assistant.json',
+  'content/m7-client-lead-agent/rag-knowledge-ingestion.json',
+  'content/m7-client-lead-agent/telegram-lead-qualification-bot.json',
 ];
 
 const FORBIDDEN_TEXT_PATTERNS = [
@@ -20,7 +23,9 @@ const FORBIDDEN_TEXT_PATTERNS = [
   /1sLA9GWGhDHy3HNDizeEWe9YcwzdV7UVCn5TO473Op_c/,
   /1VQrdLA0JSfCWaAhPE31ri7Ovj2SDcO6_GQLuJi8B9ZI/,
   /natalee-rightable-unblissfully\.ngrok-free\.dev/i,
+  /@AlsoCan_Bot/,
   /sk-[A-Za-z0-9_-]{20,}/,
+  /\b\d{8,12}:AA[A-Za-z0-9_-]{30,}\b/,
   /ya29\.[A-Za-z0-9_-]+/,
   /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
 ];

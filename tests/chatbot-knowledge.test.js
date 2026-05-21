@@ -20,6 +20,7 @@ test('classifyIntent recognises portfolio project questions', () => {
   assert.equal(classifyIntent('Tell me about Ken projects'), 'projects');
   assert.equal(classifyIntent('How does ACD-Bot work?'), 'projects');
   assert.equal(classifyIntent('Tell me about the HR Agentic Agent'), 'projects');
+  assert.equal(classifyIntent('Can I try the Telegram client lead agent?'), 'projects');
 });
 
 test('retrieveKnowledge returns project-specific context for project questions', () => {
@@ -41,6 +42,16 @@ test('retrieveKnowledge includes HR Agent V2 roadmap context', () => {
   assert.doesNotMatch(hrAgent.content, /n8n-demo/);
   assert.match(hrAgent.content, /V3 is planned/);
   assert.match(hrAgent.content, /V4 is planned/);
+});
+
+test('retrieveKnowledge includes M7 Client Lead Agent artifact context', () => {
+  const results = retrieveKnowledge('Tell me about the Telegram Supabase M7 Client Lead Agent');
+  const m7Agent = results.find((entry) => entry.id === 'project-m7-client-lead-agent');
+
+  assert.ok(m7Agent);
+  assert.match(m7Agent.content, /\/site\/m7-client-lead-agent\.html/);
+  assert.match(m7Agent.content, /production bot handles, credentials, and endpoints stay outside/);
+  assert.match(m7Agent.content, /Supabase RAG/);
 });
 
 test('retrieveKnowledge includes ACD-Bot architecture context', () => {

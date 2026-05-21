@@ -6,7 +6,7 @@ const STOP_WORDS = new Set([
 
 const INTENT_RULES = [
   ['hiring', /\b(hire|hiring|consult|consulting|collaborate|collaboration|available|availability|contact|email|linkedin|role|job|recruit)\b/i],
-  ['projects', /\b(project|projects|portfolio|lucky7|toto|booth|chatbot|automation|n8n|aws|migration)\b|\b(acd[\s-]?bot|hr agent|agentic agent|resume screening)\b/i],
+  ['projects', /\b(project|projects|portfolio|lucky7|toto|booth|chatbot|automation|n8n|aws|migration|telegram|supabase)\b|\b(acd[\s-]?bot|hr agent|agentic agent|resume screening|client lead agent)\b/i],
   ['skills', /\b(skill|skills|python|node|react|docker|sql|data|infrastructure|agentic|ai|automation|llm|prompt)\b/i],
   ['work_history', /\b(experience|career|work|history|advertising|tbwa|saatchi|omd|hdb|tessag|regional)\b/i],
   ['certifications', /\b(cert|certificate|certification|bells|cissp|diploma|course|training|sctp)\b/i],
@@ -69,6 +69,13 @@ const KNOWLEDGE_BASE = [
     title: 'HR Agentic Agent',
     keywords: ['hr', 'agentic', 'agent', 'resume', 'screening', 'n8n', 'mistral', 'ocr', 'v2', 'cv', 'v3', 'v4'],
     content: 'HR Agentic Agent is Ken\'s completed V2 capstone workflow for auditable HR screening, hosted at /site/hr-agent-v2.html. It uses an n8n form, Mistral OCR, an AI Agent to score resumes, deterministic n8n nodes to validate totals and OCR quality, Google Sheets logging for every candidate, and recruiter email only on the shortlist branch. Public workflow JSON is sanitized for portfolio viewing. V3 is planned as a multi-agent evidence audit, and V4 is planned as autonomous triage with a route-planning agent.',
+  },
+  {
+    id: 'project-m7-client-lead-agent',
+    intent: 'projects',
+    title: 'M7 Client Lead Agent',
+    keywords: ['m7', 'client', 'lead', 'agent', 'telegram', 'alsocan', 'bot', 'supabase', 'rag', 'n8n', 'gmail', 'sheets', 'capstone'],
+    content: 'M7 Client Lead Agent is Ken\'s SCTP Agentic AI capstone artifact page at /site/m7-client-lead-agent.html. It combines a Customer Rapport Assistant for compliant investment-client response drafting with a Telegram Lead Qualification Bot design. The system uses n8n, OpenAI, Supabase RAG, Gmail approval and alerting, and Google Sheets logs. Public workflow files are sanitized, and production bot handles, credentials, and endpoints stay outside the hosted artifacts.',
   },
   {
     id: 'certifications',
