@@ -55,11 +55,6 @@ test('public pages use standardized shell metadata and page hero treatment', asy
       path: '/hr-agent-v2.html',
       canonical: 'https://acd-ken.github.io/site/hr-agent-v2.html',
       title: 'HR Agent V2 - Auditable Agentic Workflow'
-    },
-    {
-      path: '/n8n-demo/',
-      canonical: 'https://acd-ken.github.io/site/n8n-demo/',
-      title: 'HR Agent V2.1 - Live CV Screening'
     }
   ];
 

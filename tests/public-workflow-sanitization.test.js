@@ -5,7 +5,6 @@ const path = require('node:path');
 
 const PUBLIC_WORKFLOW_FILES = [
   'content/hr-agent/05_HR_Agent_v2.json',
-  'content/hr-agent/05_HR_Agent_v2_1.json',
   'content/hr-agent/05_HR_Agent_v3.json',
   'content/hr-agent/05_HR_Agent_v4.json',
   'content/inventory-agent/04-inventory-agent-v2.json',

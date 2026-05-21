@@ -30,14 +30,15 @@ test('retrieveKnowledge returns project-specific context for project questions',
   assert.match(results[0].content, /DeepSeek/);
 });
 
-test('retrieveKnowledge includes HR Agent V2.1 live runner context', () => {
+test('retrieveKnowledge includes HR Agent V2 roadmap context', () => {
   const results = retrieveKnowledge('HR Agentic Agent V3 V4 roadmap');
   const hrAgent = results.find((entry) => entry.id === 'project-hr-agent');
 
   assert.ok(hrAgent);
-  assert.match(hrAgent.content, /live V2\.1 capstone workflow/);
-  assert.match(hrAgent.content, /\/site\/n8n-demo\//);
-  assert.match(hrAgent.content, /ngrok-hosted n8n Form Trigger/);
+  assert.match(hrAgent.content, /completed V2 capstone workflow/);
+  assert.match(hrAgent.content, /\/site\/hr-agent-v2\.html/);
+  assert.doesNotMatch(hrAgent.content, /V2\.1/);
+  assert.doesNotMatch(hrAgent.content, /n8n-demo/);
   assert.match(hrAgent.content, /V3 is planned/);
   assert.match(hrAgent.content, /V4 is planned/);
 });

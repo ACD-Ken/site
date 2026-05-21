@@ -67,8 +67,8 @@ const KNOWLEDGE_BASE = [
     id: 'project-hr-agent',
     intent: 'projects',
     title: 'HR Agentic Agent',
-    keywords: ['hr', 'agentic', 'agent', 'resume', 'screening', 'n8n', 'mistral', 'ocr', 'v2', 'v2.1', 'form trigger', 'cv', 'v3', 'v4'],
-    content: 'HR Agentic Agent is Ken\'s live V2.1 capstone workflow for auditable HR screening, hosted at /site/n8n-demo/. Visitors can submit a PDF CV through a ngrok-hosted n8n Form Trigger. It uses an AI Agent to score resumes, deterministic n8n nodes to validate totals and OCR quality, Google Sheets logging for every candidate, and recruiter email only on the shortlist branch. V3 is planned as a multi-agent evidence audit, and V4 is planned as autonomous triage with a route-planning agent.',
+    keywords: ['hr', 'agentic', 'agent', 'resume', 'screening', 'n8n', 'mistral', 'ocr', 'v2', 'cv', 'v3', 'v4'],
+    content: 'HR Agentic Agent is Ken\'s completed V2 capstone workflow for auditable HR screening, hosted at /site/hr-agent-v2.html. It uses an n8n form, Mistral OCR, an AI Agent to score resumes, deterministic n8n nodes to validate totals and OCR quality, Google Sheets logging for every candidate, and recruiter email only on the shortlist branch. Public workflow JSON is sanitized for portfolio viewing. V3 is planned as a multi-agent evidence audit, and V4 is planned as autonomous triage with a route-planning agent.',
   },
   {
     id: 'certifications',

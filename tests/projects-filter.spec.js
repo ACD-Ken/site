@@ -28,7 +28,7 @@ test('project filters show the expected project groups', async ({ page }) => {
   await expect(visibleProjectCards(page)).toHaveCount(6);
 });
 
-test('HR Agentic Agent card links to live V2.1 runner with planned roadmap', async ({ page }) => {
+test('HR Agentic Agent card links to the canonical V2 workflow page with planned roadmap', async ({ page }) => {
   await page.goto('/projects.html#hr-agentic-agent/');
 
   await expect(page).toHaveURL(/#hr-agentic-agent$/);
@@ -36,25 +36,17 @@ test('HR Agentic Agent card links to live V2.1 runner with planned roadmap', asy
   const hrCard = page.locator('#hr-agentic-agent');
   await expect(hrCard).toBeVisible();
   await expect(hrCard.locator('.status-badge.completed')).toContainText('Completed');
-  await expect(hrCard.getByText('Live V2.1 capstone workflow')).toBeVisible();
-  await expect(hrCard.locator('.metric', { hasText: 'Version' })).toContainText('V2.1');
-  await expect(hrCard.getByRole('link', { name: 'Run V2.1 Live' })).toHaveAttribute('href', 'n8n-demo/');
-  await expect(hrCard.getByRole('link', { name: '60s n8n Demo' })).toHaveAttribute('href', 'content/hr-agent/n8n-demo-60s.mp4');
+  await expect(hrCard.getByText('Completed V2 capstone workflow')).toBeVisible();
+  await expect(hrCard.locator('.metric', { hasText: 'Version' })).toContainText('V2');
+  await expect(hrCard.getByRole('link', { name: 'View V2 Workflow' })).toHaveAttribute('href', 'hr-agent-v2.html');
+  await expect(hrCard.getByRole('link', { name: '60s Workflow Video' })).toHaveAttribute('href', 'content/hr-agent/n8n-demo-60s.mp4');
   await expect(hrCard.getByRole('link', { name: 'V3/V4 Planned' })).toHaveAttribute('href', 'hr-agent-v2.html#roadmap');
 
-  await hrCard.getByRole('link', { name: 'Run V2.1 Live' }).click();
-  await expect(page).toHaveURL(/n8n-demo\/$/);
-  await expect(page.getByRole('heading', { name: 'HR Agent V2.1 Live CV Screening' })).toBeVisible();
-
-  const n8nFormUrl = 'https://natalee-rightable-unblissfully.ngrok-free.dev/form/c0e1598e-0814-4bcc-b721-8fece67b75c8';
-  await expect(page.locator('#hr-agent-live-form')).toHaveCount(0);
-  const submitLinks = page.getByRole('link', { name: 'Submit CV' });
-  await expect(submitLinks).toHaveCount(2);
-  await expect(submitLinks.first()).toHaveAttribute('href', n8nFormUrl);
-  await expect(submitLinks.first()).toHaveAttribute('target', '_blank');
-  await expect(page.getByText('CV submission received.')).toBeVisible();
-  await expect(page.getByText('Sends the PDF through the site backend to n8n.')).toHaveCount(0);
-  await expect(page.locator('#artifacts').getByRole('link', { name: 'Sanitized V2.1 JSON' })).toHaveAttribute('href', '../content/hr-agent/05_HR_Agent_v2_1.json');
+  await hrCard.getByRole('link', { name: 'View V2 Workflow' }).click();
+  await expect(page).toHaveURL(/hr-agent-v2\.html$/);
+  await expect(page.getByRole('heading', { name: /HR Agent Auditable Workflow/ })).toBeVisible();
+  await expect(page.locator('#artifacts').getByRole('link', { name: 'Sanitized V2 JSON' })).toHaveAttribute('href', 'content/hr-agent/05_HR_Agent_v2.json');
+  await expect(page.getByText('V2.1')).toHaveCount(0);
 });
 
 test('ACD-Bot project card opens the site chat widget', async ({ page }) => {
