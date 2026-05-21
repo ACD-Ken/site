@@ -5,12 +5,11 @@ const visibleProjectCards = page => page.locator('.project-card:visible');
 test('project filters show the expected project groups', async ({ page }) => {
   await page.goto('/projects.html');
 
-  await expect(visibleProjectCards(page)).toHaveCount(7);
+  await expect(visibleProjectCards(page)).toHaveCount(6);
 
   await page.getByRole('button', { name: 'Automation' }).click();
-  await expect(visibleProjectCards(page)).toHaveCount(2);
+  await expect(visibleProjectCards(page)).toHaveCount(1);
   await expect(page.locator('#n8n-orchestrator')).toBeVisible();
-  await expect(page.locator('#docker-monitor')).toBeVisible();
 
   await page.getByRole('button', { name: 'Capstone' }).click();
   await expect(visibleProjectCards(page)).toHaveCount(4);
@@ -18,15 +17,21 @@ test('project filters show the expected project groups', async ({ page }) => {
   await expect(page.locator('#chatbot-on-website').getByRole('heading', { name: 'ACD-Bot' })).toBeVisible();
   await expect(page.locator('#chatbot-on-website')).toContainText('Phase 1 RAG-assisted portfolio assistant');
   await expect(page.locator('#m7-client-lead-agent')).toBeVisible();
+  await expect(page.locator('#m7-client-lead-agent').locator('.status-badge.completed')).toContainText('Live Demo');
+  await expect(page.locator('#m7-client-lead-agent').getByRole('link', { name: 'View Live Demo' })).toHaveAttribute('href', 'm7-client-lead-agent.html');
   await expect(page.locator('#hr-agentic-agent')).toBeVisible();
   await expect(page.locator('#inventory-ai-agent')).toBeVisible();
+  await expect(page.locator('#inventory-ai-agent').locator('.status-badge.completed')).toContainText('V2 Verified');
+  await expect(page.locator('#inventory-ai-agent')).toContainText('Verified capstone workflow for reliable inventory audits');
+  await expect(page.locator('#inventory-ai-agent').getByRole('link', { name: 'View Details' })).toHaveAttribute('href', 'inventory-agent.html');
+  await expect(page.locator('#inventory-ai-agent').getByRole('link', { name: 'Workflow Video' })).toHaveAttribute('href', 'content/inventory-agent/inventory-v2-demo.mp4');
 
   await page.getByRole('button', { name: 'Web Apps' }).click();
   await expect(visibleProjectCards(page)).toHaveCount(1);
   await expect(page.locator('#lucky7-toto')).toBeVisible();
 
   await page.getByRole('button', { name: 'All Projects' }).click();
-  await expect(visibleProjectCards(page)).toHaveCount(7);
+  await expect(visibleProjectCards(page)).toHaveCount(6);
 });
 
 test('M7 Client Lead Agent card links to the live Telegram capstone page', async ({ page }) => {
