@@ -55,6 +55,9 @@ test('M7 Client Lead Agent card links to the live Telegram capstone page', async
   await expect(page.locator('#test-status')).toContainText('lead with score 85');
   await expect(page.locator('#test-status')).toContainText('Live webhook trigger');
   await expect(page.locator('#test-status')).toContainText('All three production webhook entry points');
+  await expect(page.locator('#service-catalog')).toContainText('RAG Service Catalog');
+  await expect(page.locator('#service-catalog')).toContainText('Invoice And Document Extraction');
+  await expect(page.locator('#service-catalog')).toContainText('Onboarding And FAQ Assistants');
   await expect(page.locator('#artifacts').getByRole('link', { name: 'Customer Rapport JSON' })).toHaveAttribute('href', 'content/m7-client-lead-agent/customer-rapport-assistant.json');
   await expect(page.locator('#artifacts').getByRole('link', { name: 'Telegram Bot JSON' })).toHaveAttribute('href', 'content/m7-client-lead-agent/telegram-lead-qualification-bot.json');
   await expect(page.locator('#artifacts').getByRole('link', { name: 'Test Results' })).toHaveAttribute('href', 'content/m7-client-lead-agent/test-results-2026-05-22.md');

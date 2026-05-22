@@ -316,6 +316,42 @@
             font-weight: 700;
         }
 
+        .service-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .service-item {
+            display: flex;
+            gap: 0.7rem;
+            align-items: flex-start;
+            padding: 0.85rem;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 0.65rem;
+            background: rgba(15, 23, 42, 0.54);
+        }
+
+        .service-index {
+            color: var(--teal);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.78rem;
+            font-weight: 800;
+            flex: 0 0 auto;
+        }
+
+        .service-item strong {
+            display: block;
+            color: var(--text);
+            font-size: 0.94rem;
+            margin-bottom: 0.12rem;
+        }
+
+        .service-item p {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+        }
+
         .try-box {
             background: linear-gradient(135deg, rgba(13, 148, 136, 0.16), rgba(56, 189, 248, 0.08));
             border: 1px solid rgba(45, 212, 191, 0.25);
@@ -471,6 +507,7 @@
 
             .grid,
             .grid.two,
+            .service-list,
             .metric-row,
             .status-row {
                 grid-template-columns: 1fr;
@@ -555,13 +592,32 @@
                     <span class="metric-value">70</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Channels</span>
-                    <span class="metric-value">2</span>
+                    <span class="metric-label">RAG Services</span>
+                    <span class="metric-value">10</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Last Test</span>
                     <span class="metric-value">22 May</span>
                 </div>
+            </div>
+        </section>
+
+        <section class="section" id="service-catalog">
+            <h2>RAG Service Catalog</h2>
+            <p class="section-lede">
+                The Telegram bot now retrieves from an expanded service knowledge base, so visitors can ask for practical automation options instead of receiving only a short three-item list.
+            </p>
+            <div class="service-list">
+                <div class="service-item"><span class="service-index">01</span><div><strong>Customer Support RAG Assistants</strong><p>Grounded answers from FAQs, policies, service notes, and approved documents.</p></div></div>
+                <div class="service-item"><span class="service-index">02</span><div><strong>AI Lead Qualification Bots</strong><p>Telegram, WhatsApp, or web chat flows that capture details, score intent, and alert sales.</p></div></div>
+                <div class="service-item"><span class="service-index">03</span><div><strong>n8n Automation Pilots</strong><p>Workflow discovery, process mapping, and controlled agentic automation demos.</p></div></div>
+                <div class="service-item"><span class="service-index">04</span><div><strong>Human Approval Assistants</strong><p>Draft careful replies, classify urgency, and route sensitive communication for approval.</p></div></div>
+                <div class="service-item"><span class="service-index">05</span><div><strong>CRM Follow-Up Agents</strong><p>Summarize enquiries, draft follow-ups, update lead stages, and remind sales teams.</p></div></div>
+                <div class="service-item"><span class="service-index">06</span><div><strong>Invoice And Document Extraction</strong><p>Extract, validate, and route invoice, receipt, contract, or form data.</p></div></div>
+                <div class="service-item"><span class="service-index">07</span><div><strong>Inventory Alert Agents</strong><p>Monitor stock signals, detect low-stock risks, and draft supplier actions.</p></div></div>
+                <div class="service-item"><span class="service-index">08</span><div><strong>Resume Screening Assistants</strong><p>Score resumes against role criteria and prepare recruiter review notes.</p></div></div>
+                <div class="service-item"><span class="service-index">09</span><div><strong>Automated Analytics Briefings</strong><p>Summarize weekly performance, flag anomalies, and send management updates.</p></div></div>
+                <div class="service-item"><span class="service-index">10</span><div><strong>Onboarding And FAQ Assistants</strong><p>Guide customers through setup, collect missing details, and escalate complex questions.</p></div></div>
             </div>
         </section>
 
