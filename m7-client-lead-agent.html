@@ -249,8 +249,8 @@
         }
 
         .workflow-screenshot {
-            max-width: 920px;
-            margin: 0 auto;
+            max-width: 520px;
+            margin: 0;
         }
 
         .visual-caption {
@@ -258,6 +258,29 @@
             font-size: 0.92rem;
             margin-top: 0.85rem;
             text-align: center;
+        }
+
+        .workflow-proof {
+            display: grid;
+            grid-template-columns: minmax(280px, 520px) minmax(280px, 1fr);
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .workflow-copy h3 {
+            color: var(--text);
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .workflow-copy p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .workflow-copy ul {
+            color: var(--text-secondary);
+            padding-left: 1.2rem;
         }
 
         .grid {
@@ -519,6 +542,7 @@
 
             .grid,
             .grid.two,
+            .workflow-proof,
             .service-list,
             .metric-row,
             .status-row {
@@ -568,11 +592,21 @@
 
         <section class="section" id="n8n-workflow-view">
             <h2>Live n8n Workflow View</h2>
-            <p class="section-lede">
-                The active Telegram lead qualification workflow is published in n8n with Telegram intake, RAG retrieval, lead scoring, Gmail sales alerts, and Telegram replies.
-            </p>
-            <img class="demo-visual workflow-screenshot" src="content/m7-client-lead-agent/n8n-telegram-lead-workflow.png" alt="Published n8n editor view for the M7 Telegram Lead Qualification Bot workflow" loading="lazy">
-            <p class="visual-caption">Public screenshot of the workflow canvas only; credentials, webhook URLs, chat IDs, and execution payloads are not shown.</p>
+            <div class="workflow-proof">
+                <figure>
+                    <img class="demo-visual workflow-screenshot" src="content/m7-client-lead-agent/n8n-telegram-lead-workflow.png" alt="Published n8n editor view for the M7 Telegram Lead Qualification Bot workflow" loading="lazy">
+                    <figcaption class="visual-caption">Public canvas screenshot only; credentials, webhook URLs, chat IDs, and payloads are not shown.</figcaption>
+                </figure>
+                <div class="workflow-copy">
+                    <h3>What This Proves</h3>
+                    <p>The active Telegram lead qualification workflow is published in n8n and connected end to end across intake, RAG retrieval, scoring, Gmail alerts, and Telegram replies.</p>
+                    <ul>
+                        <li>Telegram and webhook entry points feed the same normalized message path.</li>
+                        <li>Supabase RAG and OpenAI support the AI lead qualification agent.</li>
+                        <li>Qualified leads route to Gmail while every visitor still receives a Telegram reply.</li>
+                    </ul>
+                </div>
+            </div>
         </section>
 
         <section class="section">

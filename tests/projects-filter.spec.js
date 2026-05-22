@@ -53,7 +53,8 @@ test('M7 Client Lead Agent card links to the live Telegram capstone page', async
   await expect(page.getByRole('heading', { name: /AI Lead Qualification/ })).toBeVisible();
   const workflowImage = page.getByRole('img', { name: 'Published n8n editor view for the M7 Telegram Lead Qualification Bot workflow' });
   await expect(workflowImage).toHaveAttribute('src', 'content/m7-client-lead-agent/n8n-telegram-lead-workflow.png');
-  await expect(workflowImage).toHaveCSS('max-width', '920px');
+  await expect(workflowImage).toHaveCSS('max-width', '520px');
+  await expect(page.locator('#n8n-workflow-view')).toContainText('What This Proves');
   await expect(page.getByRole('link', { name: 'Try Telegram Bot' }).first()).toHaveAttribute('href', 'https://t.me/AlsoCan_Bot');
   await expect(page.locator('main')).not.toContainText('Customer Rapport Assistant');
   await expect(page.locator('#test-status')).toContainText('Latest Test Status');
