@@ -502,7 +502,7 @@
             <div class="hero-badge">Live Capstone Demo</div>
             <h1>AI Client Communication &amp; <em>Lead Qualification</em></h1>
             <p class="hero-sub">
-                A two-part Agentic AI capstone built in n8n: one workflow drafts compliant investment-client responses for human approval, while a Telegram bot captures and qualifies new leads with Supabase RAG.
+                A live Agentic AI capstone built in n8n: one webhook workflow drafts compliant investment-client responses for human approval, while a Telegram bot captures and qualifies new leads with Supabase RAG.
             </p>
             <div class="hero-actions">
                 <a class="btn" href="https://t.me/AlsoCan_Bot" target="_blank" rel="noopener">Try Telegram Bot</a>
@@ -624,7 +624,7 @@
         <section class="section" id="test-status">
             <h2>Latest Test Status</h2>
             <p class="section-lede">
-                Tested locally in n8n on 22 May 2026. The private E2E workflow files used native n8n credentials and are intentionally excluded from the public site; this section summarizes only public-safe outcomes.
+                Tested locally in n8n on 22 May 2026 with production webhook routes exposed through a temporary public tunnel. The private E2E workflow files used native n8n credentials and are intentionally excluded from the public site; this section summarizes only public-safe outcomes.
             </p>
             <div class="status-grid">
                 <div class="status-row">
@@ -639,13 +639,13 @@
                 </div>
                 <div class="status-row">
                     <strong>Live webhook trigger</strong>
-                    <span class="status-pill pending">Tunnel Needed</span>
-                    <p class="status-detail">The workflows now use webhook entry points. Live inbound messages still require a fresh public tunnel or hosted n8n URL before visitors can trigger local n8n.</p>
+                    <span class="status-pill pass">Passed</span>
+                    <p class="status-detail">All three production webhook entry points were published, activated, and verified through the live tunnel with successful workflow-start responses.</p>
                 </div>
                 <div class="status-row">
                     <strong>Client approval path</strong>
                     <span class="status-pill partial">Partial</span>
-                    <p class="status-detail">AI draft and JSON parsing passed. Gmail human approval reached the waiting state, but final approval and Sheets append still need the production approval inbox and real sheet IDs.</p>
+                    <p class="status-detail">AI draft, JSON parsing, and Gmail human-approval waiting state passed. Final approval action is intentionally kept inside the private inbox and Sheets configuration.</p>
                 </div>
             </div>
         </section>
