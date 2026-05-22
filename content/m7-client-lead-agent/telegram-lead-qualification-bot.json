@@ -35,9 +35,9 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=User message: {{$json.user_message}}\nTelegram username: {{$json.telegram_username}}\nInstructions:\n- If name and email are not captured, extract them from the user message.\n- If both are present and valid, confirm registration and proceed.\n- If missing or invalid, ask for both name and valid email.\n- If already registered, answer using the Supabase RAG tool and assess lead qualification.",
+        "text": "=User message: {{$json.user_message}}\nTelegram username: {{$json.telegram_username}}\n\nTask:\n1. Extract any provided name, email, use case, budget, timeline, and buying intent.\n2. If name/email are missing, still give a brief useful answer when possible, then ask for the missing detail.\n3. If registered, answer the user's question using the knowledge base and ask the best next qualification question.\n4. Score the lead using the system rules and return strict JSON only.",
         "options": {
-          "systemMessage": "You are an AI assistant interacting with users on Telegram for an AI automation services capstone demo. Stage 1 is registration: extract a name and valid email from free text without hallucinating missing values. Stage 2 is conversation and lead qualification: answer using the available knowledge base, collect use case, budget, timeline, and intent, then score the lead from 0 to 100. Mark qualified true when lead_score is 70 or higher. Always return valid JSON only with reply_to_user, user_registered, lead_data, lead_score, qualified, reason, and conversation_summary."
+          "systemMessage": "You are AlsoCanDo's Telegram assistant for Ken Wong's M7 capstone demo. Your job is to be useful, concise, and natural while collecting lead qualification details.\n\nConversation style:\n- Write reply_to_user as a short Telegram message, ideally 2-5 short lines and under 700 characters.\n- Be warm, practical, and specific. Avoid generic sales fluff.\n- Do not say \"here is a summary\" unless you include the summary.\n- Ask exactly one clear next question at the end unless the user only needs a direct answer.\n- Use plain text or simple bullets only. No markdown tables.\n\nRegistration:\n- Extract name and email only when the user actually provides them. Never invent missing values.\n- If name or valid email is missing, answer any simple service question briefly, then ask for the missing name/email.\n- user_registered is true only when both name and valid email are present in this message or prior context.\n\nKnowledge and answers:\n- Use the Supabase RAG tool for service, pricing, timeline, and capability questions.\n- Mention indicative pricing or timeline as AlsoCanDo guidance only; do not copy those values into lead_data.budget or lead_data.timeline unless the user stated that budget/timeline for their project.\n- If unsure, say what you can do and ask a focused follow-up.\n\nService catalog guidance:\n- When the user asks what services are available, do not stop at three examples. Use the RAG knowledge base to list a broader menu, up to 10 services when useful.\n- The current service menu includes: customer support RAG assistants, AI lead qualification bots, workflow discovery and n8n automation pilots, human-approval client communication assistants, CRM follow-up agents, invoice/document extraction, inventory alert agents, resume screening assistants, automated analytics briefings, and onboarding/FAQ assistants.\n- Keep service-list replies concise: group into bullets and end by asking which workflow they want to automate first.\n\nLead scoring:\n- 0-30: registration only or vague curiosity.\n- 40-60: clear use case but no budget/timeline/urgency.\n- 70-84: clear use case plus budget, or explicit decision/start intent. A timeline alone is not enough if budget is unknown.\n- 85-100: clear use case plus budget and timeline, or explicit intent to start.\n- If the user says budget is not confirmed, budget is empty, or they are only exploring, cap lead_score at 65 and set qualified false.\n- qualified is true only when lead_score is 70 or higher and there is real buying intent.\n\nAlways return valid JSON only with this exact shape:\n{\n  \"reply_to_user\": \"string\",\n  \"user_registered\": boolean,\n  \"lead_data\": {\n    \"name\": \"string\",\n    \"email\": \"string\",\n    \"use_case\": \"string\",\n    \"budget\": \"string\",\n    \"timeline\": \"string\",\n    \"intent_level\": \"low|medium|high|\"\n  },\n  \"lead_score\": number,\n  \"qualified\": boolean,\n  \"reason\": \"string\",\n  \"conversation_summary\": \"string\"\n}\n"
         }
       },
       "id": "ai-agent-lead-qualification",
@@ -81,7 +81,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const codeFence = '```';\nconst source = $input.first().json;\nlet raw = source.output || source.text || source.response || '';\nif (typeof raw !== 'string') raw = JSON.stringify(raw);\nraw = raw.trim();\nif (raw.startsWith(codeFence)) raw = raw.replace(/^```(?:json)?\\s*/i, '').replace(/```$/i, '').trim();\nconst first = raw.indexOf('{');\nconst last = raw.lastIndexOf('}');\nif (first >= 0 && last > first) raw = raw.slice(first, last + 1);\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);\n} catch (error) {\n  parsed = {\n    reply_to_user: 'I had trouble reading that. Please send your name, email, and what you want to automate.',\n    user_registered: false,\n    lead_data: { name: '', email: '', use_case: '', budget: '', timeline: '', intent_level: '' },\n    lead_score: 0,\n    qualified: false,\n    reason: error.message,\n    conversation_summary: ''\n  };\n}\nconst sourceMessage = $('Normalize Telegram Message').first().json;\nconst lead = parsed.lead_data || {};\nreturn [{ json: {\n  ...sourceMessage,\n  reply_to_user: parsed.reply_to_user || 'Please enter both your Name and a valid Email ID to continue.',\n  user_registered: Boolean(parsed.user_registered),\n  Name: lead.name || '',\n  Email: lead.email || '',\n  use_case: lead.use_case || '',\n  budget: lead.budget || '',\n  timeline: lead.timeline || '',\n  intent_level: lead.intent_level || '',\n  lead_score: Number(parsed.lead_score || 0),\n  qualified: Boolean(parsed.qualified),\n  reason: parsed.reason || '',\n  conversation_summary: parsed.conversation_summary || ''\n}}];"
+        "jsCode": "const codeFence = '```';\nconst source = $input.first().json;\nlet raw = source.output || source.text || source.response || '';\nif (typeof raw !== 'string') raw = JSON.stringify(raw);\nraw = raw.trim();\nif (raw.startsWith(codeFence)) raw = raw.replace(/^```(?:json)?\\s*/i, '').replace(/```$/i, '').trim();\nconst first = raw.indexOf('{');\nconst last = raw.lastIndexOf('}');\nif (first >= 0 && last > first) raw = raw.slice(first, last + 1);\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);\n} catch (error) {\n  parsed = {\n    reply_to_user: 'I can help with AI lead qualification, RAG chatbots, and approval workflows. Please send your name, email, and what you want to automate.',\n    user_registered: false,\n    lead_data: { name: '', email: '', use_case: '', budget: '', timeline: '', intent_level: '' },\n    lead_score: 0,\n    qualified: false,\n    reason: error.message,\n    conversation_summary: ''\n  };\n}\nconst sourceMessage = $('Normalize Telegram Message').first().json;\nconst lead = parsed.lead_data || {};\nlet reply = String(parsed.reply_to_user || '').trim();\nif (!reply) reply = 'I can help with AI automation and lead qualification. What would you like to automate?';\nif (reply.length > 900) reply = `${reply.slice(0, 860).trim()}...\n\nWhat is the most important outcome you want from this automation?`;\nconst sourceText = String(sourceMessage.user_message || '').toLowerCase();\nconst hasBudget = Boolean(String(lead.budget || '').trim());\nconst explicitNoBudget = /budget\\s+(is\\s+)?(not\\s+)?(confirmed|set|ready)|no\\s+budget|budget\\s+unknown|not\\s+sure\\s+.*budget/.test(sourceText);\nconst explicitStartIntent = /(ready\\s+to\\s+start|go\\s+ahead|book\\s+a\\s+call|approve|decision|start\\s+this|kick\\s+off)/.test(sourceText);\nlet normalizedScore = Math.max(0, Math.min(100, Number(parsed.lead_score || 0)));\nlet normalizedQualified = Boolean(parsed.qualified) && normalizedScore >= 70;\nif ((!hasBudget || explicitNoBudget) && !explicitStartIntent) {\n  normalizedScore = Math.min(normalizedScore, 65);\n  normalizedQualified = false;\n}\nreturn [{ json: {\n  ...sourceMessage,\n  reply_to_user: reply,\n  user_registered: Boolean(parsed.user_registered),\n  Name: lead.name || '',\n  Email: lead.email || '',\n  use_case: lead.use_case || '',\n  budget: lead.budget || '',\n  timeline: lead.timeline || '',\n  intent_level: lead.intent_level || '',\n  lead_score: normalizedScore,\n  qualified: normalizedQualified,\n  reason: parsed.reason || '',\n  conversation_summary: parsed.conversation_summary || ''\n}}];"
       },
       "id": "parse-lead-json",
       "name": "Parse Lead JSON",
@@ -95,26 +95,42 @@
     {
       "parameters": {
         "conditions": {
-          "number": [
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
             {
-              "value1": "={{$json.lead_score}}",
-              "operation": "largerEqual",
-              "value2": 70
+              "id": "lead-score-gte-70",
+              "leftValue": "={{ $json.lead_score }}",
+              "rightValue": 70,
+              "operator": {
+                "type": "number",
+                "operation": "gte",
+                "name": "filter.operator.gte"
+              }
+            },
+            {
+              "id": "lead-qualified-true",
+              "leftValue": "={{ $json.qualified }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
             }
           ],
-          "boolean": [
-            {
-              "value1": "={{$json.qualified}}",
-              "value2": true
-            }
-          ]
+          "combinator": "and"
         },
-        "combineOperation": "all"
+        "options": {}
       },
       "id": "qualified-lead-route",
       "name": "Qualified Lead?",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
+      "typeVersion": 2.2,
       "position": [
         220,
         0
