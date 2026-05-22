@@ -74,8 +74,8 @@ const KNOWLEDGE_BASE = [
     id: 'project-m7-client-lead-agent',
     intent: 'projects',
     title: 'M7 Client Lead Agent',
-    keywords: ['m7', 'client', 'lead', 'agent', 'telegram', 'alsocan', 'bot', 'supabase', 'rag', 'n8n', 'gmail', 'sheets', 'capstone'],
-    content: 'M7 Client Lead Agent is Ken\'s SCTP Agentic AI capstone demo at /site/m7-client-lead-agent.html. It combines a Customer Rapport Assistant for compliant investment-client response drafting with a Telegram Lead Qualification Bot at t.me/AlsoCan_Bot. The system uses n8n, OpenAI, Supabase RAG, Gmail approval and alerting, and Google Sheets logs. Public workflow files are sanitized and the live visitor entry point is the Telegram bot link.',
+    keywords: ['m7', 'client', 'lead', 'agent', 'telegram', 'alsocan', 'bot', 'supabase', 'rag', 'n8n', 'gmail', 'capstone'],
+    content: 'M7 Client Lead Agent is Ken\'s SCTP Agentic AI capstone demo at /site/m7-client-lead-agent.html. It centers on a Telegram Lead Qualification Bot at t.me/AlsoCan_Bot plus a webhook-based RAG ingestion workflow for the expanded service catalog. The system uses n8n, OpenAI, Supabase RAG, and Gmail sales alerts. Public workflow files are sanitized and the live visitor entry point is the Telegram bot link.',
   },
   {
     id: 'certifications',

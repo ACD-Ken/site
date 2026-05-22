@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M7 Client Lead Agent - Live Capstone Demo</title>
-    <meta name="description" content="Ken Wong's M7 capstone demo: an n8n AI client communication workflow plus a Telegram lead qualification bot with Supabase RAG, Gmail alerts, and Sheets audit logs.">
+    <meta name="description" content="Ken Wong's M7 capstone demo: an n8n Telegram lead qualification bot with Supabase RAG, Gmail sales alerts, and a webhook-based RAG ingestion workflow.">
     <meta name="author" content="Ken Wong">
-    <meta name="keywords" content="M7 capstone, n8n, Telegram bot, Agentic AI, Supabase RAG, lead qualification, client communication">
+    <meta name="keywords" content="M7 capstone, n8n, Telegram bot, Agentic AI, Supabase RAG, lead qualification, Gmail alerts">
     <link rel="canonical" href="https://acd-ken.github.io/site/m7-client-lead-agent.html">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="Ken Wong AI Portfolio">
     <meta property="og:title" content="M7 Client Lead Agent - Live Capstone Demo">
-    <meta property="og:description" content="A live Agentic AI capstone system combining compliant client communication and Telegram lead qualification.">
+    <meta property="og:description" content="A live Agentic AI capstone system for Telegram lead qualification, service RAG, and Gmail sales alerts.">
     <meta property="og:url" content="https://acd-ken.github.io/site/m7-client-lead-agent.html">
     <meta property="og:image" content="https://acd-ken.github.io/site/og-image.svg">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="M7 Client Lead Agent - Live Capstone Demo">
-    <meta name="twitter:description" content="n8n, Telegram, Supabase RAG, Gmail, and Google Sheets in one capstone workflow system.">
+    <meta name="twitter:description" content="n8n, Telegram, Supabase RAG, and Gmail sales alerts in one capstone workflow system.">
     <meta name="twitter:image" content="https://acd-ken.github.io/site/og-image.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -537,9 +537,9 @@
     <section class="hero">
         <div class="hero-inner">
             <div class="hero-badge">Live Capstone Demo</div>
-            <h1>AI Client Communication &amp; <em>Lead Qualification</em></h1>
+            <h1>AI Lead Qualification &amp; <em>Service RAG</em></h1>
             <p class="hero-sub">
-                A live Agentic AI capstone built in n8n: one webhook workflow drafts compliant investment-client responses for human approval, while a Telegram bot captures and qualifies new leads with Supabase RAG.
+                A live Agentic AI capstone built in n8n: a Telegram bot captures and qualifies new leads while Supabase RAG answers service questions from the expanded automation catalog.
             </p>
             <div class="hero-actions">
                 <a class="btn" href="https://t.me/AlsoCan_Bot" target="_blank" rel="noopener">Try Telegram Bot</a>
@@ -551,31 +551,31 @@
 
     <main>
         <section class="section">
-            <img class="demo-visual" src="content/m7-client-lead-agent/demo-flow.svg" alt="Architecture visual for the M7 client communication and lead qualification capstone">
+            <img class="demo-visual" src="content/m7-client-lead-agent/demo-flow.svg" alt="Architecture visual for the M7 Telegram lead qualification and service RAG capstone">
         </section>
 
         <section class="section">
             <h2>Solution Overview</h2>
             <p class="section-lede">
-                The capstone connects front-office communication with lead acquisition. AI is used for reasoning, summarization, and drafting, while n8n keeps the operational controls explicit: approval, logging, scoring thresholds, and notifications.
+                The capstone connects lead acquisition with service knowledge. AI is used for qualification, RAG answers, and concise follow-up, while n8n keeps the operational controls explicit: registration, scoring thresholds, alerts, and knowledge ingestion.
             </p>
             <div class="grid two">
-                <article class="panel">
-                    <h3>Customer Rapport Assistant</h3>
-                    <ul>
-                        <li>Accepts client name, portfolio type, horizon, and investment concern through a webhook payload.</li>
-                        <li>Identifies concern category and emotional tone.</li>
-                        <li>Drafts a compliant, non-advisory response for Gmail approval.</li>
-                        <li>Logs approved drafts and manual review cases into separate Google Sheets records.</li>
-                    </ul>
-                </article>
                 <article class="panel">
                     <h3>Telegram Lead Qualification Bot</h3>
                     <ul>
                         <li>Uses `@AlsoCan_Bot` as the public Telegram entry point.</li>
-                        <li>Collects name and email before normal conversation.</li>
+                        <li>Captures name, email, use case, budget, and timeline before routing a lead.</li>
                         <li>Answers service questions using a Supabase RAG knowledge base.</li>
                         <li>Scores lead intent from 0 to 100 and alerts sales when score is 70 or higher.</li>
+                    </ul>
+                </article>
+                <article class="panel">
+                    <h3>Sales Knowledge RAG Ingestion</h3>
+                    <ul>
+                        <li>Accepts public-safe service catalog rows through a webhook payload.</li>
+                        <li>Generates OpenAI embeddings for each service record.</li>
+                        <li>Stores service facts in Supabase Vector Store for retrieval.</li>
+                        <li>Powers the expanded 10-service Telegram answer menu.</li>
                     </ul>
                 </article>
             </div>
@@ -585,7 +585,7 @@
             <div class="metric-row">
                 <div class="metric">
                     <span class="metric-label">Workflows</span>
-                    <span class="metric-value">3</span>
+                    <span class="metric-value">2</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Lead Threshold</span>
@@ -642,12 +642,12 @@
             <h2>Governance Controls</h2>
             <div class="grid">
                 <article class="panel">
-                    <h3>Human Approval</h3>
-                    <p>Client-facing investment responses are routed through Gmail approval before they are treated as approved records.</p>
+                    <h3>Controlled Sales Alerts</h3>
+                    <p>Qualified leads trigger Gmail sales alerts only after n8n validates registration, intent, and the score threshold.</p>
                 </article>
                 <article class="panel">
                     <h3>Structured Output</h3>
-                    <p>Both agents return JSON so n8n can parse, validate, route, log, and recover from malformed output.</p>
+                    <p>The bot returns JSON so n8n can parse, validate, route, alert, and recover from malformed output.</p>
                 </article>
                 <article class="panel">
                     <h3>Public Sanitization</h3>
@@ -659,12 +659,12 @@
         <section class="section">
             <h2>Demo Evidence</h2>
             <p class="section-lede">
-                The public page shows architecture, sanitized artifacts, and safe execution results only. Private execution screenshots, Gmail inbox details, Sheets URLs, Supabase keys, chat IDs, and webhook URLs stay outside the public repository.
+                The public page shows architecture, sanitized artifacts, and safe execution results only. Private execution screenshots, Gmail inbox details, Supabase keys, chat IDs, and webhook URLs stay outside the public repository.
             </p>
             <div class="evidence-list">
                 <div class="evidence-item">
                     <span class="evidence-dot"></span>
-                    <div><strong>n8n webhook workflows</strong><p>Customer rapport, lead qualification, and RAG ingestion workflows are represented by sanitized webhook-based JSON files.</p></div>
+                    <div><strong>n8n webhook workflows</strong><p>Lead qualification and RAG ingestion workflows are represented by sanitized webhook-based JSON files.</p></div>
                 </div>
                 <div class="evidence-item">
                     <span class="evidence-dot"></span>
@@ -672,7 +672,7 @@
                 </div>
                 <div class="evidence-item">
                     <span class="evidence-dot"></span>
-                    <div><strong>Audit-friendly records</strong><p>The system design separates approved communication logs, manual review logs, and qualified lead alerts.</p></div>
+                    <div><strong>Audit-friendly records</strong><p>The system design separates Telegram registration, RAG answers, lead scoring, and qualified lead alerts.</p></div>
                 </div>
             </div>
         </section>
@@ -686,7 +686,7 @@
                 <div class="status-row">
                     <strong>RAG ingestion</strong>
                     <span class="status-pill pass">Passed</span>
-                    <p class="status-detail">Loaded 4 sample sales knowledge rows, generated OpenAI embeddings, and inserted them into Supabase Vector Store.</p>
+                    <p class="status-detail">Loaded 13 public-safe sales knowledge rows, including the expanded 10-service catalog, generated OpenAI embeddings, and inserted them into Supabase Vector Store.</p>
                 </div>
                 <div class="status-row">
                     <strong>Telegram lead path</strong>
@@ -696,12 +696,7 @@
                 <div class="status-row">
                     <strong>Live webhook trigger</strong>
                     <span class="status-pill pass">Passed</span>
-                    <p class="status-detail">All three production webhook entry points were published, activated, and verified through the live tunnel with successful workflow-start responses.</p>
-                </div>
-                <div class="status-row">
-                    <strong>Client approval path</strong>
-                    <span class="status-pill partial">Partial</span>
-                    <p class="status-detail">AI draft, JSON parsing, and Gmail human-approval waiting state passed. Final approval action is intentionally kept inside the private inbox and Sheets configuration.</p>
+                    <p class="status-detail">Both production webhook entry points were published, activated, and verified through the live tunnel with successful workflow-start responses.</p>
                 </div>
             </div>
         </section>
@@ -709,10 +704,9 @@
         <section class="section" id="artifacts">
             <h2>Public Workflow Artifacts</h2>
             <p class="section-lede">
-                These are sanitized for website hosting. Real OpenAI, Telegram, Gmail, Google Sheets, and Supabase access remains configured inside native n8n credentials.
+                These are sanitized for website hosting. Real OpenAI, Telegram, Gmail, and Supabase access remains configured inside native n8n credentials.
             </p>
             <div class="artifact-links">
-                <a class="btn secondary" href="content/m7-client-lead-agent/customer-rapport-assistant.json">Customer Rapport JSON</a>
                 <a class="btn secondary" href="content/m7-client-lead-agent/telegram-lead-qualification-bot.json">Telegram Bot JSON</a>
                 <a class="btn secondary" href="content/m7-client-lead-agent/rag-knowledge-ingestion.json">RAG Ingestion JSON</a>
                 <a class="btn secondary" href="content/m7-client-lead-agent/supabase-vector-store.sql">Supabase SQL</a>

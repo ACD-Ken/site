@@ -52,6 +52,7 @@ test('retrieveKnowledge includes M7 Client Lead Agent live demo context', () => 
   assert.match(m7Agent.content, /\/site\/m7-client-lead-agent\.html/);
   assert.match(m7Agent.content, /t\.me\/AlsoCan_Bot/);
   assert.match(m7Agent.content, /Supabase RAG/);
+  assert.doesNotMatch(m7Agent.content, /Customer Rapport/i);
 });
 
 test('retrieveKnowledge includes ACD-Bot architecture context', () => {

@@ -10,7 +10,6 @@ const PUBLIC_WORKFLOW_FILES = [
   'content/inventory-agent/04-inventory-agent-v2.json',
   'content/inventory-agent/04-inventory-agent-v3.json',
   'content/inventory-agent/supplier-email-smoke-test.json',
-  'content/m7-client-lead-agent/customer-rapport-assistant.json',
   'content/m7-client-lead-agent/rag-knowledge-ingestion.json',
   'content/m7-client-lead-agent/telegram-lead-qualification-bot.json',
 ];
