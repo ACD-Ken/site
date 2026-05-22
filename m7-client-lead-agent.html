@@ -248,6 +248,12 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.24);
         }
 
+        .visual-caption {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-top: 0.85rem;
+        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -552,6 +558,15 @@
     <main>
         <section class="section">
             <img class="demo-visual" src="content/m7-client-lead-agent/demo-flow.svg" alt="Architecture visual for the M7 Telegram lead qualification and service RAG capstone">
+        </section>
+
+        <section class="section" id="n8n-workflow-view">
+            <h2>Live n8n Workflow View</h2>
+            <p class="section-lede">
+                The active Telegram lead qualification workflow is published in n8n with Telegram intake, RAG retrieval, lead scoring, Gmail sales alerts, and Telegram replies.
+            </p>
+            <img class="demo-visual" src="content/m7-client-lead-agent/n8n-telegram-lead-workflow.png" alt="Published n8n editor view for the M7 Telegram Lead Qualification Bot workflow" loading="lazy">
+            <p class="visual-caption">Public screenshot of the workflow canvas only; credentials, webhook URLs, chat IDs, and execution payloads are not shown.</p>
         </section>
 
         <section class="section">
