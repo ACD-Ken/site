@@ -42,7 +42,8 @@ test('M7 Client Lead Agent card links to the live Telegram capstone page', async
   const capstoneCard = page.locator('#m7-client-lead-agent');
   await expect(capstoneCard).toBeVisible();
   await expect(capstoneCard.locator('.status-badge.completed')).toContainText('Live Demo');
-  await expect(capstoneCard.getByText('Full SCTP Agentic AI capstone system')).toBeVisible();
+  await expect(capstoneCard.getByText('tested Telegram lead qualification path')).toBeVisible();
+  await expect(capstoneCard.locator('.metric', { hasText: 'E2E Test' })).toContainText('Pass');
   await expect(capstoneCard.getByRole('link', { name: 'View Live Demo' })).toHaveAttribute('href', 'm7-client-lead-agent.html');
   await expect(capstoneCard.getByRole('link', { name: 'Try Telegram Bot' })).toHaveAttribute('href', 'https://t.me/AlsoCan_Bot');
 
@@ -50,8 +51,12 @@ test('M7 Client Lead Agent card links to the live Telegram capstone page', async
   await expect(page).toHaveURL(/m7-client-lead-agent\.html$/);
   await expect(page.getByRole('heading', { name: /AI Client Communication/ })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Try Telegram Bot' }).first()).toHaveAttribute('href', 'https://t.me/AlsoCan_Bot');
+  await expect(page.locator('#test-status')).toContainText('Latest Test Status');
+  await expect(page.locator('#test-status')).toContainText('lead with score 85');
+  await expect(page.locator('#test-status')).toContainText('Tunnel Needed');
   await expect(page.locator('#artifacts').getByRole('link', { name: 'Customer Rapport JSON' })).toHaveAttribute('href', 'content/m7-client-lead-agent/customer-rapport-assistant.json');
   await expect(page.locator('#artifacts').getByRole('link', { name: 'Telegram Bot JSON' })).toHaveAttribute('href', 'content/m7-client-lead-agent/telegram-lead-qualification-bot.json');
+  await expect(page.locator('#artifacts').getByRole('link', { name: 'Test Results' })).toHaveAttribute('href', 'content/m7-client-lead-agent/test-results-2026-05-22.md');
 });
 
 test('HR Agentic Agent card links to the canonical V2 workflow page with planned roadmap', async ({ page }) => {

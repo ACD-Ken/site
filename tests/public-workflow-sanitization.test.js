@@ -15,6 +15,13 @@ const PUBLIC_WORKFLOW_FILES = [
   'content/m7-client-lead-agent/telegram-lead-qualification-bot.json',
 ];
 
+const PUBLIC_M7_FILES = [
+  ...PUBLIC_WORKFLOW_FILES.filter(file => file.startsWith('content/m7-client-lead-agent/')),
+  'content/m7-client-lead-agent/README.md',
+  'content/m7-client-lead-agent/test-results-2026-05-22.md',
+  'm7-client-lead-agent.html',
+];
+
 const FORBIDDEN_TEXT_PATTERNS = [
   /alsocando@gmail\.com/i,
   /dmsgbox@gmail\.com/i,
@@ -69,5 +76,28 @@ test('public n8n workflow JSON artifacts are sanitized for website hosting', () 
     });
 
     assert.deepEqual(exposedKeys, [], `${relativePath} exposes operational n8n metadata`);
+  }
+});
+
+test('M7 public site files do not expose private E2E artifacts or secrets', () => {
+  const root = path.join(__dirname, '..');
+  const publicM7Dir = path.join(root, 'content/m7-client-lead-agent');
+  const publishedNames = fs.readdirSync(publicM7Dir);
+
+  assert.equal(
+    publishedNames.some(name => /local-e2e|synthetic-e2e|test-ready/i.test(name)),
+    false,
+    'public M7 folder must not publish local E2E or synthetic workflow exports',
+  );
+
+  for (const relativePath of PUBLIC_M7_FILES) {
+    const text = fs.readFileSync(path.join(root, relativePath), 'utf8');
+
+    for (const pattern of FORBIDDEN_TEXT_PATTERNS) {
+      if (relativePath.endsWith('m7-client-lead-agent.html') && pattern.source.includes('@AlsoCan_Bot')) {
+        continue;
+      }
+      assert.doesNotMatch(text, pattern, `${relativePath} contains forbidden public metadata: ${pattern}`);
+    }
   }
 });
