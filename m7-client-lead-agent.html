@@ -526,7 +526,7 @@
                 <article class="panel">
                     <h3>Customer Rapport Assistant</h3>
                     <ul>
-                        <li>Captures client name, portfolio type, horizon, and investment concern from an n8n form.</li>
+                        <li>Accepts client name, portfolio type, horizon, and investment concern through a webhook payload.</li>
                         <li>Identifies concern category and emotional tone.</li>
                         <li>Drafts a compliant, non-advisory response for Gmail approval.</li>
                         <li>Logs approved drafts and manual review cases into separate Google Sheets records.</li>
@@ -595,7 +595,7 @@
                 </article>
                 <article class="panel">
                     <h3>Public Sanitization</h3>
-                    <p>The published workflows remove tokens, private IDs, webhook metadata, and account-specific credentials.</p>
+                    <p>The published workflows show webhook entry points while removing tokens, private URLs, private IDs, and account-specific credentials.</p>
                 </article>
             </div>
         </section>
@@ -608,7 +608,7 @@
             <div class="evidence-list">
                 <div class="evidence-item">
                     <span class="evidence-dot"></span>
-                    <div><strong>n8n workflow canvases</strong><p>Customer rapport, Telegram bot, and RAG ingestion workflows are represented by sanitized JSON files.</p></div>
+                    <div><strong>n8n webhook workflows</strong><p>Customer rapport, lead qualification, and RAG ingestion workflows are represented by sanitized webhook-based JSON files.</p></div>
                 </div>
                 <div class="evidence-item">
                     <span class="evidence-dot"></span>
@@ -638,9 +638,9 @@
                     <p class="status-detail">Synthetic E2E test produced a qualified lead with score 85, sent the Gmail sales alert, and sent the Telegram reply.</p>
                 </div>
                 <div class="status-row">
-                    <strong>Live Telegram trigger</strong>
+                    <strong>Live webhook trigger</strong>
                     <span class="status-pill pending">Tunnel Needed</span>
-                    <p class="status-detail">The bot is reachable, but live inbound messages require a fresh public tunnel or hosted n8n webhook before visitors can trigger the local n8n workflow.</p>
+                    <p class="status-detail">The workflows now use webhook entry points. Live inbound messages still require a fresh public tunnel or hosted n8n URL before visitors can trigger local n8n.</p>
                 </div>
                 <div class="status-row">
                     <strong>Client approval path</strong>

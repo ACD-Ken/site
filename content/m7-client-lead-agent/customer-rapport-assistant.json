@@ -3,59 +3,16 @@
   "nodes": [
     {
       "parameters": {
-        "formTitle": "Customer Rapport Assistant",
-        "formDescription": "Capture an investment client concern for compliant response drafting.",
-        "formFields": {
-          "values": [
-            {
-              "fieldLabel": "Client Name",
-              "fieldType": "text",
-              "requiredField": true
-            },
-            {
-              "fieldLabel": "Portfolio Type",
-              "fieldType": "dropdown",
-              "fieldOptions": {
-                "values": [
-                  {
-                    "option": "Equity"
-                  },
-                  {
-                    "option": "Debt"
-                  },
-                  {
-                    "option": "Balanced"
-                  }
-                ]
-              },
-              "requiredField": true
-            },
-            {
-              "fieldLabel": "Investment Horizon",
-              "fieldType": "dropdown",
-              "fieldOptions": {
-                "values": [
-                  {
-                    "option": "Short Term"
-                  },
-                  {
-                    "option": "Long Term"
-                  }
-                ]
-              },
-              "requiredField": true
-            },
-            {
-              "fieldLabel": "Client Query",
-              "fieldType": "textarea",
-              "requiredField": true
-            }
-          ]
+        "httpMethod": "POST",
+        "path": "SANITIZED_M7_CUSTOMER_RAPPORT_WEBHOOK",
+        "responseMode": "onReceived",
+        "options": {
+          "allowedOrigins": "*"
         }
       },
-      "id": "form-trigger-client-rapport",
-      "name": "Client Query Form",
-      "type": "n8n-nodes-base.formTrigger",
+      "id": "webhook-client-rapport-public",
+      "name": "Client Query Webhook",
+      "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
         -900,
@@ -64,7 +21,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\nreturn [{ json: {\n  client_name: item['Client Name'] || '',\n  portfolio_type: item['Portfolio Type'] || '',\n  investment_horizon: item['Investment Horizon'] || '',\n  client_query: item['Client Query'] || '',\n  received_at: new Date().toISOString()\n}}];"
+        "jsCode": "const source = $input.first().json || {};\nconst item = source.body || source;\nreturn [{ json: {\n  client_name: item['Client Name'] || item.client_name || item.name || '',\n  portfolio_type: item['Portfolio Type'] || item.portfolio_type || item.portfolio || '',\n  investment_horizon: item['Investment Horizon'] || item.investment_horizon || item.horizon || '',\n  client_query: item['Client Query'] || item.client_query || item.query || item.message || '',\n  received_at: new Date().toISOString()\n}}];"
       },
       "id": "normalize-client-query",
       "name": "Normalize Client Query",
@@ -180,17 +137,6 @@
     }
   ],
   "connections": {
-    "Client Query Form": {
-      "main": [
-        [
-          {
-            "node": "Normalize Client Query",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Normalize Client Query": {
       "main": [
         [
@@ -247,6 +193,17 @@
         [
           {
             "node": "Sheets: Manual Review Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Client Query Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Client Query",
             "type": "main",
             "index": 0
           }

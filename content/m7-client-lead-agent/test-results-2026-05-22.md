@@ -11,7 +11,7 @@ This file is a public-safe summary. It intentionally omits Telegram tokens, chat
 | --- | --- | --- |
 | RAG ingestion | Passed | Loaded 4 sample sales knowledge rows, generated OpenAI embeddings, and inserted them into Supabase Vector Store. |
 | Telegram lead qualification path | Passed | Synthetic E2E test produced a qualified lead with `lead_score: 85` and `qualified: true`; Gmail alert and Telegram reply nodes completed successfully. |
-| Live Telegram trigger | Pending public tunnel | The bot is reachable, but inbound visitor messages need a fresh public n8n webhook or hosted n8n URL before the local trigger can receive them. |
+| Live webhook trigger | Pending public tunnel | The workflows now use webhook entry points, but inbound visitor messages need a fresh public n8n webhook or hosted n8n URL before the local instance can receive them. |
 | Customer rapport approval | Partial | Sample intake, AI draft, and JSON parsing succeeded. Human approval reached the Gmail waiting state; final approval and Sheets append still need production approval inbox/sheet configuration. |
 
 ## Private Artifacts Kept Out Of GitHub Pages
@@ -23,7 +23,7 @@ This file is a public-safe summary. It intentionally omits Telegram tokens, chat
 
 ## Next Live-Demo Steps
 
-1. Configure a fresh public tunnel or hosted n8n webhook for the Telegram trigger.
+1. Configure a fresh public tunnel or hosted n8n webhook for the lead qualification entry point.
 2. Re-run the live Telegram registration and qualified-lead path from a real Telegram user message.
 3. Confirm the Gmail human-approval email delivery path.
 4. Replace sanitized Google Sheets IDs with real private sheet references inside n8n only.

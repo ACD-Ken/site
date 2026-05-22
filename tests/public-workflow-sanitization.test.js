@@ -22,6 +22,10 @@ const PUBLIC_M7_FILES = [
   'm7-client-lead-agent.html',
 ];
 
+const PUBLIC_M7_WORKFLOW_FILES = PUBLIC_WORKFLOW_FILES.filter(file => (
+  file.startsWith('content/m7-client-lead-agent/')
+));
+
 const FORBIDDEN_TEXT_PATTERNS = [
   /alsocando@gmail\.com/i,
   /dmsgbox@gmail\.com/i,
@@ -99,5 +103,28 @@ test('M7 public site files do not expose private E2E artifacts or secrets', () =
       }
       assert.doesNotMatch(text, pattern, `${relativePath} contains forbidden public metadata: ${pattern}`);
     }
+  }
+});
+
+test('M7 public workflow artifacts use sanitized webhook triggers', () => {
+  for (const relativePath of PUBLIC_M7_WORKFLOW_FILES) {
+    const workflow = JSON.parse(fs.readFileSync(path.join(__dirname, '..', relativePath), 'utf8'));
+    const triggerNodes = workflow.nodes.filter(node => node.type.endsWith('Trigger') || node.type === 'n8n-nodes-base.webhook');
+
+    assert.equal(
+      triggerNodes.some(node => node.type === 'n8n-nodes-base.manualTrigger'),
+      false,
+      `${relativePath} should not publish manual test triggers`,
+    );
+    assert.equal(
+      triggerNodes[0]?.type,
+      'n8n-nodes-base.webhook',
+      `${relativePath} should start from a sanitized Webhook trigger`,
+    );
+    assert.match(
+      triggerNodes[0].parameters.path,
+      /^SANITIZED_M7_[A-Z_]+_WEBHOOK$/,
+      `${relativePath} should not expose a live webhook path`,
+    );
   }
 });

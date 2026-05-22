@@ -2,11 +2,18 @@
   "name": "M7 Sales Knowledge RAG Ingestion - Public Sanitized",
   "nodes": [
     {
-      "parameters": {},
-      "id": "manual-ingest-trigger",
-      "name": "Manual Trigger",
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "SANITIZED_M7_SALES_KB_INGEST_WEBHOOK",
+        "responseMode": "onReceived",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-sales-kb-ingestion-public",
+      "name": "Sales KB Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
       "position": [
         -780,
         0
@@ -84,17 +91,6 @@
     }
   ],
   "connections": {
-    "Manual Trigger": {
-      "main": [
-        [
-          {
-            "node": "Google Drive: Download Sales KB",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Google Drive: Download Sales KB": {
       "main": [
         [
@@ -134,6 +130,17 @@
           {
             "node": "Supabase Vector Store: Insert",
             "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sales KB Webhook": {
+      "main": [
+        [
+          {
+            "node": "Google Drive: Download Sales KB",
+            "type": "main",
             "index": 0
           }
         ]

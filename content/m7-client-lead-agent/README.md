@@ -4,9 +4,9 @@ Public-safe website artifacts for the SCTP Agentic AI Specialist capstone projec
 
 ## Files
 
-- `customer-rapport-assistant.json`: sanitized n8n workflow for investment client response drafting, Gmail approval, and Sheets logging.
-- `telegram-lead-qualification-bot.json`: sanitized n8n workflow for `@ExampleLeadBot` lead capture, RAG answers, scoring, and sales alert routing.
-- `rag-knowledge-ingestion.json`: sanitized n8n workflow for loading the sample knowledge base into Supabase Vector Store.
+- `customer-rapport-assistant.json`: sanitized webhook-based n8n workflow for investment client response drafting, Gmail approval, and Sheets logging.
+- `telegram-lead-qualification-bot.json`: sanitized webhook-based n8n workflow for lead capture, RAG answers, scoring, and sales alert routing.
+- `rag-knowledge-ingestion.json`: sanitized webhook-based n8n workflow for loading the sample knowledge base into Supabase Vector Store.
 - `sample-sales-kb.csv`: demo knowledge base rows for the RAG workflow.
 - `supabase-vector-store.sql`: vector table and match function for the Supabase store.
 - `demo-flow.svg`: public architecture visual for the portfolio page.

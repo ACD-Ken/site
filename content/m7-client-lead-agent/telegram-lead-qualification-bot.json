@@ -3,14 +3,17 @@
   "nodes": [
     {
       "parameters": {
-        "updates": [
-          "message"
-        ]
+        "httpMethod": "POST",
+        "path": "SANITIZED_M7_LEAD_QUALIFICATION_WEBHOOK",
+        "responseMode": "onReceived",
+        "options": {
+          "allowedOrigins": "*"
+        }
       },
-      "id": "telegram-trigger-alsocan",
-      "name": "Telegram Trigger: AlsoCan Bot",
-      "type": "n8n-nodes-base.telegramTrigger",
-      "typeVersion": 1.2,
+      "id": "webhook-lead-qualification-public",
+      "name": "Lead Qualification Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
       "position": [
         -900,
         0
@@ -18,7 +21,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const message = $input.first().json.message || {};\nreturn [{ json: {\n  chat_id: message.chat?.id || '',\n  message_id: message.message_id || '',\n  user_message: message.text || '',\n  telegram_username: message.from?.username || '',\n  received_at: new Date().toISOString()\n}}];"
+        "jsCode": "const source = $input.first().json || {};\nconst payload = source.body || source;\nconst message = payload.message || {};\nconst text = message.text || payload.text || payload.user_message || payload.message_text || '';\nconst chat = message.chat || {};\nconst from = message.from || {};\nreturn [{ json: {\n  chat_id: chat.id || payload.chat_id || payload.chatId || '',\n  message_id: message.message_id || payload.message_id || payload.messageId || '',\n  user_message: text,\n  telegram_username: from.username || payload.telegram_username || payload.username || '',\n  received_at: new Date().toISOString()\n}}];"
       },
       "id": "normalize-telegram-message",
       "name": "Normalize Telegram Message",
@@ -152,17 +155,6 @@
     }
   ],
   "connections": {
-    "Telegram Trigger: AlsoCan Bot": {
-      "main": [
-        [
-          {
-            "node": "Normalize Telegram Message",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Normalize Telegram Message": {
       "main": [
         [
@@ -230,6 +222,17 @@
         [
           {
             "node": "Telegram: Reply To User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead Qualification Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Telegram Message",
             "type": "main",
             "index": 0
           }
