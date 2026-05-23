@@ -1,6 +1,6 @@
 # M7 Capstone Test Results - Public Summary
 
-Test date: 22 May 2026  
+Test date: 23 May 2026
 Environment: local n8n with native credentials and temporary public tunnel
 
 This file is a public-safe summary. It intentionally omits Telegram tokens, chat IDs, private credential IDs, Gmail inbox details, Supabase keys, and webhook URLs.
@@ -11,6 +11,7 @@ This file is a public-safe summary. It intentionally omits Telegram tokens, chat
 | --- | --- | --- |
 | RAG ingestion | Passed | Loaded 13 public-safe sales knowledge rows, including the expanded 10-service catalog, generated OpenAI embeddings, and inserted them into Supabase Vector Store. |
 | Telegram lead qualification path | Passed | Synthetic E2E test produced a qualified lead with `lead_score: 85` and `qualified: true`; Gmail alert and Telegram reply nodes completed successfully. |
+| Sales alert gate | Passed | Two handoff-style test messages for the same Telegram/email lead produced exactly one Gmail sales alert; the repeat follow-up did not create a duplicate email. |
 | Live webhook trigger | Passed | Both production webhook entry points were published, activated, and verified through the live tunnel with successful workflow-start responses. |
 
 ## Private Artifacts Kept Out Of GitHub Pages

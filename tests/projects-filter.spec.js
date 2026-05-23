@@ -59,6 +59,8 @@ test('M7 Client Lead Agent card links to the live Telegram capstone page', async
   await expect(page.locator('main')).not.toContainText('Customer Rapport Assistant');
   await expect(page.locator('#test-status')).toContainText('Latest Test Status');
   await expect(page.locator('#test-status')).toContainText('lead with score 85');
+  await expect(page.locator('#test-status')).toContainText('Sales alert gate');
+  await expect(page.locator('#test-status')).toContainText('suppressed the duplicate alert');
   await expect(page.locator('#test-status')).toContainText('Live webhook trigger');
   await expect(page.locator('#test-status')).toContainText('Both production webhook entry points');
   await expect(page.locator('#service-catalog')).toContainText('RAG Service Catalog');

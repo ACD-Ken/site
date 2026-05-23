@@ -603,7 +603,7 @@
                     <ul>
                         <li>Telegram and webhook entry points feed the same normalized message path.</li>
                         <li>Supabase RAG and OpenAI support the AI lead qualification agent.</li>
-                        <li>Qualified leads route to Gmail while every visitor still receives a Telegram reply.</li>
+                        <li>Qualified leads route to Gmail only after the sales handoff gate confirms complete lead details and buying/contact intent.</li>
                     </ul>
                 </div>
             </div>
@@ -621,7 +621,7 @@
                         <li>Uses `@AlsoCan_Bot` as the public Telegram entry point.</li>
                         <li>Captures name, email, use case, budget, and timeline before routing a lead.</li>
                         <li>Answers service questions using a Supabase RAG knowledge base.</li>
-                        <li>Scores lead intent from 0 to 100 and alerts sales when score is 70 or higher.</li>
+                        <li>Scores lead intent from 0 to 100, then alerts sales only when the score, contact details, and handoff intent are all valid.</li>
                     </ul>
                 </article>
                 <article class="panel">
@@ -652,7 +652,7 @@
                 </div>
                 <div class="metric">
                     <span class="metric-label">Last Test</span>
-                    <span class="metric-value">22 May</span>
+                    <span class="metric-value">23 May</span>
                 </div>
             </div>
         </section>
@@ -698,7 +698,7 @@
             <div class="grid">
                 <article class="panel">
                     <h3>Controlled Sales Alerts</h3>
-                    <p>Qualified leads trigger Gmail sales alerts only after n8n validates registration, intent, and the score threshold.</p>
+                    <p>Qualified leads trigger Gmail sales alerts only after n8n validates registration, intent, the score threshold, and the sales handoff gate.</p>
                 </article>
                 <article class="panel">
                     <h3>Structured Output</h3>
@@ -727,7 +727,7 @@
                 </div>
                 <div class="evidence-item">
                     <span class="evidence-dot"></span>
-                    <div><strong>Audit-friendly records</strong><p>The system design separates Telegram registration, RAG answers, lead scoring, and qualified lead alerts.</p></div>
+                    <div><strong>Audit-friendly records</strong><p>The system design separates Telegram registration, RAG answers, lead scoring, sales handoff gating, and qualified lead alerts.</p></div>
                 </div>
             </div>
         </section>
@@ -735,7 +735,7 @@
         <section class="section" id="test-status">
             <h2>Latest Test Status</h2>
             <p class="section-lede">
-                Tested locally in n8n on 22 May 2026 with production webhook routes exposed through a temporary public tunnel. The private E2E workflow files used native n8n credentials and are intentionally excluded from the public site; this section summarizes only public-safe outcomes.
+                Tested locally in n8n on 23 May 2026 with production webhook routes exposed through a temporary public tunnel. The private E2E workflow files used native n8n credentials and are intentionally excluded from the public site; this section summarizes only public-safe outcomes.
             </p>
             <div class="status-grid">
                 <div class="status-row">
@@ -746,7 +746,12 @@
                 <div class="status-row">
                     <strong>Telegram lead path</strong>
                     <span class="status-pill pass">Passed</span>
-                    <p class="status-detail">Synthetic E2E test produced a qualified lead with score 85, sent the Gmail sales alert, and sent the Telegram reply.</p>
+                    <p class="status-detail">Synthetic E2E test produced a qualified lead with score 85, sent one Gmail sales alert, and suppressed the duplicate alert on a repeat follow-up for the same Telegram/email lead.</p>
+                </div>
+                <div class="status-row">
+                    <strong>Sales alert gate</strong>
+                    <span class="status-pill pass">Passed</span>
+                    <p class="status-detail">The workflow now separates lead qualification from sales handoff, so normal qualified chat replies continue without repeatedly emailing sales.</p>
                 </div>
                 <div class="status-row">
                     <strong>Live webhook trigger</strong>
