@@ -15,7 +15,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -900,
+        -1150,
         0
       ]
     },
@@ -37,7 +37,7 @@
         "promptType": "define",
         "text": "=User message: {{$json.user_message}}\nTelegram username: {{$json.telegram_username}}\n\nTask:\n1. Extract any provided name, email, use case, budget, timeline, and buying intent.\n2. If name/email are missing, still give a brief useful answer when possible, then ask for the missing detail.\n3. If registered, answer the user's question using the knowledge base and ask the best next qualification question.\n4. Score the lead using the system rules and return strict JSON only.",
         "options": {
-          "systemMessage": "You are AlsoCanDo's Telegram assistant for Ken Wong's M7 capstone demo. Your job is to be useful, concise, and natural while collecting lead qualification details.\n\nConversation style:\n- Write reply_to_user as a short Telegram message, ideally 2-5 short lines and under 700 characters.\n- Be warm, practical, and specific. Avoid generic sales fluff.\n- Do not say \"here is a summary\" unless you include the summary.\n- Ask exactly one clear next question at the end unless the user only needs a direct answer.\n- Use plain text or simple bullets only. No markdown tables.\n\nRegistration:\n- Extract name and email only when the user actually provides them. Never invent missing values.\n- If name or valid email is missing, answer any simple service question briefly, then ask for the missing name/email.\n- user_registered is true only when both name and valid email are present in this message or prior context.\n\nKnowledge and answers:\n- Use the Supabase RAG tool for service, pricing, timeline, and capability questions.\n- Mention indicative pricing or timeline as AlsoCanDo guidance only; do not copy those values into lead_data.budget or lead_data.timeline unless the user stated that budget/timeline for their project.\n- If unsure, say what you can do and ask a focused follow-up.\n\nService catalog guidance:\n- When the user asks what services are available, do not stop at three examples. Use the RAG knowledge base to list a broader menu, up to 10 services when useful.\n- The current service menu includes: customer support RAG assistants, AI lead qualification bots, workflow discovery and n8n automation pilots, human-approval client communication assistants, CRM follow-up agents, invoice/document extraction, inventory alert agents, resume screening assistants, automated analytics briefings, and onboarding/FAQ assistants.\n- Keep service-list replies concise: group into bullets and end by asking which workflow they want to automate first.\n\nLead scoring:\n- 0-30: registration only or vague curiosity.\n- 40-60: clear use case but no budget/timeline/urgency.\n- 70-84: clear use case plus budget, or explicit decision/start intent. A timeline alone is not enough if budget is unknown.\n- 85-100: clear use case plus budget and timeline, or explicit intent to start.\n- If the user says budget is not confirmed, budget is empty, or they are only exploring, cap lead_score at 65 and set qualified false.\n- qualified is true only when lead_score is 70 or higher and there is real buying intent.\n\nAlways return valid JSON only with this exact shape:\n{\n  \"reply_to_user\": \"string\",\n  \"user_registered\": boolean,\n  \"lead_data\": {\n    \"name\": \"string\",\n    \"email\": \"string\",\n    \"use_case\": \"string\",\n    \"budget\": \"string\",\n    \"timeline\": \"string\",\n    \"intent_level\": \"low|medium|high|\"\n  },\n  \"lead_score\": number,\n  \"qualified\": boolean,\n  \"reason\": \"string\",\n  \"conversation_summary\": \"string\"\n}\n"
+          "systemMessage": "You are AlsoCanDo's Telegram assistant for Ken Wong's M7 capstone demo. Your job is to be useful, concise, and natural while collecting lead qualification details.\n\nConversation style:\n- Write reply_to_user as a short Telegram message, ideally 2-5 short lines and under 700 characters.\n- Be warm, practical, and specific. Avoid generic sales fluff.\n- Do not say \"here is a summary\" unless you include the summary.\n- Ask exactly one clear next question at the end unless the user only needs a direct answer.\n- Use plain text or simple bullets only. No markdown tables.\n\nRegistration:\n- Extract name and email only when the user actually provides them. Never invent missing values.\n- If name or valid email is missing, answer any simple service question briefly, then ask for the missing name/email.\n- user_registered is true only when both name and valid email are present in this message or prior context.\n\nKnowledge and answers:\n- Use the Supabase RAG tool for service, pricing, timeline, and capability questions.\n- Mention indicative pricing or timeline as AlsoCanDo guidance only; do not copy those values into lead_data.budget or lead_data.timeline unless the user stated that budget/timeline for their project.\n- If unsure, say what you can do and ask a focused follow-up.\n\nService catalog guidance:\n- When the user asks what services are available, do not stop at three examples. Use the RAG knowledge base to list a broader menu, up to 10 services when useful.\n- The current service menu includes: customer support RAG assistants, AI lead qualification bots, workflow discovery and n8n automation pilots, human-approval client communication assistants, CRM follow-up agents, invoice/document extraction, inventory alert agents, resume screening assistants, automated analytics briefings, and onboarding/FAQ assistants.\n- Keep service-list replies concise: group into bullets and end by asking which workflow they want to automate first.\n\nSales handoff behavior:\n- A qualified score means the lead is promising; it does not automatically mean sales should be emailed on every chat turn.\n- If the lead is qualified but has not clearly asked to proceed, book, be contacted, receive a quote/proposal, or provided a complete project submission, ask whether they want Ken to follow up.\n- Do not tell the user that a sales alert has been sent unless they clearly requested a handoff or submitted complete project details.\n\nLead scoring:\n- 0-30: registration only or vague curiosity.\n- 40-60: clear use case but no budget/timeline/urgency.\n- 70-84: clear use case plus budget, or explicit decision/start intent. A timeline alone is not enough if budget is unknown.\n- 85-100: clear use case plus budget and timeline, or explicit intent to start.\n- If the user says budget is not confirmed, budget is empty, or they are only exploring, cap lead_score at 65 and set qualified false.\n- qualified is true only when lead_score is 70 or higher and there is real buying intent.\n\nAlways return valid JSON only with this exact shape:\n{\n  \"reply_to_user\": \"string\",\n  \"user_registered\": boolean,\n  \"lead_data\": {\n    \"name\": \"string\",\n    \"email\": \"string\",\n    \"use_case\": \"string\",\n    \"budget\": \"string\",\n    \"timeline\": \"string\",\n    \"intent_level\": \"low|medium|high|\"\n  },\n  \"lead_score\": number,\n  \"qualified\": boolean,\n  \"reason\": \"string\",\n  \"conversation_summary\": \"string\"\n}\n"
         }
       },
       "id": "ai-agent-lead-qualification",
@@ -52,7 +52,8 @@
     {
       "parameters": {
         "sessionKey": "={{$json.chat_id}}",
-        "contextWindowLength": 12
+        "contextWindowLength": 12,
+        "sessionIdType": "customKey"
       },
       "id": "telegram-simple-memory",
       "name": "Simple Memory: Telegram Chat",
@@ -121,6 +122,16 @@
                 "operation": "equals",
                 "name": "filter.operator.equals"
               }
+            },
+            {
+              "id": "sales-alert-gate-true",
+              "leftValue": "={{ $json.should_send_sales_alert }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
             }
           ],
           "combinator": "and"
@@ -132,14 +143,14 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        220,
+        450,
         0
       ]
     },
     {
       "parameters": {
         "operation": "send",
-        "sendTo": "test-sales@example.com",
+        "sendTo": "sales@example.com",
         "subject": "=New Lead - {{$json.Name}} (Score: {{$json.lead_score}})",
         "message": "=A new qualified lead has been captured from the Telegram chatbot.\n\nName: {{$json.Name}}\nEmail: {{$json.Email}}\nLead Score: {{$json.lead_score}}\nUse Case: {{$json.use_case}}\nBudget: {{$json.budget}}\nTimeline: {{$json.timeline}}\nReason: {{$json.reason}}\n\nPlease follow up with the lead at the earliest."
       },
@@ -148,7 +159,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        500,
+        750,
         -130
       ]
     },
@@ -165,8 +176,22 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        500,
+        750,
         130
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json || {};\nconst staticData = $getWorkflowStaticData('global');\nstaticData.m7SalesAlerts = staticData.m7SalesAlerts || {};\n\nconst text = String(item.user_message || '').trim();\nconst lowerText = text.toLowerCase();\nconst chatId = String(item.chat_id || '').trim();\nconst email = String(item.Email || '').trim().toLowerCase();\nconst name = String(item.Name || '').trim();\nconst useCase = String(item.use_case || '').trim();\nconst budget = String(item.budget || '').trim();\nconst timeline = String(item.timeline || '').trim();\nconst score = Number(item.lead_score || 0);\nconst intentLevel = String(item.intent_level || '').trim().toLowerCase();\nconst validEmail = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\n\nconst resetRequested = /(^|\\s)\\/(reset|new|restart)\\b|\\b(reset lead|new lead|start over|new project)\\b/i.test(text);\nconst keyBase = email ? `email:${email}` : `chat:${chatId || 'unknown'}`;\nconst alertKey = `telegram:${chatId || 'unknown'}|${keyBase}`;\n\nif (resetRequested) {\n  for (const key of Object.keys(staticData.m7SalesAlerts)) {\n    if ((chatId && key.startsWith(`telegram:${chatId}|`)) || (email && key.endsWith(`email:${email}`))) {\n      delete staticData.m7SalesAlerts[key];\n    }\n  }\n}\n\nconst handoffIntentPattern = /\\b(book|schedule|call|contact|email me|follow\\s*up|sales|proposal|quote|quotation|ready to start|start this|start the project|kick\\s*off|go ahead|proceed|approve|hire|build this|can we start|let'?s start|please help|talk to ken)\\b/i;\nconst completeSubmissionPattern = /\\b(budget|sgd|\\$|dollar|timeline|week|weeks|day|days|month|months|urgent|asap|start|proceed|quote|proposal)\\b/i;\nconst explicitHandoffRequested = handoffIntentPattern.test(text);\nconst completeProjectSubmission = Boolean(name && validEmail && useCase && budget && timeline && completeSubmissionPattern.test(text));\nconst completeLead = Boolean(name && validEmail && useCase && (budget || explicitHandoffRequested));\nconst qualifiedLead = Boolean(item.qualified) && score >= 70;\nconst handoffRequested = explicitHandoffRequested || completeProjectSubmission || (intentLevel === \"high\" && completeProjectSubmission);\nconst alreadyAlerted = Boolean(staticData.m7SalesAlerts[alertKey]);\nconst shouldSendSalesAlert = Boolean(qualifiedLead && completeLead && handoffRequested && !alreadyAlerted);\n\nif (shouldSendSalesAlert) {\n  staticData.m7SalesAlerts[alertKey] = {\n    sent_at: new Date().toISOString(),\n    name,\n    email,\n    use_case: useCase,\n    lead_score: score,\n    chat_id: chatId,\n  };\n}\n\nreturn [{\n  json: {\n    ...item,\n    sales_handoff_requested: handoffRequested,\n    complete_lead_for_alert: completeLead,\n    duplicate_sales_alert_suppressed: alreadyAlerted,\n    should_send_sales_alert: shouldSendSalesAlert,\n    sales_alert_key: alertKey,\n    sales_alert_reset_requested: resetRequested,\n  },\n}];"
+      },
+      "id": "sales-alert-gate",
+      "name": "Sales Alert Gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        190,
+        0
       ]
     }
   ],
@@ -219,7 +244,7 @@
       "main": [
         [
           {
-            "node": "Qualified Lead?",
+            "node": "Sales Alert Gate",
             "type": "main",
             "index": 0
           }
@@ -231,6 +256,11 @@
         [
           {
             "node": "Gmail: Qualified Lead Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram: Reply To User",
             "type": "main",
             "index": 0
           }
@@ -254,6 +284,17 @@
           }
         ]
       ]
+    },
+    "Sales Alert Gate": {
+      "main": [
+        [
+          {
+            "node": "Qualified Lead?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "pinData": {},
@@ -268,5 +309,6 @@
     {
       "name": "public-sanitized"
     }
-  ]
+  ],
+  "updatedAt": "SANITIZED_PUBLIC_WORKFLOW_UPDATED_AT"
 }
