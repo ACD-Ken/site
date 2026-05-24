@@ -29,6 +29,8 @@ test('project filters show the expected project groups', async ({ page }) => {
   await page.getByRole('button', { name: 'Web Apps' }).click();
   await expect(visibleProjectCards(page)).toHaveCount(1);
   await expect(page.locator('#lucky7-toto')).toBeVisible();
+  await expect(page.locator('#lucky7-toto').getByRole('link', { name: 'View App' })).toBeVisible();
+  await expect(page.locator('#lucky7-toto').getByRole('link', { name: 'View Code' })).toHaveCount(0);
 
   await page.getByRole('button', { name: 'All Projects' }).click();
   await expect(visibleProjectCards(page)).toHaveCount(6);
