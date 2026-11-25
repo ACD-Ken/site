@@ -84,7 +84,7 @@ test('vibe code page tells the AI-assisted coding journey', async ({ page }) => 
   await expect(page.getByRole('link', { name: 'View Capstone Projects' })).toHaveAttribute('href', 'projects.html');
 });
 
-test('travel page shows public travel stories without a password', async ({ page }) => {
+test('travel page shows public travel stories', async ({ page }) => {
   page.on('dialog', async dialog => {
     throw new Error(`Unexpected dialog: ${dialog.message()}`);
   });
@@ -95,26 +95,5 @@ test('travel page shows public travel stories without a password', async ({ page
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', 'https://acd-ken.github.io/site/og-image.svg');
   await expect(page.locator('.hero.page-hero')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Bangkok Business Trip After Covid' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Genting Camping Mountain Reset' })).toBeHidden();
-});
-
-test('travel page keeps personal stories hidden when unlock password is wrong', async ({ page }) => {
-  page.once('dialog', dialog => dialog.accept('wrong-password'));
-
-  await page.goto('/travel.html');
-  await page.getByRole('button', { name: 'Unlock personal travel' }).click();
-
-  await expect(page.getByRole('heading', { name: 'Bangkok Business Trip After Covid' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Genting Camping Mountain Reset' })).toBeHidden();
-  await expect(page.getByText('Personal stories stay private until unlocked.')).toBeVisible();
-});
-
-test('travel page reveals personal stories after the correct password', async ({ page }) => {
-  page.once('dialog', dialog => dialog.accept('AlsoCanDo'));
-
-  await page.goto('/travel.html');
-  await page.getByRole('button', { name: 'Unlock personal travel' }).click();
-
-  await expect(page.getByRole('heading', { name: 'Genting Camping Mountain Reset' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Personal Travel', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Unlock personal travel' })).toHaveCount(0);
 });

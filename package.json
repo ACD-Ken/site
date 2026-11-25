@@ -19,6 +19,9 @@
   "devDependencies": {
     "@playwright/test": "^1.40.0"
   },
+  "overrides": {
+    "qs": "^6.16.2"
+  },
   "engines": {
     "node": ">=18"
   }

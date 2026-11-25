@@ -12,10 +12,14 @@ jobs:
           node-version: '18'
       - name: Install dependencies
         run: npm ci
+      - name: Run unit and security checks
+        run: npm run test:unit
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-      - name: Start simple HTTP server
-        run: python3 -m http.server 8000 &
+      - name: Stage and serve published files
+        run: |
+          python3 scripts/build-pages.py _site
+          python3 -m http.server 8000 --directory _site &
       - name: Run Playwright tests
         run: npx playwright test
       - name: Upload JUnit result

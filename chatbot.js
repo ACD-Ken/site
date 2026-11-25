@@ -16,9 +16,15 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
 
   const STORAGE_KEY = 'acd_chat';
   const STORAGE_VERSION = 2;
+  const MESSAGE_LIMIT = 500;
+  const REPLY_LIMIT = 3000;
 
   function saveSession() {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ version: STORAGE_VERSION, messages, isOpen }));
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ version: STORAGE_VERSION, messages, isOpen }));
+    } catch {
+      // Chat can continue when the browser disables storage.
+    }
   }
 
   function loadSession() {
@@ -58,7 +64,7 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
       </div>
       <div class="acd-messages" id="acd-messages"></div>
       <div class="acd-input-row">
-        <textarea id="acd-input" placeholder="Ask me about Ken…" rows="1" aria-label="Your message"></textarea>
+        <textarea id="acd-input" placeholder="Ask me about Ken…" rows="1" aria-label="Your message" maxlength="${MESSAGE_LIMIT}"></textarea>
         <button id="acd-send-btn" aria-label="Send">➤</button>
       </div>
     `;
@@ -82,8 +88,12 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
     });
 
     const saved = loadSession();
-    if (saved.messages && saved.messages.length > 0) {
-      messages = saved.messages;
+    if (Array.isArray(saved.messages) && saved.messages.length > 0) {
+      messages = saved.messages.slice(-12).filter(message => {
+        if (!message || !['user', 'assistant'].includes(message.role)) return false;
+        const limit = message.role === 'user' ? MESSAGE_LIMIT : REPLY_LIMIT;
+        return typeof message.content === 'string' && message.content.trim() && message.content.length <= limit;
+      });
       messages.forEach(m => {
         if (m.role === 'user') appendUserMessage(m.content);
         else appendBotMessage(m.content);
@@ -193,7 +203,7 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
     if (isWaiting) return;
     const input = document.getElementById('acd-input');
     const text = input.value.trim();
-    if (!text) return;
+    if (!text || text.length > MESSAGE_LIMIT) return;
 
     input.value = '';
     input.style.height = 'auto';
@@ -205,18 +215,26 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
 
     isWaiting = true;
     document.getElementById('acd-send-btn').disabled = true;
-    const typing = showTyping();
+    showTyping();
 
     try {
       const res = await fetch(CHATBOT_API_URL, {
         method: 'POST',
+        credentials: 'omit',
+        signal: AbortSignal.timeout(25_000),
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages }),
+        body: JSON.stringify({ messages: messages.slice(-6) }),
       });
 
+      if (res.status === 429) {
+        removeTyping();
+        appendBotMessage('Chat is at capacity. Please try again later.');
+        return;
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      const reply = data.reply || 'Sorry, I had trouble responding. Please try again.';
+      if (typeof data.reply !== 'string' || !data.reply.trim()) throw new Error('Invalid chat reply');
+      const reply = data.reply.slice(0, REPLY_LIMIT);
       removeTyping();
       appendBotMessage(reply);
       messages.push({ role: 'assistant', content: reply });

@@ -1,16 +1,13 @@
-const TRAVEL_PASSWORD = 'AlsoCanDo';
-const TRAVEL_DATA_URL = 'data/travel-stories.json?v=20260518-facebook-details';
+const TRAVEL_DATA_URL = 'data/travel-stories.json?v=20261125-public';
 
 const travelState = {
     stories: [],
-    activeFilter: 'all',
-    personalUnlocked: sessionStorage.getItem('travelAuth') === 'true'
+    activeFilter: 'all'
 };
 
 const travelFilters = [
     { id: 'all', label: 'All', matches: () => true },
     { id: 'business', label: 'Business Trips', matches: story => story.type === 'business' },
-    { id: 'personal', label: 'Personal Travel', matches: story => story.type === 'personal' },
     { id: 'event', label: 'Events', matches: story => story.tags.includes('event') },
     { id: 'city', label: 'Cities', matches: story => story.tags.includes('city') },
     { id: 'nature', label: 'Nature', matches: story => story.tags.includes('nature') }
@@ -29,7 +26,7 @@ async function loadTravelJournal() {
         }
 
         const stories = await response.json();
-        travelState.stories = stories.map(normalizeStory);
+        travelState.stories = stories.filter(story => story.visibility === 'public').map(normalizeStory);
         renderTravelJournal();
     } catch (error) {
         console.error('Error loading travel stories:', error);
@@ -44,7 +41,6 @@ function normalizeStory(story) {
         location: story.location,
         date: story.date,
         type: story.type,
-        visibility: story.visibility,
         summary: story.summary,
         source: story.source,
         image: story.image,
@@ -54,7 +50,6 @@ function normalizeStory(story) {
 
 function renderTravelJournal() {
     renderFilters();
-    renderUnlockState();
     renderStoryCards();
 }
 
@@ -78,23 +73,6 @@ function renderFilters() {
     });
 }
 
-function renderUnlockState() {
-    const unlockButton = document.getElementById('unlock-personal-travel');
-    const unlockNote = document.getElementById('travel-unlock-note');
-    if (!unlockButton || !unlockNote) return;
-
-    if (travelState.personalUnlocked) {
-        unlockButton.textContent = 'Personal travel unlocked';
-        unlockButton.disabled = true;
-        unlockNote.textContent = 'Private personal stories are visible in this browser session.';
-        return;
-    }
-
-    unlockButton.textContent = 'Unlock personal travel';
-    unlockButton.disabled = false;
-    unlockNote.textContent = 'Personal stories stay private until unlocked.';
-}
-
 function renderStoryCards() {
     const journalContainer = document.getElementById('travel-journal');
     const countElement = document.getElementById('image-count');
@@ -112,21 +90,14 @@ function renderStoryCards() {
     }
 
     if (countElement) {
-        const publicCount = travelState.stories.filter(story => story.visibility === 'public').length;
-        const privateCount = travelState.stories.length - publicCount;
-        countElement.textContent = travelState.personalUnlocked
-            ? `${visibleStories.length} stories shown`
-            : `${publicCount} public stories · ${privateCount} private`;
+        countElement.textContent = `${visibleStories.length} ${visibleStories.length === 1 ? 'story' : 'stories'} shown`;
     }
 }
 
 function getVisibleStories() {
     const activeFilter = travelFilters.find(filter => filter.id === travelState.activeFilter) || travelFilters[0];
 
-    return travelState.stories.filter(story => {
-        const canShow = story.visibility === 'public' || travelState.personalUnlocked;
-        return canShow && activeFilter.matches(story);
-    });
+    return travelState.stories.filter(activeFilter.matches);
 }
 
 function createStoryCard(story) {
@@ -225,39 +196,12 @@ function renderErrorState(container) {
 }
 
 function renderEmptyState(container) {
-    if (travelState.activeFilter === 'personal' && !travelState.personalUnlocked) {
-        container.innerHTML = `
-            <div class="travel-empty-state">
-                <h2>Unlock personal travel</h2>
-                <p>Personal travel stories are hidden until you enter the password.</p>
-            </div>
-        `;
-        return;
-    }
-
     container.innerHTML = `
         <div class="travel-empty-state">
             <h2>No stories match this filter</h2>
-            <p>Try another travel category or unlock personal travel.</p>
+            <p>Try another travel category.</p>
         </div>
     `;
-}
-
-function initTravelUnlock() {
-    const unlockButton = document.getElementById('unlock-personal-travel');
-    if (!unlockButton) return;
-
-    unlockButton.addEventListener('click', () => {
-        const password = prompt('Enter password to view personal travel:');
-        if (password !== TRAVEL_PASSWORD) {
-            renderUnlockState();
-            return;
-        }
-
-        sessionStorage.setItem('travelAuth', 'true');
-        travelState.personalUnlocked = true;
-        renderTravelJournal();
-    });
 }
 
 function initModal() {

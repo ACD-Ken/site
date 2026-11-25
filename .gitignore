@@ -2,3 +2,5 @@
 node_modules/
 test-results/
 .DS_Store
+_site/
+.local-travel/

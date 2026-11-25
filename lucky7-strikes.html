@@ -458,6 +458,7 @@
         </div>
     </footer>
 
+    <script src="js/escape-html.js"></script>
     <script>
     const BACKEND = 'https://lucky7-mobile-backend-production.up.railway.app';
 
@@ -548,7 +549,7 @@
         const cls = variant === 'gold' ? 'ball ball-gold'
                   : variant === 'add'  ? 'ball ball-add'
                   : 'ball ball-default';
-        return `<span class="${cls}">${n}</span>`;
+        return `<span class="${cls}">${escapeHtml(n)}</span>`;
     }
 
     function formatDrawDate(str) {
@@ -569,7 +570,7 @@
 
         // Summary banner
         const total = data?.total ?? strikes.length;
-        let html = `<div class="summary-banner"><span class="summary-count">${total}</span><span>strike${total !== 1 ? 's' : ''} in ${monthDisplay(data?.month || currentMonth)}</span></div>`;
+        let html = `<div class="summary-banner"><span class="summary-count">${escapeHtml(total)}</span><span>strike${total !== 1 ? 's' : ''} in ${monthDisplay(data?.month || currentMonth)}</span></div>`;
 
         if (strikes.length === 0) {
             html += `<div class="empty-state"><div class="icon">🎯</div><p>No strikes (3+ matches) recorded for ${monthDisplay(currentMonth)}.<br>Try a different month.</p></div>`;
@@ -578,7 +579,7 @@
         }
 
         // Group by draw
-        const byDraw = {};
+        const byDraw = Object.create(null);
         for (const s of strikes) {
             const key = s.drawNo || s.drawDate;
             if (!byDraw[key]) byDraw[key] = { drawNo: s.drawNo, drawDate: s.drawDate, strategies: [] };
@@ -596,8 +597,8 @@
                 const hitBalls = (s.strikeNumbers || []).map(n => ball(n, 'gold')).join('');
                 return `
                     <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.5rem;">
-                        <span class="strategy-pill">${s.strategyEmoji || ''} ${s.strategyLabel}</span>
-                        <span class="${matchBadgeClass(s.matchCount)}">${s.matchCount} hits${s.hasAdditional ? ' +A' : ''}</span>
+                        <span class="strategy-pill">${escapeHtml(s.strategyEmoji)} ${escapeHtml(s.strategyLabel)}</span>
+                        <span class="${matchBadgeClass(s.matchCount)}">${escapeHtml(s.matchCount)} hits${s.hasAdditional ? ' +A' : ''}</span>
                         <div class="balls">${hitBalls}</div>
                     </div>`;
             }).join('');
@@ -605,7 +606,7 @@
             html += `
                 <div class="strike-card">
                     <div class="strike-header">
-                        <div class="strike-draw">Draw <strong>#${draw.drawNo || '—'}</strong> · ${formatDrawDate(draw.drawDate)}</div>
+                        <div class="strike-draw">Draw <strong>#${escapeHtml(draw.drawNo || '—')}</strong> · ${formatDrawDate(draw.drawDate)}</div>
                     </div>
                     <div class="strike-nums-row">
                         <div class="nums-group">
@@ -637,7 +638,7 @@
         }
 
         for (const draw of history) {
-            const hasPred = draw.prediction !== null;
+            const hasPred = Boolean(draw.prediction);
             const m = draw.matches;
             const anyMatch = m && (m.prize1 || m.prize2 || m.prize3);
 
@@ -645,23 +646,23 @@
                 <div class="fourd-card" style="${anyMatch ? 'border-color:rgba(16,185,129,0.35);' : ''}">
                     <div class="fourd-card-header">
                         <div>
-                            <div class="strike-draw">Draw <strong>#${draw.drawNo || '—'}</strong> · ${formatDrawDate(draw.drawDate)}</div>
+                            <div class="strike-draw">Draw <strong>#${escapeHtml(draw.drawNo || '—')}</strong> · ${formatDrawDate(draw.drawDate)}</div>
                             ${hasPred ? `<div style="margin-top:0.3rem;display:flex;align-items:center;gap:0.5rem;">
                                 <span style="font-size:0.75rem;color:var(--text-muted);">Predicted pair:</span>
-                                <span class="pair-display">${draw.prediction.pairStr || draw.prediction.pairDigit}</span>
+                                <span class="pair-display">${escapeHtml(draw.prediction.pairStr || draw.prediction.pairDigit)}</span>
                             </div>` : `<div class="no-pred" style="margin-top:0.3rem;">No prediction recorded for this draw</div>`}
                         </div>
                         ${anyMatch ? `<span style="padding:0.25rem 0.625rem;border-radius:0.375rem;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:#2DD4BF;font-size:0.78rem;font-weight:700;">PAIR HIT 🎯</span>` : ''}
                     </div>
                     <div class="prize-row">
                         <span style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-right:0.25rem;">Results:</span>
-                        <span class="prize-chip${m && m.prize1 ? ' hit' : ''}">1st: ${draw.prize1 || '—'}</span>
-                        <span class="prize-chip${m && m.prize2 ? ' hit' : ''}">2nd: ${draw.prize2 || '—'}</span>
-                        <span class="prize-chip${m && m.prize3 ? ' hit' : ''}">3rd: ${draw.prize3 || '—'}</span>
+                        <span class="prize-chip${m && m.prize1 ? ' hit' : ''}">1st: ${escapeHtml(draw.prize1 || '—')}</span>
+                        <span class="prize-chip${m && m.prize2 ? ' hit' : ''}">2nd: ${escapeHtml(draw.prize2 || '—')}</span>
+                        <span class="prize-chip${m && m.prize3 ? ' hit' : ''}">3rd: ${escapeHtml(draw.prize3 || '—')}</span>
                     </div>
                     ${hasPred && draw.prediction.numbers && draw.prediction.numbers.length > 0 ? `
                     <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--text-muted);">
-                        Predicted numbers: <span style="font-family:'Fira Code',monospace;color:var(--text-secondary);">${draw.prediction.numbers.join(', ')}</span>
+                        Predicted numbers: <span style="font-family:'Fira Code',monospace;color:var(--text-secondary);">${escapeHtml(draw.prediction.numbers.join(', '))}</span>
                     </div>` : ''}
                 </div>`;
         }
