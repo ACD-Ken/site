@@ -12,6 +12,7 @@
          prevents access to private data. public_display contains only anonymised
          prediction snapshots written by the server. No user_id is stored here. -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="js/escape-html.js"></script>
     <style>
         :root {
             --bg-dark: #0f172a;
@@ -544,7 +545,7 @@
       const cls = variant === 'gold' ? 'ball ball-gold'
                 : variant === 'blue' ? 'ball ball-blue'
                 : 'ball ball-default';
-      return `<span class="${cls}">${n}</span>`;
+      return `<span class="${cls}">${escapeHtml(n)}</span>`;
     }
 
     function formatDate(iso) {
@@ -580,7 +581,7 @@
         return `
           <div class="strategy-card">
             <div class="strategy-header">
-              <span class="strategy-name">${s.emoji || ''} ${s.label || s.strategy}</span>
+              <span class="strategy-name">${escapeHtml(s.emoji)} ${escapeHtml(s.label || s.strategy)}</span>
               <span class="confidence">${conf}%</span>
             </div>
             <div class="confidence-bar-track">
@@ -595,7 +596,7 @@
       if (data.betPartition && data.betPartition.length) {
         const groups = data.betPartition.map(g => `
           <div class="bet-group">
-            <div class="bet-group-type">${g.type || 'Group'}</div>
+            <div class="bet-group-type">${escapeHtml(g.type || 'Group')}</div>
             <div class="balls">${(g.numbers || []).map(n => ball(n, 'blue')).join('')}</div>
           </div>`).join('');
         betHTML = `
@@ -613,7 +614,7 @@
           </div>
           ${data.hexagramNum ? `<div class="draw-info-item">
             <span class="draw-info-label">I-Ching Hexagram</span>
-            <span class="draw-info-value">#${data.hexagramNum}</span>
+            <span class="draw-info-value">#${escapeHtml(data.hexagramNum)}</span>
           </div>` : ''}
           <div class="draw-info-item">
             <span class="draw-info-label">Generated</span>
@@ -646,22 +647,22 @@
       const ELEMENT_COLORS = {
         Water: '#38bdf8', Wood: '#22c55e', Fire: '#ef4444', Earth: '#f59e0b', Metal: '#94a3b8'
       };
-      const elemColor = ELEMENT_COLORS[data.element] || 'var(--accent-blue)';
+      const elemColor = Object.hasOwn(ELEMENT_COLORS, data.element) ? ELEMENT_COLORS[data.element] : 'var(--accent-blue)';
 
       const numCards = (data.suggestions || []).slice(0, 1).map(s => {
         const digits = String(s.number || '').split('');
         const pairPos = s.pairPositions || [];
         const digitHtml = digits.map((d, i) =>
-          `<div class="fourd-digit${pairPos.includes(i) ? ' pair-pos' : ''}">${d}</div>`
+          `<div class="fourd-digit${pairPos.includes(i) ? ' pair-pos' : ''}">${escapeHtml(d)}</div>`
         ).join('');
 
         return `
           <div class="fourd-number-card">
             <div class="fourd-digit-row">${digitHtml}</div>
             <div class="fourd-meta">
-              ${s.hexagramNo ? `<span class="fourd-meta-item">I-Ching: <strong>#${s.hexagramNo}</strong></span>` : ''}
-              ${s.ibetType   ? `<span class="fourd-meta-item">iBet: <strong>${s.ibetType}</strong></span>` : ''}
-              ${s.permCount  ? `<span class="fourd-meta-item">Perms: <strong>${s.permCount}</strong></span>` : ''}
+              ${s.hexagramNo ? `<span class="fourd-meta-item">I-Ching: <strong>#${escapeHtml(s.hexagramNo)}</strong></span>` : ''}
+              ${s.ibetType   ? `<span class="fourd-meta-item">iBet: <strong>${escapeHtml(s.ibetType)}</strong></span>` : ''}
+              ${s.permCount  ? `<span class="fourd-meta-item">Perms: <strong>${escapeHtml(s.permCount)}</strong></span>` : ''}
             </div>
           </div>`;
       }).join('');
@@ -670,9 +671,9 @@
         <div class="fourd-layout">
           <div class="pair-digit-card">
             <div class="pair-digit-label">Lucky Pair</div>
-            <div class="pair-digit-value">${data.pairDigit ?? '?'}</div>
+            <div class="pair-digit-value">${escapeHtml(data.pairDigit ?? '?')}</div>
             <div style="margin-top:0.25rem;">
-              <span class="element-badge" style="border-color:${elemColor}33;color:${elemColor};background:${elemColor}18;">${data.element || '—'}</span>
+              <span class="element-badge" style="border-color:${elemColor}33;color:${elemColor};background:${elemColor}18;">${escapeHtml(data.element || '—')}</span>
             </div>
           </div>
           <div>
@@ -683,7 +684,7 @@
               </div>
               ${data.drawDay ? `<div class="draw-info-item">
                 <span class="draw-info-label">Day</span>
-                <span class="draw-info-value">${data.drawDay}</span>
+                <span class="draw-info-value">${escapeHtml(data.drawDay)}</span>
               </div>` : ''}
               <div class="draw-info-item">
                 <span class="draw-info-label">Generated</span>

@@ -73,11 +73,8 @@ services:
     image: n8nio/n8n:latest
     restart: unless-stopped
     ports:
-      - "5678:5678"
+      - "127.0.0.1:5678:5678"
     environment:
-      - N8N_BASIC_AUTH_ACTIVE=true
-      - N8N_BASIC_AUTH_USER=admin
-      - N8N_BASIC_AUTH_PASSWORD=changeme
       - N8N_HOST=localhost
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
@@ -114,14 +111,10 @@ docker compose logs -f n8n
 
 [STEP]
 Verify n8n is reachable:
-- Open `http://localhost:5678` in your browser. If you used the example environment variables above, sign in with **admin / changeme**.
+- Open `http://localhost:5678` and create your n8n owner account with a strong, unique password.
 
 Or use curl to check the HTTP response directly:
 ```bash
-# If Basic Auth is enabled (example config)
-curl -I -u admin:changeme http://localhost:5678
-
-# If Basic Auth is disabled
 curl -I http://localhost:5678
 ```
 
@@ -163,12 +156,13 @@ ngrok config add-authtoken <YOUR_AUTH_TOKEN>
 ```
 
 [STEP]
-Start a tunnel to your locally running service (example: n8n on port 5678):
+Keep the n8n editor local. For external testing, point ngrok at a local gateway that exposes only the intended webhook route and requires authentication.
 
 ```bash
-ngrok http 5678
+# Example: your authenticated webhook gateway listens on port 8080
+ngrok http 8080
 ```
 
-Once started, ngrok prints public HTTP/HTTPS forwarding URLs — open the HTTPS URL in your browser to reach your local service remotely. Note: the free tier uses ephemeral subdomains and has connection limits; review https://ngrok.com/pricing for details.
+Use the HTTPS URL in the service sending the webhook. Stop the tunnel when testing is complete.
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"

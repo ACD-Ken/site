@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travel Journal - Ken Wong</title>
-    <meta name="description" content="Ken Wong's split travel journal featuring public business trip notes and private personal travel memories.">
+    <meta name="description" content="Ken Wong's travel journal featuring business trips, events, and city observations.">
     <meta name="author" content="Ken Wong">
     <link rel="canonical" href="https://acd-ken.github.io/site/travel.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Ken Wong AI Portfolio">
     <meta property="og:title" content="Travel Journal - Ken Wong">
-    <meta property="og:description" content="A split travel journal with public business trip notes and private personal travel memories.">
+    <meta property="og:description" content="Business trips, events, and city observations from Ken Wong's travel journal.">
     <meta property="og:url" content="https://acd-ken.github.io/site/travel.html">
     <meta property="og:image" content="https://acd-ken.github.io/site/og-image.svg">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Travel Journal - Ken Wong">
-    <meta name="twitter:description" content="A split travel journal with public business trip notes and private personal travel memories.">
+    <meta name="twitter:description" content="Business trips, events, and city observations from Ken Wong's travel journal.">
     <meta name="twitter:image" content="https://acd-ken.github.io/site/og-image.svg">
     <link rel="stylesheet" href="css/ai-portfolio.css">
     <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled>
@@ -70,8 +70,7 @@
           the next <em>Build</em>
         </h1>
         <p class="hero-sub">
-          Public business-trip notes, city observations, and selected travel
-          memories, with personal stories kept behind a private soft gate.
+          Business trip notes, events, and city observations from across the region.
         </p>
         <div class="hero-ctas">
           <a href="#travel-journal" class="hero-btn hero-btn-primary">
@@ -86,7 +85,7 @@
           </span>
           <span class="hero-proof-item">
             <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
-            Personal Travel
+            Events
           </span>
           <span class="hero-proof-item">
             <svg class="hero-proof-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
@@ -102,12 +101,9 @@
     <main class="container travel-journal-shell">
         <section class="travel-toolbar" aria-label="Travel journal controls">
             <div class="travel-toolbar-copy">
-                <p class="travel-kicker">Split access journal</p>
-                <h2>Public work travel, private personal memories</h2>
-                <p id="travel-unlock-note">Personal stories stay private until unlocked.</p>
+                <h2>Travel Stories</h2>
             </div>
             <div class="travel-toolbar-actions">
-                <button type="button" class="travel-unlock-btn" id="unlock-personal-travel">Unlock personal travel</button>
                 <span id="image-count">Loading stories...</span>
             </div>
         </section>
@@ -149,11 +145,10 @@
     </footer>
 
     <script src="js/theme-toggle.js"></script>
-    <script src="js/gallery-loader.js?v=20260518-facebook-details"></script>
+    <script src="js/gallery-loader.js?v=20261125-public"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             initModal();
-            initTravelUnlock();
             loadTravelJournal();
             
             // Mobile menu toggle

@@ -2,6 +2,8 @@ const assert = require('node:assert/strict');
 const { existsSync, readFileSync } = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
+const { once } = require('node:events');
+const { createChatApp } = require('../chat-api');
 
 function source(relativePath) {
   return readFileSync(path.join(__dirname, '..', relativePath), 'utf8');
@@ -12,7 +14,7 @@ function exists(relativePath) {
 }
 
 test('chat rate limiter does not key directly on spoofable X-Forwarded-For', () => {
-  const server = source('server.js');
+  const server = source('chat-api.js');
 
   assert.doesNotMatch(
     server,
@@ -21,6 +23,51 @@ test('chat rate limiter does not key directly on spoofable X-Forwarded-For', () 
   assert.match(server, /function getRateLimitKey/);
   assert.match(server, /req\.socket\.remoteAddress/);
   assert.match(server, /keyGenerator:\s*getRateLimitKey/);
+});
+
+test('chat HTTP endpoint validates browser requests before using the provider', async t => {
+  const calls = [];
+  const client = { chat: { completions: { create: async request => {
+    calls.push(request);
+    return { choices: [{ message: { content: 'A test reply' } }] };
+  } } } };
+  const server = createChatApp({ client, model: 'test', systemPrompt: 'test', dailyLimit: 1 })
+    .listen(0, '127.0.0.1');
+  t.after(() => {
+    server.closeAllConnections();
+    return new Promise(resolve => server.close(resolve));
+  });
+  await once(server, 'listening');
+  const url = `http://127.0.0.1:${server.address().port}/api/chat`;
+  const origin = 'https://acd-ken.github.io';
+  const post = (body, headers = {}) => fetch(url, {
+    method: 'POST',
+    headers: { Origin: origin, 'Content-Type': 'application/json', ...headers },
+    body,
+  });
+  const question = JSON.stringify({ messages: [{ role: 'user', content: 'Tell me about Ken' }] });
+
+  assert.equal((await post(question, { Origin: 'https://example.com' })).status, 403);
+  assert.equal((await post(question, { Origin: 'http://localhost:8000' })).status, 403);
+  const preflight = await fetch(url, { method: 'OPTIONS', headers: { Origin: origin } });
+  assert.equal(preflight.status, 204);
+  assert.equal(preflight.headers.get('access-control-allow-origin'), origin);
+  assert.match(preflight.headers.get('vary'), /Origin/i);
+  assert.equal((await fetch(url)).status, 405);
+  assert.equal((await post(question, { 'Content-Type': 'text/plain' })).status, 415);
+  assert.equal((await post('{')).status, 400);
+  assert.equal((await post(JSON.stringify({ messages: [null, { role: 'user', content: 'Hi' }] }))).status, 400);
+  assert.equal((await post(JSON.stringify({ messages: [{ role: 'assistant', content: 'Hello' }] }))).status, 400);
+  assert.equal((await post(JSON.stringify({ messages: [{ role: 'user', content: 'a'.repeat(33_000) }] }))).status, 413);
+  assert.equal(calls.length, 0);
+
+  const answer = await post(question);
+  assert.equal(answer.status, 200);
+  assert.equal(answer.headers.get('cache-control'), 'no-store');
+  assert.deepEqual(await answer.json(), { reply: 'A test reply' });
+  assert.equal(calls[0].messages.at(-1).content, 'Tell me about Ken');
+  assert.equal((await post(question)).status, 429);
+  assert.equal(calls.length, 1);
 });
 
 test('Supabase notification emails escape public form fields before rendering HTML', () => {

@@ -22,17 +22,5 @@
     "source": "facebook-manual-review",
     "image": "images/travel/singapore-tbwa-events.jpg?v=20260518-approved-images",
     "tags": ["business", "city", "tbwa", "event"]
-  },
-  {
-    "id": "genting-camping-mountain-reset",
-    "title": "Genting Camping Mountain Reset",
-    "location": "Genting Sempah, Malaysia",
-    "date": "2025-08",
-    "type": "personal",
-    "visibility": "private",
-    "summary": "A personal mountain reset from the yearly camping trip at Rainforest Park and Rainforest Campsite Genting, with five old friends, fresh air, and a slower rhythm away from daily work.",
-    "source": "facebook-manual-review",
-    "image": "images/travel/genting-camping-mountain-reset.jpg?v=20260518-approved-images",
-    "tags": ["personal", "nature", "mountain", "camping"]
   }
 ]
