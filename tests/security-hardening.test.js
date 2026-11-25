@@ -4,6 +4,7 @@ const path = require('node:path');
 const test = require('node:test');
 const { once } = require('node:events');
 const { createChatApp } = require('../chat-api');
+const { createChatBudget } = require('../chat-budget');
 
 function source(relativePath) {
   return readFileSync(path.join(__dirname, '..', relativePath), 'utf8');
@@ -11,6 +12,16 @@ function source(relativePath) {
 
 function exists(relativePath) {
   return existsSync(path.join(__dirname, '..', relativePath));
+}
+
+async function serveChat(t, app) {
+  const server = app.listen(0, '127.0.0.1');
+  t.after(() => {
+    server.closeAllConnections();
+    return new Promise(resolve => server.close(resolve));
+  });
+  await once(server, 'listening');
+  return `http://127.0.0.1:${server.address().port}/api/chat`;
 }
 
 test('chat rate limiter does not key directly on spoofable X-Forwarded-For', () => {
@@ -31,14 +42,9 @@ test('chat HTTP endpoint validates browser requests before using the provider', 
     calls.push(request);
     return { choices: [{ message: { content: 'A test reply' } }] };
   } } } };
-  const server = createChatApp({ client, model: 'test', systemPrompt: 'test', dailyLimit: 1 })
-    .listen(0, '127.0.0.1');
-  t.after(() => {
-    server.closeAllConnections();
-    return new Promise(resolve => server.close(resolve));
-  });
-  await once(server, 'listening');
-  const url = `http://127.0.0.1:${server.address().port}/api/chat`;
+  const url = await serveChat(t, createChatApp({
+    client, model: 'test', systemPrompt: 'test', budget: createChatBudget({ dailyLimit: 1 }),
+  }));
   const origin = 'https://acd-ken.github.io';
   const post = (body, headers = {}) => fetch(url, {
     method: 'POST',
@@ -66,8 +72,31 @@ test('chat HTTP endpoint validates browser requests before using the provider', 
   assert.equal(answer.headers.get('cache-control'), 'no-store');
   assert.deepEqual(await answer.json(), { reply: 'A test reply' });
   assert.equal(calls[0].messages.at(-1).content, 'Tell me about Ken');
-  assert.equal((await post(question)).status, 429);
+  const limited = await post(question);
+  assert.equal(limited.status, 429);
+  const notice = await limited.json();
+  assert.equal(notice.code, 'CHAT_DAILY_LIMIT');
+  assert.match(notice.error, /daily usage limit/);
+  assert.equal(limited.headers.get('retry-after'), String(notice.retryAfterSeconds));
+  assert.ok(notice.retryAfterSeconds > 0 && notice.retryAfterSeconds <= 86400);
   assert.equal(calls.length, 1);
+});
+
+test('chat pauses provider requests when the provider rejects its credentials', async t => {
+  let calls = 0;
+  const client = { chat: { completions: { create: async () => {
+    calls += 1;
+    throw Object.assign(new Error('provider rejected key'), { status: 401 });
+  } } } };
+  const url = await serveChat(t, createChatApp({ client, model: 'test', systemPrompt: 'test' }));
+  const post = () => fetch(url, {
+    method: 'POST',
+    headers: { Origin: 'https://acd-ken.github.io', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: [{ role: 'user', content: 'Tell me about Ken' }] }),
+  });
+  assert.equal((await post()).status, 502);
+  assert.equal((await post()).status, 503);
+  assert.equal(calls, 1);
 });
 
 test('Supabase notification emails escape public form fields before rendering HTML', () => {
