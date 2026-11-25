@@ -199,6 +199,25 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
     if (msgs) msgs.scrollTop = msgs.scrollHeight;
   }
 
+  function usageLimitNotice(data) {
+    const messages = {
+      CHAT_BURST_LIMIT: 'ACD-Bot has reached its short-term usage limit.',
+      CHAT_DAILY_LIMIT: 'ACD-Bot has reached its daily usage limit.',
+      CHAT_MONTHLY_LIMIT: 'ACD-Bot has reached its 30-day usage limit.',
+    };
+    if (!Object.hasOwn(messages, data?.code)) {
+      return 'Chat is at capacity. Please try again later.';
+    }
+    const message = messages[data.code];
+    const seconds = data.retryAfterSeconds;
+    if (!Number.isSafeInteger(seconds) || seconds < 1 || seconds > 30 * 24 * 60 * 60) {
+      return `${message} Please try again later.`;
+    }
+    const unit = seconds >= 86400 ? 'day' : seconds >= 3600 ? 'hour' : 'minute';
+    const count = Math.ceil(seconds / { day: 86400, hour: 3600, minute: 60 }[unit]);
+    return `${message} Please try again in about ${count} ${unit}${count === 1 ? '' : 's'}.`;
+  }
+
   async function sendMessage() {
     if (isWaiting) return;
     const input = document.getElementById('acd-input');
@@ -227,8 +246,9 @@ const CHATBOT_API_URL = (location.hostname === 'localhost' || location.hostname 
       });
 
       if (res.status === 429) {
+        const limit = await res.json().catch(() => null);
         removeTyping();
-        appendBotMessage('Chat is at capacity. Please try again later.');
+        appendBotMessage(usageLimitNotice(limit));
         return;
       }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);

@@ -1,7 +1,8 @@
 const { isIP } = require('node:net');
 const express = require('express');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
+const { createChatBudget } = require('./chat-budget');
 const { formatBotReply } = require('./reply-format');
 const {
   buildKnowledgeContext,
@@ -12,6 +13,11 @@ const {
 const USER_LIMIT = 500;
 const REPLY_LIMIT = 3000;
 const RATE_WINDOW = 15 * 60 * 1000;
+const LIMIT_MESSAGES = {
+  CHAT_BURST_LIMIT: 'ACD-Bot has reached its short-term usage limit.',
+  CHAT_DAILY_LIMIT: 'ACD-Bot has reached its daily usage limit.',
+  CHAT_MONTHLY_LIMIT: 'ACD-Bot has reached its 30-day usage limit.',
+};
 
 function validateHistory(messages) {
   if (!Array.isArray(messages) || messages.length > 12 || messages.at(-1)?.role !== 'user') {
@@ -26,12 +32,15 @@ function validateHistory(messages) {
     const limit = message.role === 'user' ? USER_LIMIT : REPLY_LIMIT;
     const content = message.content.replace(/\0/g, '').trim();
     if (!content || message.content.length > limit) return null;
-    history.push({ role: message.role, content });
+    history.push({ role: message.role, content: message.role === 'assistant' ? content.slice(0, 1000) : content });
   }
   return history.slice(-6);
 }
 
-function createChatApp({ client, onRailway = false, allowLocal = false, systemPrompt, model, dailyLimit = 250 }) {
+function createChatApp({
+  client, onRailway = false, allowLocal = false, systemPrompt, model,
+  budget = createChatBudget(), chatEnabled = true,
+}) {
   const app = express();
   app.set('etag', false);
   app.set('query parser', false);
@@ -61,13 +70,13 @@ function createChatApp({ client, onRailway = false, allowLocal = false, systemPr
   function getRateLimitKey(req) {
     // Use Railway's edge-provided client address only on the Railway service.
     const edgeIp = onRailway && req.get('X-Real-IP');
-    if (edgeIp && isIP(edgeIp)) return edgeIp;
-    return req.socket.remoteAddress || 'unknown-client';
+    const clientIp = edgeIp && isIP(edgeIp) ? edgeIp : req.socket.remoteAddress;
+    return clientIp ? ipKeyGenerator(clientIp) : 'unknown-client';
   }
 
   const globalLimiter = rateLimit({
     windowMs: RATE_WINDOW,
-    limit: 100,
+    limit: 60,
     standardHeaders: false,
     legacyHeaders: false,
     keyGenerator: () => 'chat',
@@ -75,7 +84,7 @@ function createChatApp({ client, onRailway = false, allowLocal = false, systemPr
   });
   const chatLimiter = rateLimit({
     windowMs: RATE_WINDOW,
-    limit: 15,
+    limit: 10,
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     keyGenerator: getRateLimitKey,
@@ -92,8 +101,7 @@ function createChatApp({ client, onRailway = false, allowLocal = false, systemPr
     res.sendStatus(204);
   });
 
-  let budgetDay = 0;
-  let providerCalls = 0;
+  let providerAuthFailed = false;
   let inFlight = 0;
   const jsonBody = express.json({ limit: '32kb', inflate: false });
   app.post('/api/chat', allowPortfolioOrigin, chatLimiter, globalLimiter, (req, res, next) => {
@@ -111,24 +119,25 @@ function createChatApp({ client, onRailway = false, allowLocal = false, systemPr
     if (shouldBlockRemovedProjectQuery(question)) {
       return res.json({ reply: getRemovedProjectReply() });
     }
-    if (!client) return res.status(503).json({ error: 'Chat is temporarily unavailable.' });
-    if (inFlight >= 3) {
+    if (!client || !chatEnabled || providerAuthFailed) {
+      return res.status(503).json({ error: 'Chat is temporarily unavailable.' });
+    }
+    if (inFlight >= 2) {
       res.set('Retry-After', '10');
       return res.status(503).json({ error: 'Chat is busy. Please try again shortly.' });
     }
 
-    const now = Date.now();
-    const today = Math.floor(now / 86_400_000);
-    if (today !== budgetDay) {
-      budgetDay = today;
-      providerCalls = 0;
-    }
-    if (providerCalls >= dailyLimit) {
-      res.set('Retry-After', String(Math.ceil(((today + 1) * 86_400_000 - now) / 1000)));
-      return res.status(429).json({ error: 'Chat has reached its daily capacity. Please try again tomorrow.' });
+    try {
+      const limit = budget.reserve();
+      if (limit) {
+        res.set('Retry-After', String(limit.retryAfterSeconds));
+        return res.status(429).json({ ...limit, error: LIMIT_MESSAGES[limit.code] });
+      }
+    } catch {
+      console.error('[ACD-Bot] Usage budget storage unavailable');
+      return res.status(503).json({ error: 'Chat is temporarily unavailable.' });
     }
 
-    providerCalls += 1;
     inFlight += 1;
     const controller = new AbortController();
     const cancel = () => controller.abort();
@@ -136,7 +145,7 @@ function createChatApp({ client, onRailway = false, allowLocal = false, systemPr
     try {
       const response = await client.chat.completions.create({
         model,
-        max_tokens: 450,
+        max_tokens: 350,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'system', content: buildKnowledgeContext(question) },
@@ -147,9 +156,12 @@ function createChatApp({ client, onRailway = false, allowLocal = false, systemPr
       if (!res.destroyed) {
         res.json({ reply: reply || "Sorry, I couldn't generate a response." });
       }
-    } catch {
+    } catch (error) {
+      if (error?.status === 401 || error?.status === 403) providerAuthFailed = true;
       if (!res.destroyed) {
-        console.error('[ACD-Bot] Chat provider request failed');
+        console.error(providerAuthFailed
+          ? '[ACD-Bot] Provider authorization failed. Chat paused until restart.'
+          : '[ACD-Bot] Chat provider request failed');
         res.status(502).json({ error: 'Chat is temporarily unavailable.' });
       }
     } finally {

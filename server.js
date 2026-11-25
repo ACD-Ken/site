@@ -1,6 +1,7 @@
 require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 const OpenAI = require('openai');
 const { createChatApp } = require('./chat-api');
+const { createChatBudget } = require('./chat-budget');
 
 const SYSTEM_PROMPT = `You are ACD-Bot, a sharp and friendly assistant on Ken Wong's personal portfolio site. You help visitors quickly understand who Ken is, what he has done, and what he can do.
 
@@ -66,9 +67,15 @@ Portfolio: https://acd-ken.github.io/site
 const apiKey = process.env.OPENAI_API_KEY;
 const client = apiKey && new OpenAI({ apiKey, timeout: 20_000, maxRetries: 0 });
 const onRailway = Boolean(process.env.RAILWAY_SERVICE_ID);
+const budgetDirectory = process.env.RAILWAY_VOLUME_MOUNT_PATH;
+if (onRailway && !budgetDirectory) {
+  throw new Error('ACD-Bot requires a Railway volume for its persistent chat budget');
+}
 const app = createChatApp({
   client,
   onRailway,
+  budget: createChatBudget({ directory: budgetDirectory }),
+  chatEnabled: process.env.ACD_CHAT_ENABLED !== 'false',
   allowLocal: !onRailway && process.env.NODE_ENV !== 'production',
   systemPrompt: SYSTEM_PROMPT,
   model: process.env.OPENAI_MODEL || 'gpt-4.1',
