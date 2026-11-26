@@ -347,6 +347,11 @@
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { window.location.href = 'admin-login.html'; return; }
       if (!(await assertBlogAdmin(session))) return;
+      const { data: assurance, error } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (error || assurance?.currentLevel !== 'aal2' || assurance?.nextLevel !== 'aal2') {
+        window.location.replace('admin-login.html');
+        return;
+      }
       document.getElementById('admin-email').textContent = session.user.email;
       loadPosts();
     }
